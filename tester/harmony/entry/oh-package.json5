@@ -1,0 +1,12 @@
+{
+  "license": "ISC",
+  "devDependencies": {},
+  "name": "entry",
+  "description": "example description",
+  "repository": {},
+  "version": "1.0.0",
+  "dependencies": {
+    "rnoh-gesture-handler": "file:../react_native_modules/gesture_handler",
+    "rnoh": "file:../react_native_modules/rnoh"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  app: {
+    compileSdkVersion: 9,
+    compatibleSdkVersion: 9,
+    products: [
+      {
+        name: 'default',
+        signingConfig: 'default',
+      },
+    ],
+  },
+  modules: [
+    {
+      name: 'entry',
+      srcPath: './entry',
+      targets: [
+        {
+          name: 'default',
+          applyToProducts: ['default'],
+        },
+      ],
+    },
+    {
+      name: 'gesture_handler',
+      srcPath: './gesture_handler',
+    },
+    {
+      name: 'rnoh',
+      srcPath: './react_native_modules/rnoh',
+    },
+  ],
+}

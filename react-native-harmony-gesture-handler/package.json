@@ -1,0 +1,32 @@
+{
+  "name": "@rnoh/react-native-harmony-gesture-handler",
+  "harmony": {
+    "alias": "react-native-gesture-handler"
+  },
+  "version": "2.12.0",
+  "description": "",
+  "main": "lib/index.js",
+  "scripts": {
+    "prepare": "npm run build",
+    "build": "tsc"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "react-native-gesture-handler": "^2.12.1"
+  },
+  "devDependencies": {
+    "react": "^18.2.0",
+    "react-native": "^0.72.3",
+    "typescript": "^5.1.6"
+  },
+  "files": [
+    "lib",
+    "harmony"
+  ]
+}
