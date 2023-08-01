@@ -7,12 +7,14 @@
   "description": "",
   "main": "lib/index.js",
   "scripts": {
-    "prepare": "npm run build",
-    "build": "tsc"
+    "prepack": "bob build",
+    "test": "jest",
+    "build": "tsc -p tsconfig.build.json"
   },
   "peerDependencies": {
     "react": "*",
-    "react-native": "*"
+    "react-native": "*",
+    "react-native-harmony": "npm:@rnoh/react-native-harmony@^0.72.4"
   },
   "keywords": [],
   "author": "",
@@ -21,12 +23,29 @@
     "react-native-gesture-handler": "^2.12.1"
   },
   "devDependencies": {
+    "@types/react": "^18.2.18",
     "react": "^18.2.0",
-    "react-native": "^0.72.3",
-    "typescript": "^5.1.6"
+    "react-native": "^0.72.0",
+    "react-native-builder-bob": "^0.21.3",
+    "react-native-harmony": "^0.72.4",
+    "typescript": "4.5.5"
   },
   "files": [
     "lib",
     "harmony"
-  ]
+  ],
+  "react-native-builder-bob": {
+    "source": "src",
+    "output": "lib",
+    "targets": [
+      "commonjs",
+      "module",
+      [
+        "typescript",
+        {
+          "project": "tsconfig.build.json"
+        }
+      ]
+    ]
+  }
 }
