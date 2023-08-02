@@ -5,7 +5,7 @@ import {
   // Gesture,
   // GestureDetector,
   GestureHandlerRootView,
-} from 'react-native-gesture-handler';
+} from 'react-native-harmony-gesture-handler';
 
 function App({}): JSX.Element {
   return (
