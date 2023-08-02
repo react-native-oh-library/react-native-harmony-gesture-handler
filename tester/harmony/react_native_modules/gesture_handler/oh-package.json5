@@ -2,9 +2,11 @@
   "license": "",
   "devDependencies": {},
   "author": "",
-  "name": "gesture_handler",
+  "name": "rnoh-gesture-handler",
   "description": "",
   "main": "",
   "version": "1.0.0",
-  "dependencies": {}
+  "dependencies": {
+    "rnoh": "file:../rnoh"
+  }
 }
