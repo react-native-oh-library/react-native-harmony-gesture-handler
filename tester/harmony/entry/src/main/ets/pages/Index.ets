@@ -11,7 +11,11 @@ struct Index {
   @Builder
   buildCustomComponent(ctx: ComponentBuilderContext) {
     if (ctx.descriptor.type === RNGestureHandlerRootView.DESCRIPTOR_TYPE) {
-      RNGestureHandlerRootView({ tag: ctx.descriptor.tag, ctx: ctx.rnohContext })
+      RNGestureHandlerRootView({
+        tag: ctx.descriptor.tag,
+        ctx: ctx.rnohContext,
+        buildCustomComponent: this.buildCustomComponent.bind(this)
+      })
     }
   }
 

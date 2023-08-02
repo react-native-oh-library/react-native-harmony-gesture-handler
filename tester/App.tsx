@@ -10,7 +10,7 @@ import {
 function App({}): JSX.Element {
   return (
     <GestureHandlerRootView>
-      <ScrollView style={styles.container}>
+      <ScrollView style={[styles.container]}>
         <Tester>
           <TestSuite name="react-native-gesture-handler">
             <TestCase itShould="toggle color on tap">

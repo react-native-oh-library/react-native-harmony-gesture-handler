@@ -1,4 +1,4 @@
-import { Descriptor, RNOHContext, RNViewBase } from "rnoh"
+import { Descriptor, RNOHContext, RNViewBase, ComponentBuilderContext, RNComponentFactory } from "rnoh"
 
 export type RNGestureHandlerRootViewDescriptor = Descriptor<"RNGestureHandlerRootView", {
   source: {
@@ -14,10 +14,12 @@ export struct RNGestureHandlerRootView {
   static DESCRIPTOR_TYPE = "RNGestureHandlerRootView" as const
   ctx: RNOHContext
   tag: number
-  @State descriptor: RNGestureHandlerRootViewDescriptor | undefined = undefined
+  @BuilderParam buildCustomComponent: (componentBuilderContext: ComponentBuilderContext) => void
+  @State descriptor: RNGestureHandlerRootViewDescriptor = {} as RNGestureHandlerRootViewDescriptor
   private unsubscribes: (() => void)[] = []
 
   aboutToAppear() {
+    this.handleDescriptorChange(this.ctx.descriptorRegistry.getDescriptor<RNGestureHandlerRootViewDescriptor>(this.tag))
     this.unsubscribes.push(this.ctx.descriptorRegistry.subscribeToDescriptorChanges(this.tag, (d) => {
       this.handleDescriptorChange(d as RNGestureHandlerRootViewDescriptor)
     }))
@@ -29,6 +31,7 @@ export struct RNGestureHandlerRootView {
 
   handleDescriptorChange(newDescriptor: RNGestureHandlerRootViewDescriptor) {
     this.descriptor = newDescriptor
+    console.log("RNOH::RNGH", JSON.stringify(newDescriptor))
   }
 
   private dispatchEvent(eventName: string, payload: any) {
@@ -37,11 +40,10 @@ export struct RNGestureHandlerRootView {
 
   build() {
     RNViewBase({ ctx: this.ctx, tag: this.tag }) {
-      Stack() {
-      }
-      .width("100%")
-      .height("100%")
-      .backgroundColor("red")
+      ForEach(this.descriptor.childrenTags, (childrenTag) => {
+        Text(childrenTag.toString())
+        RNComponentFactory({ ctx: this.ctx, tag: childrenTag, buildCustomComponent: this.buildCustomComponent })
+      }, childrenTag => childrenTag)
     }
   }
 }
