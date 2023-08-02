@@ -5,7 +5,7 @@
   "scripts": {
     "start": "react-native start",
     "pack:pkg": "cd ../react-native-harmony-gesture-handler && npm pack && cd ../tester",
-    "install:pkg": "npm uninstall react-native-harmony-web-view && npm run pack:pkg && npm i react-native-harmony-gesture-handler@file:../react-native-harmony-gesture-handler/rnoh-react-native-harmony-gesture-handler-2.12.0.tgz",
+    "install:pkg": "npm uninstall react-native-harmony-gesture-handler && npm run pack:pkg && npm i react-native-harmony-gesture-handler@file:../react-native-harmony-gesture-handler/rnoh-react-native-harmony-gesture-handler-2.12.0.tgz",
     "dev": "npm run install:pkg && react-native bundle-harmony",
     "android": "react-native run-android",
     "postinstall": "react-native unpack-harmony"
