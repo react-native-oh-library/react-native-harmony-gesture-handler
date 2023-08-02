@@ -9,5 +9,7 @@ class GestureHandlerPackage : public Package {
     std::vector<facebook::react::ComponentDescriptorProvider> createComponentDescriptorProviders() override;
 
     EventEmitRequestHandlers createEventEmitRequestHandlers() override;
+
+    std::unique_ptr<TurboModuleFactoryDelegate> createTurboModuleFactoryDelegate() override;
 };
 } // namespace rnoh
