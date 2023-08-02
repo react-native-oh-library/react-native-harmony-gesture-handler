@@ -2,7 +2,7 @@ import {ReactNativeViewAttributes, registerViewConfig} from "react-native-harmon
 import * as React from 'react';
 import { PropsWithChildren } from 'react';
 import { ViewProps } from 'react-native';
-// import { maybeInitializeFabric } from 'react-native-gesture-handler/src/init';
+import { maybeInitializeFabric } from './init';
 import GestureHandlerRootViewContext from 'react-native-gesture-handler/src/GestureHandlerRootViewContext';
 
 
@@ -24,7 +24,7 @@ export default function GestureHandlerRootView(
   // try initialize fabric on the first render, at this point we can
   // reliably check if fabric is enabled (the function contains a flag
   // to make sure it's called only once)
-  // maybeInitializeFabric(); // TODO: add turbo module
+  maybeInitializeFabric(); 
 
   return (
     <GestureHandlerRootViewContext.Provider value>

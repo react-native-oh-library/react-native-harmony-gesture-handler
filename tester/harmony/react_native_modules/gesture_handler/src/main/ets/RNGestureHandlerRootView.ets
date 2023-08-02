@@ -31,7 +31,6 @@ export struct RNGestureHandlerRootView {
 
   handleDescriptorChange(newDescriptor: RNGestureHandlerRootViewDescriptor) {
     this.descriptor = newDescriptor
-    console.log("RNOH::RNGH", JSON.stringify(newDescriptor))
   }
 
   private dispatchEvent(eventName: string, payload: any) {
@@ -41,7 +40,6 @@ export struct RNGestureHandlerRootView {
   build() {
     RNViewBase({ ctx: this.ctx, tag: this.tag }) {
       ForEach(this.descriptor.childrenTags, (childrenTag) => {
-        Text(childrenTag.toString())
         RNComponentFactory({ ctx: this.ctx, tag: childrenTag, buildCustomComponent: this.buildCustomComponent })
       }, childrenTag => childrenTag)
     }
