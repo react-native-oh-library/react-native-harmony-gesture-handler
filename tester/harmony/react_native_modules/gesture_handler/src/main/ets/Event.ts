@@ -23,7 +23,7 @@ export enum PointerType {
   PEN = 'pen',
 }
 
-export enum EventTypes {
+export enum EventType {
   DOWN,
   ADDITIONAL_POINTER_DOWN,
   UP,
@@ -50,7 +50,7 @@ export interface AdaptedEvent {
   offsetX: number;
   offsetY: number;
   pointerId: number;
-  eventType: EventTypes;
+  eventType: EventType;
   pointerType: PointerType;
   buttons: number;
   time: number;

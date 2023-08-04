@@ -1,7 +1,7 @@
 import type { GestureHandlerOrchestrator } from "./GestureHandlerOrchestrator"
 import type { PointerTracker } from "./PointerTracker"
 import { State } from "./State"
-import { HitSlop, Directions } from "./Event"
+import { HitSlop, Directions, AdaptedEvent } from "./Event"
 
 
 export interface Handler {
@@ -43,7 +43,9 @@ export interface GestureConfig {
   shouldActivateOnStart?: boolean;
   disallowInterruption?: boolean;
   direction?: typeof Directions;
+  // --- Tap
   needsPointerData?: boolean
+  minNumberOfPointers?: number
 }
 
 type PointerId = number
@@ -53,23 +55,101 @@ export interface View {
 }
 
 export abstract class GestureHandler {
-  private config: GestureConfig
-  private currentState: State
+  protected config: GestureConfig
+  protected currentState: State
 
-  constructor(private view: View,
-              private handlerTag: number,
-              private orchestrator: GestureHandlerOrchestrator,
-              private tracker: PointerTracker
+  constructor(protected view: View,
+              protected handlerTag: number,
+              protected orchestrator: GestureHandlerOrchestrator,
+              protected tracker: PointerTracker
   ) {
   }
 
-  public activate(): void {
+  public abstract onPointerDown(e: AdaptedEvent): void
+
+  protected begin(): void {
+    if (!this.isWithinHitSlop()) return;
+    if (this.currentState === State.UNDETERMINED) {
+      this.moveToState(State.BEGAN);
+    }
+  }
+
+  private isWithinHitSlop(): boolean {
+    if (!this.config.hitSlop) {
+      return true;
+    }
+
+    const width = this.view.getBoundingRect().width;
+    const height = this.view.getBoundingRect().height;
+
+    let left = 0;
+    let top = 0;
+    let right: number = width;
+    let bottom: number = height;
+
+    if (this.config.hitSlop.horizontal !== undefined) {
+      left -= this.config.hitSlop.horizontal;
+      right += this.config.hitSlop.horizontal;
+    }
+
+    if (this.config.hitSlop.vertical !== undefined) {
+      top -= this.config.hitSlop.vertical;
+      bottom += this.config.hitSlop.vertical;
+    }
+
+    if (this.config.hitSlop.left !== undefined) {
+      left = -this.config.hitSlop.left;
+    }
+
+    if (this.config.hitSlop.right !== undefined) {
+      right = width + this.config.hitSlop.right;
+    }
+
+    if (this.config.hitSlop.top !== undefined) {
+      top = -this.config.hitSlop.top;
+    }
+
+    if (this.config.hitSlop.bottom !== undefined) {
+      bottom = width + this.config.hitSlop.bottom;
+    }
+    if (this.config.hitSlop.width !== undefined) {
+      if (this.config.hitSlop.left !== undefined) {
+        right = left + this.config.hitSlop.width;
+      } else if (this.config.hitSlop.right !== undefined) {
+        left = right - this.config.hitSlop.width;
+      }
+    }
+
+    if (this.config.hitSlop.height !== undefined) {
+      if (this.config.hitSlop.top !== undefined) {
+        bottom = top + this.config.hitSlop.height;
+      } else if (this.config.hitSlop.bottom !== undefined) {
+        top = bottom - this.config.hitSlop.height;
+      }
+    }
+
+    const rect = this.view.getBoundingRect();
+    const offsetX: number = this.tracker.getLastX() - rect.x;
+    const offsetY: number = this.tracker.getLastY() - rect.y;
+
+    if (
+      offsetX >= left &&
+        offsetX <= right &&
+        offsetY >= top &&
+        offsetY <= bottom
+    ) {
+      return true;
+    }
+    return false;
+  }
+
+  protected activate(): void {
     if (this.currentState === State.UNDETERMINED || this.currentState === State.BEGAN) {
       this.moveToState(State.ACTIVE)
     }
   }
 
-  public moveToState(state: State) {
+  protected moveToState(state: State) {
     if (state === this.currentState) return;
     const oldState = this.currentState
     this.currentState = state;
