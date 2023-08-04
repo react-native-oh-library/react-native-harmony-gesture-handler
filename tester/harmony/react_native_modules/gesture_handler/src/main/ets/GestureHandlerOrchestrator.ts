@@ -1,4 +1,5 @@
-import { GestureHandler, State } from "./GestureHandler"
+import { GestureHandler } from "./GestureHandler"
+import {State} from "./State"
 
 
 interface OverlapChecker {
