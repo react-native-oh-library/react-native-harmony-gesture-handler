@@ -66,6 +66,14 @@ export abstract class GestureHandler {
   }
 
   public abstract onPointerDown(e: AdaptedEvent): void
+  public abstract onPointerUp(e: AdaptedEvent): void
+  public abstract onAdditionalPointerAdd(e: AdaptedEvent): void
+  public abstract onAdditionalPointerRemove(e: AdaptedEvent): void
+  public abstract onPointerMove(e: AdaptedEvent): void
+  public abstract onPointerEnter(e: AdaptedEvent): void
+  public abstract onPointerOut(e: AdaptedEvent): void
+  public abstract onPointerCancel(e: AdaptedEvent): void
+  public abstract onPointerOutOfBounds(e: AdaptedEvent): void
 
   protected begin(): void {
     if (!this.isWithinHitSlop()) return;
