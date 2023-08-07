@@ -34,7 +34,7 @@ export enum EventType {
   CANCEL,
 }
 
-type TouchList = unknown
+export type Touch = {id: number, x: number, y: number, absoluteX: number, absoluteY: number}
 
 export enum TouchEventType {
   UNDETERMINED,
@@ -54,8 +54,8 @@ export interface AdaptedEvent {
   pointerType: PointerType;
   buttons: number;
   time: number;
-  allTouches?: TouchList;
-  changedTouches?: TouchList;
+  allTouches?: Touch[];
+  changedTouches?: Touch[];
   touchEventType?: TouchEventType;
 }
 

@@ -1,5 +1,5 @@
 import { GestureHandler, View } from "./GestureHandler"
-import { AdaptedEvent, EventType, PointerType, TouchEventType } from "./Event"
+import { AdaptedEvent, EventType, PointerType, TouchEventType, Touch } from "./Event"
 
 export class GestureHandlerArkUIAdapter {
   private activePointersCounter = 0
@@ -75,8 +75,8 @@ export class GestureHandlerArkUIAdapter {
       pointerType: PointerType.TOUCH,
       buttons: 0,
       time: e.timestamp,
-      allTouches: [],
-      changedTouches: [],
+      allTouches: e.touches.map(this.mapTouchObjectToTouch.bind(this)),
+      changedTouches: e.changedTouches.map(this.mapTouchObjectToTouch.bind(this)),
       touchEventType: this.mapTouchTypeToTouchEventType(changedTouch.type)
     }
   }
@@ -123,6 +123,16 @@ export class GestureHandlerArkUIAdapter {
         return this.activePointersCounter - 1
       case TouchType.Cancel:
         return 0
+    }
+  }
+
+  private mapTouchObjectToTouch(touchObject: TouchObject): Touch {
+    return {
+      id: touchObject.id,
+      x: touchObject.x,
+      y: touchObject.y,
+      absoluteX: touchObject.screenX,
+      absoluteY: touchObject.screenY
     }
   }
 
