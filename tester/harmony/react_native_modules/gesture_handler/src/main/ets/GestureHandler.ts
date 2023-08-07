@@ -51,6 +51,7 @@ export interface GestureConfig {
 type PointerId = number
 
 export interface View {
+  getTag(): number
   getBoundingRect(): {x: number, y: number, width: number, height: number}
 }
 

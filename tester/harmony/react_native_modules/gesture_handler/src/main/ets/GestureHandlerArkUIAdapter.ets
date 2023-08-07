@@ -1,6 +1,8 @@
 import { GestureHandler, View } from "./GestureHandler"
 import { AdaptedEvent, EventType, PointerType, TouchEventType, Touch } from "./Event"
 
+
+
 export class GestureHandlerArkUIAdapter {
   private activePointersCounter = 0
   private pointersIdInBounds = new Set<number>()
