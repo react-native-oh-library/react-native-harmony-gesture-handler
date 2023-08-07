@@ -10,12 +10,46 @@ export class GestureHandlerArkUIAdapter {
 
   handleTouch(e: TouchEvent) {
     for (const changedTouch of e.changedTouches) {
-      if (e.type === TouchType.Down && !this.isInBounds({ x: changedTouch.x, y: changedTouch.y })) continue;
+      if (this.shouldSkipTouch(changedTouch)) continue;
+      const wasInBounds = this.pointersIdInBounds.has(changedTouch.id)
+      const isInBounds = this.isInBounds(changedTouch)
       const adaptedEvent = this.adaptTouchEvent(e, changedTouch)
-      this.gestureHandler.onPointerDown(adaptedEvent)
+      switch (adaptedEvent.eventType) {
+        case EventType.DOWN:
+          this.gestureHandler.onPointerDown(adaptedEvent)
+          break;
+        case EventType.ADDITIONAL_POINTER_DOWN:
+          this.gestureHandler.onAdditionalPointerAdd(adaptedEvent)
+          break;
+        case EventType.UP:
+          this.gestureHandler.onPointerUp(adaptedEvent)
+          break;
+        case EventType.ADDITIONAL_POINTER_UP:
+          this.gestureHandler.onAdditionalPointerRemove(adaptedEvent)
+          break;
+        case EventType.MOVE:
+          if (!wasInBounds && !isInBounds)
+            this.gestureHandler.onPointerOutOfBounds(adaptedEvent)
+          else
+            this.gestureHandler.onPointerMove(adaptedEvent)
+          break;
+        case EventType.ENTER:
+          this.gestureHandler.onPointerEnter(adaptedEvent)
+          break;
+        case EventType.OUT:
+          this.gestureHandler.onPointerOut(adaptedEvent)
+          break;
+        case EventType.CANCEL:
+          this.gestureHandler.onPointerCancel(adaptedEvent)
+          break;
+      }
+
     }
   }
 
+  private shouldSkipTouch(changedTouch: TouchObject): boolean {
+    return changedTouch.type === TouchType.Down && !this.isInBounds({ x: changedTouch.x, y: changedTouch.y })
+  }
 
   private adaptTouchEvent(e: TouchEvent, changedTouch: TouchObject): AdaptedEvent {
     const eventType = this.mapTouchTypeToEventType({
