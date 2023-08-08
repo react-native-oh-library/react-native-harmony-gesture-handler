@@ -19,13 +19,13 @@ export class RNGestureHandlerModule extends TurboModule {
   private gestureHandlerFactory: GestureHandlerFactory | undefined = undefined
   private viewRegistry: ViewRegistry | undefined = undefined
 
-  install() {
+  public install() {
     const orchestrator = new GestureHandlerOrchestrator()
     this.viewRegistry = new ViewRegistry(this.ctx.descriptorRegistry)
     this.gestureHandlerFactory = new GestureHandlerFactory(orchestrator)
   }
 
-  createGestureHandler(
+  public createGestureHandler(
     handlerName: string,
     handlerTag: number,
     config: Readonly<Record<string, unknown>>
@@ -38,7 +38,7 @@ export class RNGestureHandlerModule extends TurboModule {
     this.gestureHandlerRegistry.addGestureHandler(gestureHandler)
   }
 
-  attachGestureHandler(
+  public attachGestureHandler(
     handlerTag: number,
     newView: number,
     actionType: ActionType
@@ -58,25 +58,33 @@ export class RNGestureHandlerModule extends TurboModule {
     }
   }
 
-  updateGestureHandler(
+  public updateGestureHandler(
     handlerTag: number,
     newConfig: Readonly<Record<string, unknown>>
   ) {
+    this.warn("updateGestureHandler is not implemented")
   }
 
-  dropGestureHandler(handlerTag: number) {
+  public dropGestureHandler(handlerTag: number) {
+    this.warn("dropGestureHandler is not implemented")
   }
 
-  handleSetJSResponder(tag: number, blockNativeResponder: boolean) {
+  public handleSetJSResponder(tag: number, blockNativeResponder: boolean) {
+    this.warn("handleSetJSResponder is not implemented")
   }
 
-  handleClearJSResponder() {
+  public handleClearJSResponder() {
+    this.warn("handleClearJSResponder is not implemented")
   }
 
-  flushOperations() {
+  public flushOperations() {
+    this.warn("flushOperations is not implemented")
   }
 
   // -------------------------------------------------------------------------------------------------------------------
+  protected warn(message: string) {
+    this.ctx.logger.warn("RNGH: " + message)
+  }
 
   public getGestureHandlerRegistry() {
     return this.gestureHandlerRegistry
