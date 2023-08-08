@@ -68,7 +68,7 @@ export { default as GestureHandlerRootView } from './GestureHandlerRootView';
 //   NativeViewGestureHandlerPayload,
 //   NativeViewGestureHandlerProps,
 // } from './handlers/NativeViewGestureHandler';
-export { GestureDetector } from 'react-native-gesture-handler/src/handlers/gestures/GestureDetector';
+export { GestureDetector } from './GestureDetector';
 export { GestureObjects as Gesture } from 'react-native-gesture-handler/src/handlers/gestures/gestureObjects';
 // export type { TapGestureType as TapGesture } from './handlers/gestures/tapGesture';
 // export type { PanGestureType as PanGesture } from './handlers/gestures/panGesture';
