@@ -4,7 +4,7 @@ import {RNGestureHandlerModule} from './RNGestureHandlerModule';
 
 class GestureHandlerTurboModulesFactory extends TurboModulesFactory {
   createTurboModule(name: string): TurboModule | null {
-    if (name === 'RNGestureHandlerModule') {
+    if (name === RNGestureHandlerModule.NAME) {
       return new RNGestureHandlerModule(this.ctx);
     }
     return null;
