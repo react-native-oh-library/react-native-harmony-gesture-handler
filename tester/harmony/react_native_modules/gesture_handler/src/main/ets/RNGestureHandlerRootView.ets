@@ -1,5 +1,6 @@
 import { Descriptor, RNOHContext, RNViewBase, ComponentBuilderContext, RNComponentFactory } from "rnoh"
 import { RNGHRootTouchHandler } from "./RNGHRootTouchHandler"
+import { RNGestureHandlerModule } from "./RNGestureHandlerModule"
 
 export type RNGestureHandlerRootViewDescriptor = Descriptor<"RNGestureHandlerRootView", {
   source: {
@@ -21,7 +22,8 @@ export struct RNGestureHandlerRootView {
   private touchHandler: RNGHRootTouchHandler | undefined = undefined
 
   aboutToAppear() {
-    this.touchHandler = RNGHRootTouchHandler.from(this.ctx.descriptorRegistry)
+    const rnGestureHandlerModule = this.ctx.rnInstanceManager.getTurboModule<RNGestureHandlerModule>(RNGestureHandlerModule.NAME)
+    this.touchHandler = RNGHRootTouchHandler.from(this.ctx.descriptorRegistry, rnGestureHandlerModule.getGestureHandlerRegistry())
     this.handleDescriptorChange(this.ctx.descriptorRegistry.getDescriptor<RNGestureHandlerRootViewDescriptor>(this.tag))
     this.unsubscribes.push(this.ctx.descriptorRegistry.subscribeToDescriptorChanges(this.tag, (d) => {
       this.handleDescriptorChange(d as RNGestureHandlerRootViewDescriptor)

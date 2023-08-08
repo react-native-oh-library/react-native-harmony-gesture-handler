@@ -1,6 +1,11 @@
 import { TurboModule } from 'rnoh/ts';
+import { GestureHandlerRegistry } from './GestureHandlerRegistry';
 
 export class RNGestureHandlerModule extends TurboModule {
+  static NAME = "RNGestureHandlerModule"
+
+  private gestureHandlerRegistry = new GestureHandlerRegistry()
+
   handleSetJSResponder(tag: number, blockNativeResponder: boolean) {
   }
 
@@ -35,5 +40,11 @@ export class RNGestureHandlerModule extends TurboModule {
   }
 
   flushOperations() {
+  }
+
+  // -------------------------------------------------------------------------------------------------------------------
+
+  public getGestureHandlerRegistry() {
+    return this.gestureHandlerRegistry
   }
 }

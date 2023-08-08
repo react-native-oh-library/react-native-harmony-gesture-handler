@@ -4,8 +4,8 @@ import { GestureHandlerArkUIAdapter } from "./GestureHandlerArkUIAdapter"
 import { ViewRegistry } from "./ViewRegistry"
 
 export class RNGHRootTouchHandler {
-  static from(descriptorRegistry: DescriptorRegistry) {
-    return new RNGHRootTouchHandler(new ViewRegistry(descriptorRegistry), new GestureHandlerRegistry())
+  static from(descriptorRegistry: DescriptorRegistry, gestureHandlerRegistry: GestureHandlerRegistry) {
+    return new RNGHRootTouchHandler(new ViewRegistry(descriptorRegistry), gestureHandlerRegistry)
   }
 
   constructor(private viewRegistry: ViewRegistry, private gestureHandlerRegistry: GestureHandlerRegistry) {
