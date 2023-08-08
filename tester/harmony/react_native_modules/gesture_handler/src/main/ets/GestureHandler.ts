@@ -99,6 +99,14 @@ export abstract class GestureHandler {
     return this.handlerTag
   }
 
+  public getTracker() {
+    return this.tracker
+  }
+
+  public getView() {
+    return this.view
+  }
+
   protected begin(): void {
     if (!this.isWithinHitSlop()) return;
     if (this.currentState === State.UNDETERMINED) {
