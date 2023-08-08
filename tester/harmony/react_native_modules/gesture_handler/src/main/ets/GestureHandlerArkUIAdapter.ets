@@ -1,6 +1,6 @@
-import { GestureHandler, View } from "./GestureHandler"
+import { GestureHandler } from "./GestureHandler"
 import { AdaptedEvent, EventType, PointerType, TouchEventType, Touch } from "./Event"
-
+import { View } from "./View"
 
 
 export class GestureHandlerArkUIAdapter {
