@@ -1,16 +1,10 @@
 import { DescriptorRegistry } from "rnoh"
-import { GestureHandler } from "./GestureHandler"
+import { GestureHandlerRegistry } from "./GestureHandlerRegistry"
 import { GestureHandlerArkUIAdapter } from "./GestureHandlerArkUIAdapter"
 import { ViewRegistry } from "./ViewRegistry"
 
-export class GestureHandlerRegistry {
-  public getGestureHandlersByViewTag(viewTag: number): GestureHandler[] {
-    return []
-  }
-}
-
 export class RNGHRootTouchHandler {
-  static fromDescriptorRegistry(descriptorRegistry: DescriptorRegistry) {
+  static from(descriptorRegistry: DescriptorRegistry) {
     return new RNGHRootTouchHandler(new ViewRegistry(descriptorRegistry), new GestureHandlerRegistry())
   }
 

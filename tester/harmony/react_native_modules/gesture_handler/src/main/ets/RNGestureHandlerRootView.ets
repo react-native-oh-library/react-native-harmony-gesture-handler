@@ -21,7 +21,7 @@ export struct RNGestureHandlerRootView {
   private touchHandler: RNGHRootTouchHandler | undefined = undefined
 
   aboutToAppear() {
-    this.touchHandler = RNGHRootTouchHandler.fromDescriptorRegistry(this.ctx.descriptorRegistry)
+    this.touchHandler = RNGHRootTouchHandler.from(this.ctx.descriptorRegistry)
     this.handleDescriptorChange(this.ctx.descriptorRegistry.getDescriptor<RNGestureHandlerRootViewDescriptor>(this.tag))
     this.unsubscribes.push(this.ctx.descriptorRegistry.subscribeToDescriptorChanges(this.tag, (d) => {
       this.handleDescriptorChange(d as RNGestureHandlerRootViewDescriptor)

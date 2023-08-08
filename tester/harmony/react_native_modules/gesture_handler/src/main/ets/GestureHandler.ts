@@ -71,6 +71,10 @@ export abstract class GestureHandler {
   public abstract onPointerCancel(e: AdaptedEvent): void
   public abstract onPointerOutOfBounds(e: AdaptedEvent): void
 
+  public getTag(): number {
+    return this.handlerTag
+  }
+
   protected begin(): void {
     if (!this.isWithinHitSlop()) return;
     if (this.currentState === State.UNDETERMINED) {
