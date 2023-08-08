@@ -44,11 +44,11 @@ export struct RNGestureHandlerRootView {
 
   build() {
     RNViewBase({ ctx: this.ctx, tag: this.tag }) {
-      ForEach(this.descriptor.childrenTags, (childrenTag) => {
-        RNComponentFactory({ ctx: this.ctx, tag: childrenTag, buildCustomComponent: this.buildCustomComponent })
-      }, childrenTag => childrenTag)
-    }.onTouch((e) => {
-      this.touchHandler.handleTouch(e)
-    })
+      Stack() {
+        ForEach(this.descriptor.childrenTags, (childrenTag) => {
+          RNComponentFactory({ ctx: this.ctx, tag: childrenTag, buildCustomComponent: this.buildCustomComponent })
+        }, childrenTag => childrenTag)
+      }.width("100%").height("100%").onTouch((e) => this.touchHandler.handleTouch(e))
+    }
   }
 }
