@@ -50,9 +50,13 @@ export interface GestureConfig {
 
 type PointerId = number
 
+export type BoundingBox = {x: number, y: number, width: number, height: number}
+
 export interface View {
   getTag(): number
-  getBoundingRect(): {x: number, y: number, width: number, height: number}
+  getBoundingRect(): BoundingBox
+  isInBounds(pos: {x: number, y: number}): boolean
+  getChildren(): View[]
 }
 
 export abstract class GestureHandler {
