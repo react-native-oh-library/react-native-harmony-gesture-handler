@@ -2,10 +2,6 @@ import { GestureHandler } from "./GestureHandler"
 import { State } from "./State"
 
 
-interface OverlapChecker {
-  checkOverlap(handlerA: GestureHandler, handlerB: GestureHandler)
-}
-
 interface GestureHandlerOrchestratorProtocol {
   onHandlerStateChange(handler: GestureHandler, newState: State, oldState: State, sendIfDisabled?: boolean): void
 
@@ -23,7 +19,7 @@ export class GestureHandlerOrchestrator implements GestureHandlerOrchestratorPro
   private handlersToCancel: GestureHandler[]
   private activationIndex: number = 0
 
-  constructor(private overlapChecker: OverlapChecker) {
+  constructor() {
   }
 
   public onHandlerStateChange(handler: GestureHandler, newState: State, oldState: State, sendIfDisabled?: boolean) {
@@ -136,13 +132,49 @@ export class GestureHandlerOrchestrator implements GestureHandlerOrchestratorPro
       return false;
     if (handler !== otherHandler && (handler.isAwaiting() || handler.getState() === State.ACTIVE))
       return handler.shouldBeCancelledByOther(otherHandler)
-    return this.overlapChecker.checkOverlap(handler, otherHandler)
+    return this.checkOverlap(handler, otherHandler)
   }
 
   private canRunSimultaneously(handlerA: GestureHandler, handlerB: GestureHandler) {
     return handlerA === handlerB
       || handlerA.shouldRecognizeSimultaneously(handlerB)
       || handlerB.shouldRecognizeSimultaneously(handlerA)
+  }
+
+  private checkOverlap(
+    handler: GestureHandler,
+    otherHandler: GestureHandler
+  ): boolean {
+    // If handlers don't have common pointers, default return value is false.
+    // However, if at least on pointer overlaps with both handlers, we return true
+    // This solves issue in overlapping parents example
+
+    // TODO: Find better way to handle that issue, for example by activation order and handler cancelling
+
+    const handlerPointers: number[] = handler.getTrackedPointersID();
+    const otherPointers: number[] = otherHandler.getTrackedPointersID();
+    let overlap = false;
+    handlerPointers.forEach((pointer: number) => {
+      const handlerX: number = handler.getTracker().getLastX(pointer);
+      const handlerY: number = handler.getTracker().getLastY(pointer);
+      if (
+        handler.getView().isPositionInBounds({ x: handlerX, y: handlerY }) &&
+        otherHandler.getView().isPositionInBounds({ x: handlerX, y: handlerY })
+      ) {
+        overlap = true;
+      }
+    });
+    otherPointers.forEach((pointer: number) => {
+      const otherX: number = otherHandler.getTracker().getLastX(pointer);
+      const otherY: number = otherHandler.getTracker().getLastY(pointer);
+      if (
+        handler.getView().isPositionInBounds({ x: otherX, y: otherY }) &&
+        otherHandler.getView().isPositionInBounds({ x: otherX, y: otherY })
+      ) {
+        overlap = true;
+      }
+    });
+    return overlap;
   }
 
   private makeActive(handler: GestureHandler): void {
