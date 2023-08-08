@@ -43,6 +43,7 @@ export interface GestureConfig {
   shouldActivateOnStart?: boolean;
   disallowInterruption?: boolean;
   direction?: typeof Directions;
+
   // --- Tap
   needsPointerData?: boolean
   minNumberOfPointers?: number
@@ -50,26 +51,49 @@ export interface GestureConfig {
 
 type PointerId = number
 
+export type GestureHandlerDependencies = {
+  handlerTag: number
+  orchestrator: GestureHandlerOrchestrator
+  tracker: PointerTracker
+}
+
 export abstract class GestureHandler {
   protected config: GestureConfig
   protected currentState: State
+  protected view: View | undefined = undefined
 
-  constructor(protected view: View,
-              protected handlerTag: number,
-              protected orchestrator: GestureHandlerOrchestrator,
-              protected tracker: PointerTracker
+  protected handlerTag: number
+  protected orchestrator: GestureHandlerOrchestrator
+  protected tracker: PointerTracker
+
+  constructor(deps: GestureHandlerDependencies
   ) {
+    this.handlerTag = deps.handlerTag
+    this.orchestrator = deps.orchestrator
+    this.tracker = deps.tracker
   }
 
   public abstract onPointerDown(e: AdaptedEvent): void
+
   public abstract onPointerUp(e: AdaptedEvent): void
+
   public abstract onAdditionalPointerAdd(e: AdaptedEvent): void
+
   public abstract onAdditionalPointerRemove(e: AdaptedEvent): void
+
   public abstract onPointerMove(e: AdaptedEvent): void
+
   public abstract onPointerEnter(e: AdaptedEvent): void
+
   public abstract onPointerOut(e: AdaptedEvent): void
+
   public abstract onPointerCancel(e: AdaptedEvent): void
+
   public abstract onPointerOutOfBounds(e: AdaptedEvent): void
+
+  public onViewAttached(view: View) {
+    this.view = view
+  }
 
   public getTag(): number {
     return this.handlerTag
@@ -180,7 +204,8 @@ export abstract class GestureHandler {
     // TODO
   }
 
-  protected stateDidChange(newState: State, oldState: State) {}
+  protected stateDidChange(newState: State, oldState: State) {
+  }
 
 
   public updateGestureConfig(config: GestureConfig): void {

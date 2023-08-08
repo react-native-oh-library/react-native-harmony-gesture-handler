@@ -5,6 +5,10 @@ export class ViewRegistry {
   constructor(private descriptorRegistry: DescriptorRegistry) {
   }
 
+  public getViewByTag(viewTag: number) {
+    return new View(this.descriptorRegistry, viewTag)
+  }
+
   public getTouchableViewsAt(pos: {
     x: number,
     y: number

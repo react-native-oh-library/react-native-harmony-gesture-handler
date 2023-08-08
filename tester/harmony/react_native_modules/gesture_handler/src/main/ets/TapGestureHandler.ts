@@ -18,16 +18,40 @@ export class TapGestureHandler extends GestureHandler {
   private waitTimeout: number | undefined;
   private delayTimeout: number | undefined;
 
-  getDefaultConfig() {
-    return {}
-  }
-
   onPointerDown(event) {
     this.tracker.addToTracker(event);
     this.trySettingPosition(event);
     this.lastX = event.x;
     this.lastY = event.y;
     this.updateState(event);
+  }
+
+  onPointerUp() {
+  }
+
+  onAdditionalPointerAdd() {
+  }
+
+  onAdditionalPointerRemove() {
+  }
+
+  onPointerMove() {
+  }
+
+  onPointerEnter() {
+  }
+
+  onPointerOut() {
+  }
+
+  onPointerCancel() {
+  }
+
+  onPointerOutOfBounds() {
+  }
+
+  getDefaultConfig() {
+    return {}
   }
 
   private trySettingPosition(event: AdaptedEvent): void {
@@ -109,5 +133,4 @@ export class TapGestureHandler extends GestureHandler {
       this.delayTimeout = setTimeout(() => this.fail(), this.config.maxDelayMs ?? DEFAULT_MAX_DELAY_MS);
     }
   }
-
 }
