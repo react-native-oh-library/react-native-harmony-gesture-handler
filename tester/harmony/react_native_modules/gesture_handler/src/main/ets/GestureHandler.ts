@@ -1,8 +1,8 @@
 import type { GestureHandlerOrchestrator } from "./GestureHandlerOrchestrator"
 import type { PointerTracker } from "./PointerTracker"
+import type { View } from "./View"
 import { State } from "./State"
 import { HitSlop, Directions, AdaptedEvent } from "./Event"
-
 
 export interface Handler {
   handlerTag: number;
@@ -49,15 +49,6 @@ export interface GestureConfig {
 }
 
 type PointerId = number
-
-export type BoundingBox = {x: number, y: number, width: number, height: number}
-
-export interface View {
-  getTag(): number
-  getBoundingRect(): BoundingBox
-  isInBounds(pos: {x: number, y: number}): boolean
-  getChildren(): View[]
-}
 
 export abstract class GestureHandler {
   protected config: GestureConfig
