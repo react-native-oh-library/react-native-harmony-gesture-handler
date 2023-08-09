@@ -10,7 +10,7 @@ export enum ActionType {
   JS_FUNCTION_OLD_API = 3,
   JS_FUNCTION_NEW_API = 4,
 }
-;
+
 
 export class RNGestureHandlerModule extends TurboModule {
   static NAME = "RNGestureHandlerModule"
@@ -22,7 +22,7 @@ export class RNGestureHandlerModule extends TurboModule {
   public install() {
     const orchestrator = new GestureHandlerOrchestrator()
     this.viewRegistry = new ViewRegistry(this.ctx.descriptorRegistry)
-    this.gestureHandlerFactory = new GestureHandlerFactory(orchestrator)
+    this.gestureHandlerFactory = new GestureHandlerFactory(orchestrator, this.ctx.rnInstanceManager)
   }
 
   public createGestureHandler(

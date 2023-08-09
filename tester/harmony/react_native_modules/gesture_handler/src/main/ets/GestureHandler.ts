@@ -1,9 +1,10 @@
 import type { GestureHandlerOrchestrator } from "./GestureHandlerOrchestrator"
 import type { PointerTracker } from "./PointerTracker"
 import type { View } from "./View"
+import type { EventDispatcher} from "./EventDispatcher"
 import { State } from "./State"
 import { HitSlop, Directions, AdaptedEvent, PointerType } from "./Event"
-import { GestureStateChangeEvent, GestureUpdateEvent } from "./OutgoingEvent"
+import { GestureStateChangeEvent } from "./OutgoingEvent"
 
 
 export interface Handler {
@@ -52,12 +53,6 @@ export interface GestureConfig {
 
 type PointerId = number
 
-
-export interface EventDispatcher {
-  onGestureHandlerStateChange(handler: GestureHandler, event: GestureStateChangeEvent)
-
-  onGestureHandlerEvent(handler: GestureHandler, event: GestureStateChangeEvent | GestureUpdateEvent)
-}
 
 export type GestureHandlerDependencies = {
   handlerTag: number
@@ -279,11 +274,11 @@ export abstract class GestureHandler {
     const stateChangeEvent = this.createStateChangeEvent(newState, oldState);
     if (this.lastSentState !== newState) {
       this.lastSentState = newState;
-      this.eventDispatcher.onGestureHandlerStateChange(this, stateChangeEvent);
+      this.eventDispatcher.onGestureHandlerStateChange(stateChangeEvent);
     }
     if (this.currentState === State.ACTIVE) {
       stateChangeEvent.nativeEvent.oldState = undefined;
-      this.eventDispatcher.onGestureHandlerEvent(this, stateChangeEvent);
+      this.eventDispatcher.onGestureHandlerEvent(stateChangeEvent);
     }
   }
 

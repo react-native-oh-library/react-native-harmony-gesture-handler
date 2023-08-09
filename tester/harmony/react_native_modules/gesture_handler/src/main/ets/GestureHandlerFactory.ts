@@ -1,18 +1,21 @@
+import { RNInstanceManager } from "rnoh/ts"
 import { GestureHandlerOrchestrator } from './GestureHandlerOrchestrator';
 import { GestureHandler, GestureHandlerDependencies } from "./GestureHandler"
 import { TapGestureHandler } from './TapGestureHandler';
 import { PointerTracker } from './PointerTracker';
 import { RNGHError } from "./RNGHError"
+import { EventDispatcher } from "./EventDispatcher"
 
 export class GestureHandlerFactory {
-  constructor(private orchestrator: GestureHandlerOrchestrator) {
+  constructor(private orchestrator: GestureHandlerOrchestrator, private rnInstanceManager: RNInstanceManager) {
   }
 
   create(handlerName: string, handlerTag: number): GestureHandler {
     const deps: GestureHandlerDependencies = {
       tracker: new PointerTracker(),
       orchestrator: this.orchestrator,
-      handlerTag
+      handlerTag,
+      eventDispatcher: new EventDispatcher(this.rnInstanceManager)
     }
     switch(handlerName) {
       case "TapGestureHandler": return new TapGestureHandler(deps)
