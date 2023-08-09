@@ -2,7 +2,9 @@ import type { GestureHandlerOrchestrator } from "./GestureHandlerOrchestrator"
 import type { PointerTracker } from "./PointerTracker"
 import type { View } from "./View"
 import { State } from "./State"
-import { HitSlop, Directions, AdaptedEvent } from "./Event"
+import { HitSlop, Directions, AdaptedEvent, PointerType } from "./Event"
+import { GestureStateChangeEvent, GestureUpdateEvent } from "./OutgoingEvent"
+
 
 export interface Handler {
   handlerTag: number;
@@ -43,37 +45,61 @@ export interface GestureConfig {
   shouldActivateOnStart?: boolean;
   disallowInterruption?: boolean;
   direction?: typeof Directions;
-
-  // --- Tap
   needsPointerData?: boolean
+  // --- Tap
   minNumberOfPointers?: number
 }
 
 type PointerId = number
 
+
+export interface EventDispatcher {
+  onGestureHandlerStateChange(handler: GestureHandler, event: GestureStateChangeEvent)
+
+  onGestureHandlerEvent(handler: GestureHandler, event: GestureStateChangeEvent | GestureUpdateEvent)
+}
+
 export type GestureHandlerDependencies = {
   handlerTag: number
   orchestrator: GestureHandlerOrchestrator
   tracker: PointerTracker
+  eventDispatcher: EventDispatcher
 }
 
 export abstract class GestureHandler {
   protected config: GestureConfig = {}
   protected currentState: State
   protected view: View | undefined = undefined
+  protected lastSentState: State | undefined = undefined
 
   protected handlerTag: number
   protected orchestrator: GestureHandlerOrchestrator
   protected tracker: PointerTracker
+  protected eventDispatcher: EventDispatcher
+  protected pointerType: PointerType
 
   constructor(deps: GestureHandlerDependencies
   ) {
     this.handlerTag = deps.handlerTag
     this.orchestrator = deps.orchestrator
     this.tracker = deps.tracker
+    this.eventDispatcher = deps.eventDispatcher
   }
 
-  public abstract onPointerDown(e: AdaptedEvent): void
+  public onPointerDown(e: AdaptedEvent) {
+    this.orchestrator.registerHandlerIfNotPresent(this);
+    this.pointerType = e.pointerType;
+    if (this.pointerType === PointerType.TOUCH) {
+      this.orchestrator.cancelMouseAndPenGestures(this);
+    }
+    if (this.config.needsPointerData) {
+      this.sendTouchEvent(e);
+    }
+  }
+
+  protected sendTouchEvent(e: AdaptedEvent) {
+
+  }
 
   public abstract onPointerUp(e: AdaptedEvent): void
 
@@ -246,11 +272,41 @@ export abstract class GestureHandler {
     return this.currentState
   }
 
-  public sendEvent(args: {
+  public sendEvent({newState, oldState}: {
     oldState: State,
     newState: State
   }): void {
-    // TODO
+    const stateChangeEvent = this.createStateChangeEvent(newState, oldState);
+    if (this.lastSentState !== newState) {
+      this.lastSentState = newState;
+      this.eventDispatcher.onGestureHandlerStateChange(this, stateChangeEvent);
+    }
+    if (this.currentState === State.ACTIVE) {
+      stateChangeEvent.nativeEvent.oldState = undefined;
+      this.eventDispatcher.onGestureHandlerEvent(this, stateChangeEvent);
+    }
+  }
+
+  private createStateChangeEvent(newState: State, oldState: State): GestureStateChangeEvent {
+    return {
+      nativeEvent: {
+        numberOfPointers: this.tracker.getTrackedPointersCount(),
+        state: newState,
+        pointerInside: this.view.isPositionInBounds({
+          x: this.tracker.getLastAvgX(),
+          y: this.tracker.getLastAvgY(),
+        }),
+        ...this.transformNativeEvent(),
+        handlerTag: this.handlerTag,
+        target: this.view.getTag(),
+        oldState: newState !== oldState ? oldState : undefined,
+      },
+      timeStamp: Date.now(),
+    };
+  }
+
+  protected transformNativeEvent() {
+    return {};
   }
 
   setAwaiting(isAwaiting: boolean): void {
@@ -310,5 +366,9 @@ export abstract class GestureHandler {
   shouldRecognizeSimultaneously(otherHandler: GestureHandler): boolean {
     // TODO
     return false
+  }
+
+  public getPointerType(): PointerType {
+    return this.pointerType
   }
 }
