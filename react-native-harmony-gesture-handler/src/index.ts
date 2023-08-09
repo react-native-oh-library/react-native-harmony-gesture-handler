@@ -9,7 +9,7 @@ global.isFormsStackingContext = () => true; // TODO: add using JSI
 // export { Directions } from './Directions';
 // export { State } from './State';
 // export { default as gestureHandlerRootHOC } from './components/gestureHandlerRootHOC';
-export { default as GestureHandlerRootView } from './GestureHandlerRootView';
+export { default as GestureHandlerRootView } from './components/GestureHandlerRootView';
 // export type {
 //   // event types
 //   GestureEvent,
@@ -68,7 +68,7 @@ export { default as GestureHandlerRootView } from './GestureHandlerRootView';
 //   NativeViewGestureHandlerPayload,
 //   NativeViewGestureHandlerProps,
 // } from './handlers/NativeViewGestureHandler';
-export { GestureDetector } from './GestureDetector';
+export { GestureDetector } from './handlers/gestures/GestureDetector';
 export { GestureObjects as Gesture } from 'react-native-gesture-handler/src/handlers/gestures/gestureObjects';
 // export type { TapGestureType as TapGesture } from './handlers/gestures/tapGesture';
 // export type { PanGestureType as PanGesture } from './handlers/gestures/panGesture';
