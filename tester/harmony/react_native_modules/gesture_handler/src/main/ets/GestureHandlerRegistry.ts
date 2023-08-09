@@ -21,4 +21,8 @@ export class GestureHandlerRegistry {
   public getGestureHandlersByViewTag(viewTag: number): GestureHandler[] {
     return Array.from(this.gestureHandlersByViewTag.get(viewTag) ?? [])
   }
+
+  public getGestureHandlerByHandlerTag(handlerTag: number): GestureHandler {
+    return this.gestureHandlerByHandlerTag.get(handlerTag)
+  }
 }
