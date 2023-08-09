@@ -13,7 +13,7 @@ import {
 } from 'react-native-gesture-handler/src/handlers/gestures/gesture';
 import { Reanimated, SharedValue } from 'react-native-gesture-handler/src/handlers/gestures/reanimatedWrapper';
 import { registerHandler, unregisterHandler } from 'react-native-gesture-handler/src/handlers/handlersRegistry';
-import { RNGestureHandlerModule } from './RNGestureHandlerModule'; // RNGH: patch
+import { RNGestureHandlerModule } from '../../RNGestureHandlerModule'; // RNGH: patch
 import {
   baseGestureHandlerWithMonitorProps,
   filterConfig,
