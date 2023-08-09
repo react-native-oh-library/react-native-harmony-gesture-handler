@@ -58,7 +58,7 @@ export type GestureHandlerDependencies = {
 }
 
 export abstract class GestureHandler {
-  protected config: GestureConfig
+  protected config: GestureConfig = {}
   protected currentState: State
   protected view: View | undefined = undefined
 

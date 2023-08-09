@@ -45,7 +45,6 @@ export class GestureHandlerArkUIAdapter {
           this.gestureHandler.onPointerCancel(adaptedEvent)
           break;
       }
-
     }
   }
 

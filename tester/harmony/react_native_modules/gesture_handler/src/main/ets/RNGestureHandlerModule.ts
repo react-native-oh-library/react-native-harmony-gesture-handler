@@ -62,7 +62,8 @@ export class RNGestureHandlerModule extends TurboModule {
     handlerTag: number,
     newConfig: Readonly<Record<string, unknown>>
   ) {
-    this.warn("updateGestureHandler is not implemented")
+    const gestureHandler = this.gestureHandlerRegistry.getGestureHandlerByHandlerTag(handlerTag)
+    gestureHandler.updateGestureConfig(newConfig)
   }
 
   public dropGestureHandler(handlerTag: number) {
