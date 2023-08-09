@@ -22,9 +22,11 @@ import {
   GestureUpdateEvent,
   GestureStateChangeEvent,
   HandlerStateChangeEvent,
-  scheduleFlushOperations,
   UserSelect,
 } from 'react-native-gesture-handler/src/handlers/gestureHandlerCommon';
+import {
+  scheduleFlushOperations,
+} from '../gestureHandlerCommon'; // RNGH: patch
 import {
   GestureStateManager,
   GestureStateManagerType,
