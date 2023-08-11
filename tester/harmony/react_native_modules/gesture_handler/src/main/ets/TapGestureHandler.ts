@@ -170,7 +170,7 @@ export class TapGestureHandler extends GestureHandler {
     this.clearTimeouts();
     if (
       ++this.numberOfTapsSoFar === (this.config.numberOfTaps ?? DEFAULT_NUMBER_OF_TAPS) &&
-        this.maxNumberOfPointersSoFar >= this.config.minNumberOfPointers
+        this.maxNumberOfPointersSoFar >= (this.config.minNumberOfPointers ?? 0)
     ) {
       this.activate();
     } else {
