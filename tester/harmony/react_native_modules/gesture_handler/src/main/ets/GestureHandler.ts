@@ -2,6 +2,7 @@ import type { GestureHandlerOrchestrator } from "./GestureHandlerOrchestrator"
 import type { PointerTracker } from "./PointerTracker"
 import type { View } from "./View"
 import type { EventDispatcher } from "./EventDispatcher"
+import type { InteractionManager } from "./InteractionManager"
 import { State } from "./State"
 import { HitSlop, Directions, AdaptedEvent, PointerType } from "./Event"
 import { GestureStateChangeEvent, GestureTouchEvent } from "./OutgoingEvent"
@@ -59,6 +60,7 @@ export type GestureHandlerDependencies = {
   orchestrator: GestureHandlerOrchestrator
   tracker: PointerTracker
   eventDispatcher: EventDispatcher
+  interactionManager: InteractionManager
 }
 
 export abstract class GestureHandler {

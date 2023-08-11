@@ -1,7 +1,6 @@
 import { TurboModule } from 'rnoh/ts';
 import { GestureHandlerRegistry } from './GestureHandlerRegistry';
 import { GestureHandlerFactory } from "./GestureHandlerFactory"
-import { GestureHandlerOrchestrator } from './GestureHandlerOrchestrator';
 import { ViewRegistry } from './ViewRegistry';
 
 export enum ActionType {
@@ -20,9 +19,8 @@ export class RNGestureHandlerModule extends TurboModule {
   private viewRegistry: ViewRegistry | undefined = undefined
 
   public install() {
-    const orchestrator = new GestureHandlerOrchestrator()
     this.viewRegistry = new ViewRegistry(this.ctx.descriptorRegistry)
-    this.gestureHandlerFactory = new GestureHandlerFactory(orchestrator, this.ctx.rnInstanceManager)
+    this.gestureHandlerFactory = new GestureHandlerFactory(this.ctx.rnInstanceManager)
   }
 
   public createGestureHandler(

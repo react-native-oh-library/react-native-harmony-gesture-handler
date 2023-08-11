@@ -5,9 +5,13 @@ import { TapGestureHandler } from './TapGestureHandler';
 import { PointerTracker } from './PointerTracker';
 import { RNGHError } from "./RNGHError"
 import { EventDispatcher } from "./EventDispatcher"
+import { InteractionManager } from './InteractionManager';
 
 export class GestureHandlerFactory {
-  constructor(private orchestrator: GestureHandlerOrchestrator, private rnInstanceManager: RNInstanceManager) {
+  private orchestrator = new GestureHandlerOrchestrator()
+  private interactionManager = new InteractionManager()
+
+  constructor(private rnInstanceManager: RNInstanceManager) {
   }
 
   create(handlerName: string, handlerTag: number): GestureHandler {
@@ -15,11 +19,14 @@ export class GestureHandlerFactory {
       tracker: new PointerTracker(),
       orchestrator: this.orchestrator,
       handlerTag,
-      eventDispatcher: new EventDispatcher(this.rnInstanceManager)
+      eventDispatcher: new EventDispatcher(this.rnInstanceManager),
+      interactionManager: this.interactionManager
     }
-    switch(handlerName) {
-      case "TapGestureHandler": return new TapGestureHandler(deps)
-      default: throw new RNGHError(`Unknown handler type: ${handlerName}`)
+    switch (handlerName) {
+      case "TapGestureHandler":
+        return new TapGestureHandler(deps)
+      default:
+        throw new RNGHError(`Unknown handler type: ${handlerName}`)
     }
   }
 }
