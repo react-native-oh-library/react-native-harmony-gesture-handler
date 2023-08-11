@@ -1,10 +1,10 @@
 import type { GestureHandlerOrchestrator } from "./GestureHandlerOrchestrator"
 import type { PointerTracker } from "./PointerTracker"
 import type { View } from "./View"
-import type { EventDispatcher} from "./EventDispatcher"
+import type { EventDispatcher } from "./EventDispatcher"
 import { State } from "./State"
 import { HitSlop, Directions, AdaptedEvent, PointerType } from "./Event"
-import { GestureStateChangeEvent } from "./OutgoingEvent"
+import { GestureStateChangeEvent, GestureTouchEvent } from "./OutgoingEvent"
 
 
 export interface Handler {
@@ -66,11 +66,14 @@ export abstract class GestureHandler {
   protected currentState: State
   protected view: View | undefined = undefined
   protected lastSentState: State | undefined = undefined
-
+  protected shouldCancelWhenOutside = false
   protected handlerTag: number
   protected orchestrator: GestureHandlerOrchestrator
   protected tracker: PointerTracker
   protected eventDispatcher: EventDispatcher
+
+  protected isActivated = false
+  protected isAwaiting_ = false
   protected pointerType: PointerType
 
   constructor(deps: GestureHandlerDependencies
@@ -93,24 +96,90 @@ export abstract class GestureHandler {
   }
 
   protected sendTouchEvent(e: AdaptedEvent) {
+    if (!this.config.enabled) {
+      return;
+    }
 
+
+    const touchEvent: GestureTouchEvent | undefined =
+    this.createTouchEventIfPossible(e);
+
+    if (touchEvent) {
+      // TODO
+      // this.eventDispatcher.onGestureHandlerEvent(touchEvent)
+    }
   }
 
-  public abstract onPointerUp(e: AdaptedEvent): void
+  protected createTouchEventIfPossible(e: AdaptedEvent): GestureTouchEvent | undefined {
+    return undefined;
+  }
 
-  public abstract onAdditionalPointerAdd(e: AdaptedEvent): void
+  public onPointerUp(e: AdaptedEvent): void {
+    if (this.config.needsPointerData) this.sendTouchEvent(e)
+  }
 
-  public abstract onAdditionalPointerRemove(e: AdaptedEvent): void
+  public onAdditionalPointerAdd(e: AdaptedEvent): void {
+    if (this.config.needsPointerData) this.sendTouchEvent(e)
+  }
 
-  public abstract onPointerMove(e: AdaptedEvent): void
+  public onAdditionalPointerRemove(e: AdaptedEvent): void {
+    if (this.config.needsPointerData) this.sendTouchEvent(e)
+  }
 
-  public abstract onPointerEnter(e: AdaptedEvent): void
+  public onPointerMove(e: AdaptedEvent): void {
+    this.tryToSendMoveEvent(false);
+    if (this.config.needsPointerData) {
+      this.sendTouchEvent(e);
+    }
+  }
 
-  public abstract onPointerOut(e: AdaptedEvent): void
+  private tryToSendMoveEvent(out: boolean): void {
+    if (
+      this.config.enabled &&
+      this.isActivated &&
+        (!out || (out && !this.shouldCancelWhenOutside))
+    ) {
+      this.sendEvent({ newState: this.currentState, oldState: this.currentState });
+    }
+  }
 
-  public abstract onPointerCancel(e: AdaptedEvent): void
+  public onPointerEnter(e: AdaptedEvent): void {
+    if (this.config.needsPointerData) {
+      this.sendTouchEvent(e)
+    }
+  }
 
-  public abstract onPointerOutOfBounds(e: AdaptedEvent): void
+  public onPointerOut(e: AdaptedEvent): void {
+    if (this.shouldCancelWhenOutside) {
+      switch (this.currentState) {
+        case State.ACTIVE:
+          this.cancel();
+          break;
+        case State.BEGAN:
+          this.fail();
+          break;
+      }
+      return;
+    }
+    if (this.config.needsPointerData) {
+      this.sendTouchEvent(e);
+    }
+  }
+
+  public onPointerCancel(e: AdaptedEvent): void {
+    if (this.config.needsPointerData) {
+      this.sendTouchEvent(e);
+    }
+    this.cancel();
+    this.reset();
+  }
+
+  public onPointerOutOfBounds(e: AdaptedEvent): void {
+    this.tryToSendMoveEvent(true);
+    if (this.config.needsPointerData) {
+      this.sendTouchEvent(e);
+    }
+  }
 
   public onViewAttached(view: View) {
     this.view = view
@@ -250,18 +319,27 @@ export abstract class GestureHandler {
   // ----
 
   public isEnabled(): boolean {
-    // TODO
-    return false
+    return Boolean(this.config.enabled)
   }
 
   public isActive(): boolean {
-    // TODO
-    return false
+    return this.isActivated
   }
 
   public cancel(): void {
-    // TODO
+    if (
+      this.currentState === State.ACTIVE ||
+        this.currentState === State.UNDETERMINED ||
+        this.currentState === State.BEGAN
+    ) {
+      this.onCancel();
+      this.moveToState(State.CANCELLED);
+    }
   }
+
+  protected onCancel(): void {}
+  protected onReset(): void {}
+  protected resetProgress(): void {}
 
   public getState(): State {
     return this.currentState
@@ -305,7 +383,7 @@ export abstract class GestureHandler {
   }
 
   setAwaiting(isAwaiting: boolean): void {
-    // TODO
+    this.isAwaiting_ = isAwaiting
   }
 
   shouldWaitForHandlerFailure(handler: GestureHandler): boolean {
@@ -328,12 +406,11 @@ export abstract class GestureHandler {
   }
 
   isAwaiting(): boolean {
-    // TODO
-    return false
+    return this.isAwaiting_
   }
 
-  setActive(isActive: boolean): void {
-    // TODO
+  setActive(isActivated: boolean): void {
+    this.isActivated = isActivated
   }
 
   setActivationIndex(activationIndex: number): void {
@@ -365,5 +442,9 @@ export abstract class GestureHandler {
 
   public getPointerType(): PointerType {
     return this.pointerType
+  }
+
+  protected setShouldCancelWhenOutside(shouldCancel: boolean) {
+    this.shouldCancelWhenOutside = shouldCancel
   }
 }

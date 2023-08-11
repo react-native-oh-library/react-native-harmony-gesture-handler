@@ -20,34 +20,11 @@ export class TapGestureHandler extends GestureHandler {
 
   onPointerDown(event) {
     this.tracker.addToTracker(event);
+    super.onPointerDown(event);
     this.trySettingPosition(event);
     this.lastX = event.x;
     this.lastY = event.y;
     this.updateState(event);
-  }
-
-  onPointerUp() {
-  }
-
-  onAdditionalPointerAdd() {
-  }
-
-  onAdditionalPointerRemove() {
-  }
-
-  onPointerMove() {
-  }
-
-  onPointerEnter() {
-  }
-
-  onPointerOut() {
-  }
-
-  onPointerCancel() {
-  }
-
-  onPointerOutOfBounds() {
   }
 
   getDefaultConfig() {
