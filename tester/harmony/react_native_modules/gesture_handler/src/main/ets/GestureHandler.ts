@@ -65,7 +65,7 @@ export type GestureHandlerDependencies = {
 
 export abstract class GestureHandler {
   protected config: GestureConfig = {}
-  protected currentState: State
+  protected currentState: State = State.UNDETERMINED
   protected view: View | undefined = undefined
   protected lastSentState: State | undefined = undefined
   protected shouldCancelWhenOutside = false

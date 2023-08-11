@@ -4,9 +4,9 @@ import { PointerType } from "./Event"
 
 
 export class GestureHandlerOrchestrator {
-  private awaitingHandlers: Set<GestureHandler>
-  private gestureHandlers: GestureHandler[]
-  private handlersToCancel: GestureHandler[]
+  private awaitingHandlers: Set<GestureHandler> = new Set()
+  private gestureHandlers: GestureHandler[] = []
+  private handlersToCancel: GestureHandler[] = []
   private activationIndex: number = 0
 
   constructor() {

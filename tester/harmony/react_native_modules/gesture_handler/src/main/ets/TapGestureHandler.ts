@@ -27,6 +27,73 @@ export class TapGestureHandler extends GestureHandler {
     this.updateState(event);
   }
 
+  onAdditionalPointerAdd(event: AdaptedEvent): void {
+    super.onAdditionalPointerAdd(event);
+    this.tracker.addToTracker(event);
+    this.trySettingPosition(event);
+
+    this.offsetX += this.lastX - this.startX;
+    this.offsetY += this.lastY - this.startY;
+
+    this.lastX = this.tracker.getLastAvgX();
+    this.lastY = this.tracker.getLastAvgY();
+
+    this.startX = this.tracker.getLastAvgX();
+    this.startY = this.tracker.getLastAvgY();
+
+    this.updateState(event);
+  }
+
+  onPointerUp(event: AdaptedEvent): void {
+    super.onPointerUp(event);
+    this.lastX = this.tracker.getLastAvgX();
+    this.lastY = this.tracker.getLastAvgY();
+
+    this.tracker.removeFromTracker(event.pointerId);
+
+    this.updateState(event);
+  }
+
+  onAdditionalPointerRemove(event: AdaptedEvent): void {
+    super.onAdditionalPointerRemove(event);
+    this.tracker.removeFromTracker(event.pointerId);
+
+    this.offsetX += this.lastX - this.startX;
+    this.offsetY += this.lastY = this.startY;
+
+    this.lastX = this.tracker.getLastAvgX();
+    this.lastY = this.tracker.getLastAvgY();
+
+    this.startX = this.lastX;
+    this.startY = this.lastY;
+
+    this.updateState(event);
+  }
+
+  onPointerMove(event: AdaptedEvent): void {
+    this.trySettingPosition(event);
+    this.tracker.track(event);
+
+    this.lastX = this.tracker.getLastAvgX();
+    this.lastY = this.tracker.getLastAvgY();
+
+    this.updateState(event);
+
+    super.onPointerMove(event);
+  }
+
+  onPointerOutOfBounds(event: AdaptedEvent): void {
+    this.trySettingPosition(event);
+    this.tracker.track(event);
+
+    this.lastX = this.tracker.getLastAvgX();
+    this.lastY = this.tracker.getLastAvgY();
+
+    this.updateState(event);
+
+    super.onPointerOutOfBounds(event);
+  }
+
   getDefaultConfig() {
     return {}
   }
