@@ -37,11 +37,11 @@ export enum EventType {
 export type Touch = {id: number, x: number, y: number, absoluteX: number, absoluteY: number}
 
 export enum TouchEventType {
-  UNDETERMINED,
-  DOWN,
-  MOVE,
-  UP,
-  CANCELLED,
+  UNDETERMINED = 0,
+  DOWN = 1,
+  MOVE = 2,
+  UP = 3,
+  CANCELLED = 4,
 }
 
 export interface AdaptedEvent {

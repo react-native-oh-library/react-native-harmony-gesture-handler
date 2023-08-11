@@ -1,5 +1,5 @@
 import { State } from "./State"
-
+import { TouchEventType } from "./Event"
 
 export interface GestureEventPayload {
   handlerTag: number;
@@ -12,21 +12,16 @@ export interface HandlerStateChangeEventPayload extends GestureEventPayload {
 }
 
 export type GestureUpdateEvent<GestureEventPayloadT = Record<string, unknown>> =
-GestureEventPayload & GestureEventPayloadT;
+{
+  nativeEvent: GestureEventPayload
+    & GestureEventPayloadT
+  timeStamp: number
+};
 
 export type GestureStateChangeEvent<GestureStateChangeEventPayloadT = Record<string, unknown>> = {
   nativeEvent: HandlerStateChangeEventPayload & GestureStateChangeEventPayloadT,
   timeStamp: number
 }
-
-export enum TouchEventType {
-  UNDETERMINED = 0,
-  TOUCHES_DOWN = 1,
-  TOUCHES_MOVE = 2,
-  TOUCHES_UP = 3,
-  TOUCHES_CANCELLED = 4,
-}
-
 
 export type TouchData = {
   id: number;
@@ -37,10 +32,13 @@ export type TouchData = {
 };
 
 export type GestureTouchEvent = {
-  handlerTag: number;
-  numberOfTouches: number;
-  state: State;
-  eventType: TouchEventType;
-  allTouches: TouchData[];
-  changedTouches: TouchData[];
+  nativeEvent: {
+    handlerTag: number;
+    numberOfTouches: number;
+    state: State;
+    eventType: TouchEventType;
+    allTouches: TouchData[];
+    changedTouches: TouchData[];
+  },
+  timeStamp: number
 };
