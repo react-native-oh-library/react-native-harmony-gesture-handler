@@ -51,7 +51,6 @@ export struct RNGestureHandlerRootView {
       .width("100%")
       .height("100%")
       .onTouch((e) => {
-        console.log("RNGH::RootView onTouch")
         this.touchHandler.handleTouch(e)}
       )
     }
