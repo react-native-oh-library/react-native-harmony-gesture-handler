@@ -451,7 +451,7 @@ export abstract class GestureHandler {
   }
 
   protected stateDidChange(newState: State, oldState: State) {
-    this.logger.info(`stateDidChange from ${getStateName(oldState)} to ${getStateName(newState)}}`)
+    this.logger.info(`stateDidChange from ${getStateName(oldState)} to ${getStateName(newState)}`)
   }
 
 

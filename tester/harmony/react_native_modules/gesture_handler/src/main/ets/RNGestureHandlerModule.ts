@@ -95,4 +95,8 @@ export class RNGestureHandlerModule extends TurboModule {
   public getGestureHandlerRegistry() {
     return this.gestureHandlerRegistry
   }
+
+  public getLogger() {
+    return this.logger
+  }
 }
