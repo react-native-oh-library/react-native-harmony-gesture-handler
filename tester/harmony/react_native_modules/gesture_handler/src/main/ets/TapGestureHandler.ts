@@ -1,4 +1,4 @@
-import { GestureHandler } from "./GestureHandler"
+import { GestureHandler, GestureHandlerDependencies } from "./GestureHandler"
 import { AdaptedEvent, EventType } from "./Event"
 import { State } from "./State"
 
@@ -17,6 +17,10 @@ export class TapGestureHandler extends GestureHandler {
   private numberOfTapsSoFar: number = 0;
   private waitTimeout: number | undefined;
   private delayTimeout: number | undefined;
+
+  constructor(deps: GestureHandlerDependencies) {
+    super({...deps, logger: deps.logger.cloneWithPrefix("TapGestureHandler")})
+  }
 
   onPointerDown(event) {
     this.tracker.addToTracker(event);
@@ -107,10 +111,12 @@ export class TapGestureHandler extends GestureHandler {
   }
 
   private updateState(event: AdaptedEvent): void {
+    const logger = this.logger.cloneWithPrefix("updateState")
     if (this.maxNumberOfPointersSoFar < this.tracker.getTrackedPointersCount()) {
       this.maxNumberOfPointersSoFar = this.tracker.getTrackedPointersCount()
     }
     if (this.shouldFail()) {
+      logger.info("fail")
       this.fail()
       return;
     }
@@ -121,10 +127,13 @@ export class TapGestureHandler extends GestureHandler {
         this.startTap();
         break;
       case State.BEGAN:
-        if (event.eventType === EventType.UP)
+        if (event.eventType === EventType.UP) {
+          logger.info("endTap")
           this.endTap();
-        if (event.eventType === EventType.DOWN)
+        }
+        if (event.eventType === EventType.DOWN) {
           this.startTap();
+        }
         break;
       default:
         break;
@@ -176,5 +185,10 @@ export class TapGestureHandler extends GestureHandler {
     } else {
       this.delayTimeout = setTimeout(() => this.fail(), this.config.maxDelayMs ?? DEFAULT_MAX_DELAY_MS);
     }
+  }
+
+  public activate(): void {
+    super.activate();
+    this.end();
   }
 }

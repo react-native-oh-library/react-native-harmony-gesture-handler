@@ -310,6 +310,7 @@ export abstract class GestureHandler {
   }
 
   protected begin(): void {
+    this.logger.info("begin")
     if (!this.isWithinHitSlop()) return;
     if (this.currentState === State.UNDETERMINED) {
       this.moveToState(State.BEGAN);
@@ -386,13 +387,14 @@ export abstract class GestureHandler {
   }
 
   protected activate(): void {
+    this.logger.info("activate")
     if (this.currentState === State.UNDETERMINED || this.currentState === State.BEGAN) {
       this.moveToState(State.ACTIVE)
     }
   }
 
   protected moveToState(state: State) {
-    this.logger.info(`moveToState ${ getStateName(state)}`)
+    this.logger.info(`moveToState ${getStateName(state)}`)
     if (state === this.currentState) return;
     const oldState = this.currentState
     this.currentState = state;
@@ -562,6 +564,7 @@ export abstract class GestureHandler {
   }
 
   reset(): void {
+    this.logger.info("reset")
     this.tracker.resetTracker();
     this.onReset();
     this.resetProgress();
@@ -589,7 +592,7 @@ export abstract class GestureHandler {
   }
 
   fail(): void {
-    this.logger.info(`fail`)
+    this.logger.info('fail')
     if (
       this.currentState === State.ACTIVE ||
         this.currentState === State.BEGAN
@@ -621,5 +624,13 @@ export abstract class GestureHandler {
 
   protected setShouldCancelWhenOutside(shouldCancel: boolean) {
     this.shouldCancelWhenOutside = shouldCancel
+  }
+
+  public end() {
+    this.logger.info("end")
+    if (this.currentState === State.BEGAN || this.currentState === State.ACTIVE) {
+      this.moveToState(State.END);
+    }
+    this.resetProgress();
   }
 }
