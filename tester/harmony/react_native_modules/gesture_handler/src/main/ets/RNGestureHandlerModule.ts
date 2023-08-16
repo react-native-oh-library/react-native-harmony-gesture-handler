@@ -1,7 +1,8 @@
-import { TurboModule } from 'rnoh/ts';
+import { TurboModule, TurboModuleContext } from 'rnoh/ts';
 import { GestureHandlerRegistry } from './GestureHandlerRegistry';
 import { GestureHandlerFactory } from "./GestureHandlerFactory"
 import { ViewRegistry } from './ViewRegistry';
+import { RNGHLogger } from './RNGHLogger';
 
 export enum ActionType {
   REANIMATED_WORKLET = 1,
@@ -17,10 +18,16 @@ export class RNGestureHandlerModule extends TurboModule {
   private gestureHandlerRegistry = new GestureHandlerRegistry()
   private gestureHandlerFactory: GestureHandlerFactory | undefined = undefined
   private viewRegistry: ViewRegistry | undefined = undefined
+  private logger: RNGHLogger
+
+  constructor(ctx: TurboModuleContext) {
+    super(ctx)
+    this.logger = new RNGHLogger(ctx.logger, "RNGH")
+  }
 
   public install() {
     this.viewRegistry = new ViewRegistry(this.ctx.descriptorRegistry)
-    this.gestureHandlerFactory = new GestureHandlerFactory(this.ctx.rnInstanceManager)
+    this.gestureHandlerFactory = new GestureHandlerFactory(this.ctx.rnInstanceManager, this.logger)
   }
 
   public createGestureHandler(
