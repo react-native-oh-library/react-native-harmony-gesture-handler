@@ -4,7 +4,7 @@ declare const global: {
 
 global.isFormsStackingContext = () => true; // TODO: add using JSI
 
-// import { initialize } from './init';
+import { initialize } from './init';
 
 // export { Directions } from './Directions';
 // export { State } from './State';
@@ -169,4 +169,4 @@ export { GestureObjects as Gesture } from 'react-native-gesture-handler/src/hand
 //   enableLegacyWebImplementation,
 // } from './EnableNewWebImplementation';
 
-// initialize();
+initialize();
