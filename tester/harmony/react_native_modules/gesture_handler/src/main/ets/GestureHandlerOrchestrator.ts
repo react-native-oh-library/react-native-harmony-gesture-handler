@@ -1,7 +1,7 @@
 import { GestureHandler } from "./GestureHandler"
 import { State } from "./State"
 import { PointerType } from "./Event"
-
+import { RNGHLogger } from "./RNGHLogger"
 
 export class GestureHandlerOrchestrator {
   private awaitingHandlers: Set<GestureHandler> = new Set()
@@ -9,10 +9,11 @@ export class GestureHandlerOrchestrator {
   private handlersToCancel: GestureHandler[] = []
   private activationIndex: number = 0
 
-  constructor() {
+  constructor(private logger: RNGHLogger) {
   }
 
   public onHandlerStateChange(handler: GestureHandler, newState: State, oldState: State, sendIfDisabled?: boolean) {
+    this.logger.info("onHandlerStateChange")
     if (this.shouldCancelStateChange(handler, sendIfDisabled)) return;
     if (this.isFinishedState(newState)) {
       this.handleChangingToFinishedState(handler, newState)
@@ -240,6 +241,7 @@ export class GestureHandlerOrchestrator {
   }
 
   public registerHandlerIfNotPresent(handler: GestureHandler) {
+    this.logger.info("registerHandlerIfNotPresent")
     if (this.gestureHandlers.includes(handler)) return;
     this.gestureHandlers.push(handler);
     handler.setActive(false);
@@ -256,6 +258,7 @@ export class GestureHandlerOrchestrator {
    pointer they're using. If there are any handler with mouse/pen as a pointer, we cancel them
    */
   public cancelMouseAndPenGestures(currentHandler: GestureHandler): void {
+    this.logger.info("cancelMouseAndPenGestures")
     this.gestureHandlers.forEach((handler: GestureHandler) => {
       if (handler.getPointerType() !== PointerType.MOUSE && handler.getPointerType() !== PointerType.PEN) return;
 

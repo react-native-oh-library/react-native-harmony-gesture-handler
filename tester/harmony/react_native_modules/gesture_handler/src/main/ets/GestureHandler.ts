@@ -3,7 +3,8 @@ import type { PointerTracker } from "./PointerTracker"
 import type { View } from "./View"
 import type { EventDispatcher } from "./EventDispatcher"
 import type { InteractionManager } from "./InteractionManager"
-import { State } from "./State"
+import type { RNGHLogger } from './RNGHLogger'
+import { State, getStateName } from "./State"
 import { HitSlop, Directions, AdaptedEvent, PointerType, TouchEventType, EventType } from "./Event"
 import { GestureStateChangeEvent, GestureTouchEvent, TouchData } from "./OutgoingEvent"
 
@@ -61,6 +62,7 @@ export type GestureHandlerDependencies = {
   tracker: PointerTracker
   eventDispatcher: EventDispatcher
   interactionManager: InteractionManager
+  logger: RNGHLogger
 }
 
 export abstract class GestureHandler {
@@ -69,17 +71,19 @@ export abstract class GestureHandler {
   protected view: View | undefined = undefined
   protected lastSentState: State | undefined = undefined
   protected shouldCancelWhenOutside = false
-  protected handlerTag: number
-  protected orchestrator: GestureHandlerOrchestrator
-  protected tracker: PointerTracker
-  protected eventDispatcher: EventDispatcher
-  protected interactionManager: InteractionManager
 
   protected isActivated = false
   protected isAwaiting_ = false
   protected pointerType: PointerType
   protected activationIndex = 0
   protected shouldResetProgress = false;
+
+  protected handlerTag: number
+  protected orchestrator: GestureHandlerOrchestrator
+  protected tracker: PointerTracker
+  protected eventDispatcher: EventDispatcher
+  protected interactionManager: InteractionManager
+  protected logger: RNGHLogger
 
   constructor(deps: GestureHandlerDependencies
   ) {
@@ -88,9 +92,11 @@ export abstract class GestureHandler {
     this.tracker = deps.tracker
     this.eventDispatcher = deps.eventDispatcher
     this.interactionManager = deps.interactionManager
+    this.logger = deps.logger
   }
 
   public onPointerDown(e: AdaptedEvent) {
+    this.logger.info("onPointerDown")
     this.orchestrator.registerHandlerIfNotPresent(this);
     this.pointerType = e.pointerType;
     if (this.pointerType === PointerType.TOUCH) {
@@ -212,18 +218,22 @@ export abstract class GestureHandler {
   }
 
   public onPointerUp(e: AdaptedEvent): void {
+    this.logger.info("onPointerUp")
     if (this.config.needsPointerData) this.sendTouchEvent(e)
   }
 
   public onAdditionalPointerAdd(e: AdaptedEvent): void {
+    this.logger.info("onAdditionalPointerAdd")
     if (this.config.needsPointerData) this.sendTouchEvent(e)
   }
 
   public onAdditionalPointerRemove(e: AdaptedEvent): void {
+    this.logger.info("onAdditionalPointerRemove")
     if (this.config.needsPointerData) this.sendTouchEvent(e)
   }
 
   public onPointerMove(e: AdaptedEvent): void {
+    this.logger.info("onPointerMove")
     this.tryToSendMoveEvent(false);
     if (this.config.needsPointerData) {
       this.sendTouchEvent(e);
@@ -241,12 +251,14 @@ export abstract class GestureHandler {
   }
 
   public onPointerEnter(e: AdaptedEvent): void {
+    this.logger.info("onPointerEnter")
     if (this.config.needsPointerData) {
       this.sendTouchEvent(e)
     }
   }
 
   public onPointerOut(e: AdaptedEvent): void {
+    this.logger.info("onPointerOut")
     if (this.shouldCancelWhenOutside) {
       switch (this.currentState) {
         case State.ACTIVE:
@@ -264,6 +276,7 @@ export abstract class GestureHandler {
   }
 
   public onPointerCancel(e: AdaptedEvent): void {
+    this.logger.info("onPointerCancel")
     if (this.config.needsPointerData) {
       this.sendTouchEvent(e);
     }
@@ -272,6 +285,7 @@ export abstract class GestureHandler {
   }
 
   public onPointerOutOfBounds(e: AdaptedEvent): void {
+    this.logger.info("onPointerOutOfBounds")
     this.tryToSendMoveEvent(true);
     if (this.config.needsPointerData) {
       this.sendTouchEvent(e);
@@ -279,6 +293,7 @@ export abstract class GestureHandler {
   }
 
   public onViewAttached(view: View) {
+    this.logger.info("onViewAttached")
     this.view = view
   }
 
@@ -377,6 +392,7 @@ export abstract class GestureHandler {
   }
 
   protected moveToState(state: State) {
+    this.logger.info(`moveToState ${ getStateName(state)}`)
     if (state === this.currentState) return;
     const oldState = this.currentState
     this.currentState = state;
@@ -435,6 +451,7 @@ export abstract class GestureHandler {
   }
 
   protected stateDidChange(newState: State, oldState: State) {
+    this.logger.info(`stateDidChange from ${getStateName(oldState)} to ${getStateName(newState)}}`)
   }
 
 
@@ -458,6 +475,7 @@ export abstract class GestureHandler {
   }
 
   public cancel(): void {
+    this.logger.info(`cancel`)
     if (
       this.currentState === State.ACTIVE ||
         this.currentState === State.UNDETERMINED ||
@@ -485,6 +503,7 @@ export abstract class GestureHandler {
     oldState: State,
     newState: State
   }): void {
+    this.logger.info(`sendEvent`)
     const stateChangeEvent = this.createStateChangeEvent(newState, oldState);
     if (this.lastSentState !== newState) {
       this.lastSentState = newState;
@@ -570,6 +589,7 @@ export abstract class GestureHandler {
   }
 
   fail(): void {
+    this.logger.info(`fail`)
     if (
       this.currentState === State.ACTIVE ||
         this.currentState === State.BEGAN

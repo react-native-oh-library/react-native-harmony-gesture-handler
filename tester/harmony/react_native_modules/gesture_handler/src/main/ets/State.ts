@@ -28,3 +28,20 @@ export enum State {
    * */
   END,
 }
+
+export function getStateName(state: State): string {
+  switch (state) {
+    case State.UNDETERMINED:
+      return "UNDETERMINED"
+    case State.FAILED:
+      return "FAILED"
+    case State.BEGAN:
+      return "BEGAN"
+    case State.CANCELLED:
+      return "CANCELLED"
+    case State.ACTIVE:
+      return "ACTIVE"
+    case State.END:
+      return "END"
+  }
+}
