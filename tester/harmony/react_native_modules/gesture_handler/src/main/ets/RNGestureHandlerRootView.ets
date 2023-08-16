@@ -23,7 +23,7 @@ export struct RNGestureHandlerRootView {
 
   aboutToAppear() {
     const rnGestureHandlerModule = this.ctx.rnInstanceManager.getTurboModule<RNGestureHandlerModule>(RNGestureHandlerModule.NAME)
-    this.touchHandler = RNGHRootTouchHandler.from(this.ctx.descriptorRegistry, rnGestureHandlerModule.getGestureHandlerRegistry())
+    this.touchHandler = RNGHRootTouchHandler.from(this.ctx.descriptorRegistry, rnGestureHandlerModule.getGestureHandlerRegistry(), rnGestureHandlerModule.getLogger())
     this.handleDescriptorChange(this.ctx.descriptorRegistry.getDescriptor<RNGestureHandlerRootViewDescriptor>(this.tag))
     this.unsubscribes.push(this.ctx.descriptorRegistry.subscribeToDescriptorChanges(this.tag, (d) => {
       this.handleDescriptorChange(d as RNGestureHandlerRootViewDescriptor)
