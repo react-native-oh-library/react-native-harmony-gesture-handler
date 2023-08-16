@@ -241,6 +241,12 @@ export abstract class GestureHandler {
   }
 
   private tryToSendMoveEvent(out: boolean): void {
+    this.logger.info(`tryToSendMoveEvent ${JSON.stringify({
+      out,
+      enabled: this.config.enabled,
+      isActivated: this.isActivated,
+      shouldCancelWhenOutside: this.shouldCancelWhenOutside
+    })}`)
     if (
       this.config.enabled &&
       this.isActivated &&
@@ -458,7 +464,25 @@ export abstract class GestureHandler {
 
 
   public updateGestureConfig(config: GestureConfig): void {
-    this.config = config
+    this.config = { enabled: true, ...config }
+        if (this.config.shouldCancelWhenOutside !== undefined) {
+      this.setShouldCancelWhenOutside(this.config.shouldCancelWhenOutside);
+    }
+
+    // this.validateHitSlops();
+    if (this.config.enabled) {
+      return;
+    }
+    // switch (this.currentState) {
+    //   case State.ACTIVE:
+    //     this.fail(true);
+    //     break;
+    //   case State.UNDETERMINED:
+    //     this.orchestrator.removeHandlerFromOrchestrator(this);
+    //     break;
+    //   default:
+    //     this.cancel(true);
+    //     break;
   }
 
   protected resetConfig(): void {
