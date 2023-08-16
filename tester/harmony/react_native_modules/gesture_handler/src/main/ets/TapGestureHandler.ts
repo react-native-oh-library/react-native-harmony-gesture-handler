@@ -191,4 +191,15 @@ export class TapGestureHandler extends GestureHandler {
     super.activate();
     this.end();
   }
+
+  protected onCancel() {
+    super.onCancel()
+    this.resetProgress()
+  }
+
+  protected resetProgress(): void {
+    this.clearTimeouts();
+    this.numberOfTapsSoFar = 0;
+    this.maxNumberOfPointersSoFar = 0;
+  }
 }
