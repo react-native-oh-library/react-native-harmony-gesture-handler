@@ -205,15 +205,12 @@ export abstract class GestureHandler {
     }
 
     return {
-      nativeEvent: {
-        handlerTag: this.handlerTag,
-        state: this.currentState,
-        eventType: event.touchEventType ?? eventType,
-        changedTouches: changed,
-        allTouches: all,
-        numberOfTouches: numberOfTouches,
-      },
-      timeStamp: Date.now(),
+      handlerTag: this.handlerTag,
+      state: this.currentState,
+      eventType: event.touchEventType ?? eventType,
+      changedTouches: changed,
+      allTouches: all,
+      numberOfTouches: numberOfTouches,
     };
   }
 
@@ -445,15 +442,12 @@ export abstract class GestureHandler {
       });
     });
     const cancelEvent: GestureTouchEvent = {
-      nativeEvent: {
-        handlerTag: this.handlerTag,
-        state: this.currentState,
-        eventType: TouchEventType.CANCELLED,
-        changedTouches: changed,
-        allTouches: all,
-        numberOfTouches: all.length,
-      },
-      timeStamp: Date.now(),
+      handlerTag: this.handlerTag,
+      state: this.currentState,
+      eventType: TouchEventType.CANCELLED,
+      changedTouches: changed,
+      allTouches: all,
+      numberOfTouches: all.length,
     };
     this.eventDispatcher.onGestureHandlerEvent(cancelEvent)
   }
@@ -465,7 +459,7 @@ export abstract class GestureHandler {
 
   public updateGestureConfig(config: GestureConfig): void {
     this.config = { enabled: true, ...config }
-        if (this.config.shouldCancelWhenOutside !== undefined) {
+    if (this.config.shouldCancelWhenOutside !== undefined) {
       this.setShouldCancelWhenOutside(this.config.shouldCancelWhenOutside);
     }
 
@@ -536,26 +530,23 @@ export abstract class GestureHandler {
       this.eventDispatcher.onGestureHandlerStateChange(stateChangeEvent);
     }
     if (this.currentState === State.ACTIVE) {
-      stateChangeEvent.nativeEvent.oldState = undefined;
+      stateChangeEvent.oldState = undefined;
       this.eventDispatcher.onGestureHandlerEvent(stateChangeEvent);
     }
   }
 
   private createStateChangeEvent(newState: State, oldState: State): GestureStateChangeEvent {
     return {
-      nativeEvent: {
-        numberOfPointers: this.tracker.getTrackedPointersCount(),
-        state: newState,
-        pointerInside: this.view.isPositionInBounds({
-          x: this.tracker.getLastAvgX(),
-          y: this.tracker.getLastAvgY(),
-        }),
-        ...this.transformNativeEvent(),
-        handlerTag: this.handlerTag,
-        target: this.view.getTag(),
-        oldState: newState !== oldState ? oldState : undefined,
-      },
-      timeStamp: Date.now(),
+      numberOfPointers: this.tracker.getTrackedPointersCount(),
+      state: newState,
+      pointerInside: this.view.isPositionInBounds({
+        x: this.tracker.getLastAvgX(),
+        y: this.tracker.getLastAvgY(),
+      }),
+      ...this.transformNativeEvent(),
+      handlerTag: this.handlerTag,
+      target: this.view.getTag(),
+      oldState: newState !== oldState ? oldState : undefined,
     };
   }
 

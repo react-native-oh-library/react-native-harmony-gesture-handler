@@ -11,17 +11,10 @@ export interface HandlerStateChangeEventPayload extends GestureEventPayload {
   oldState: State;
 }
 
-export type GestureUpdateEvent<GestureEventPayloadT = Record<string, unknown>> =
-{
-  nativeEvent: GestureEventPayload
-    & GestureEventPayloadT
-  timeStamp: number
-};
+export type GestureUpdateEvent<GestureEventPayloadT = Record<string, unknown>> = GestureEventPayload
+  & GestureEventPayloadT
 
-export type GestureStateChangeEvent<GestureStateChangeEventPayloadT = Record<string, unknown>> = {
-  nativeEvent: HandlerStateChangeEventPayload & GestureStateChangeEventPayloadT,
-  timeStamp: number
-}
+export type GestureStateChangeEvent<GestureStateChangeEventPayloadT = Record<string, unknown>> = HandlerStateChangeEventPayload & GestureStateChangeEventPayloadT
 
 export type TouchData = {
   id: number;
@@ -32,13 +25,10 @@ export type TouchData = {
 };
 
 export type GestureTouchEvent = {
-  nativeEvent: {
-    handlerTag: number;
-    numberOfTouches: number;
-    state: State;
-    eventType: TouchEventType;
-    allTouches: TouchData[];
-    changedTouches: TouchData[];
-  },
-  timeStamp: number
+  handlerTag: number;
+  numberOfTouches: number;
+  state: State;
+  eventType: TouchEventType;
+  allTouches: TouchData[];
+  changedTouches: TouchData[];
 };
