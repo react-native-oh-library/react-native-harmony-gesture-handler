@@ -1,12 +1,13 @@
 import { RNInstanceManager } from "rnoh/ts"
 import { GestureHandlerOrchestrator } from './GestureHandlerOrchestrator';
 import { GestureHandler, GestureHandlerDependencies } from "./GestureHandler"
-import { TapGestureHandler } from './TapGestureHandler';
 import { PointerTracker } from './PointerTracker';
 import { RNGHError } from "./RNGHError"
 import { EventDispatcher } from "./EventDispatcher"
 import { InteractionManager } from './InteractionManager';
 import { RNGHLogger } from './RNGHLogger';
+import { TapGestureHandler } from './TapGestureHandler';
+import { PanGestureHandler } from "./PanGestureHandler"
 
 export class GestureHandlerFactory {
   private orchestrator: GestureHandlerOrchestrator
@@ -31,8 +32,12 @@ export class GestureHandlerFactory {
     switch (handlerName) {
       case "TapGestureHandler":
         return new TapGestureHandler(deps)
+      case "PanGestureHandler":
+        return new PanGestureHandler(deps)
       default:
-        throw new RNGHError(`Unknown handler type: ${handlerName}`)
+        const msg = `Unknown handler type: ${handlerName}`
+        this.factoryLogger.info(msg)
+        throw new RNGHError(msg)
     }
   }
 }

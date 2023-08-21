@@ -13,6 +13,8 @@ export interface Handler {
   handlerTag: number;
 }
 
+export const DEFAULT_TOUCH_SLOP = 15;
+
 export interface GestureConfig {
   enabled?: boolean;
   simultaneousHandlers?: Handler[] | null;
@@ -65,8 +67,8 @@ export type GestureHandlerDependencies = {
   logger: RNGHLogger
 }
 
-export abstract class GestureHandler {
-  protected config: GestureConfig = {}
+export abstract class GestureHandler<TGestureConfig extends GestureConfig = GestureConfig> {
+  protected config: TGestureConfig = this.getDefaultConfig()
   protected currentState: State = State.UNDETERMINED
   protected view: View | undefined = undefined
   protected lastSentState: State | undefined = undefined
@@ -457,7 +459,7 @@ export abstract class GestureHandler {
   }
 
 
-  public updateGestureConfig(config: GestureConfig): void {
+  public updateGestureConfig(config: TGestureConfig): void {
     this.config = { enabled: true, ...config }
     if (this.config.shouldCancelWhenOutside !== undefined) {
       this.setShouldCancelWhenOutside(this.config.shouldCancelWhenOutside);
@@ -483,7 +485,7 @@ export abstract class GestureHandler {
     this.config = this.getDefaultConfig()
   }
 
-  abstract getDefaultConfig(): GestureConfig
+  abstract getDefaultConfig(): TGestureConfig
 
 
   public isEnabled(): boolean {
