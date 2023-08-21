@@ -80,17 +80,19 @@ export class PanGestureHandler extends GestureHandler<PanGestureHandlerConfig> {
 
   private minVelocitySq = Number.MAX_SAFE_INTEGER
 
+  private get minPointers() {
+    return this.config.minPointers ?? 1
+  }
+
   public constructor(deps: GestureHandlerDependencies) {
-    super({ ...deps, logger: deps.logger.cloneWithPrefix("TapGestureHandler") })
+    super({ ...deps, logger: deps.logger.cloneWithPrefix("PanGestureHandler") })
   }
 
   public onPointerDown(e) {
     this.tracker.addToTracker(e);
     super.onPointerDown(e);
-
     this.lastX = this.tracker.getLastAvgX();
     this.lastY = this.tracker.getLastAvgY();
-
     this.tryBegin(e);
     this.tryActivating();
   }
@@ -183,7 +185,7 @@ export class PanGestureHandler extends GestureHandler<PanGestureHandlerConfig> {
   private tryBegin(e: AdaptedEvent): void {
     if (
       this.currentState === State.UNDETERMINED &&
-        this.tracker.getTrackedPointersCount() >= this.config.minPointers
+        this.tracker.getTrackedPointersCount() >= this.minPointers
     ) {
       this.resetProgress();
       this.offsetX = 0;
@@ -240,5 +242,105 @@ export class PanGestureHandler extends GestureHandler<PanGestureHandlerConfig> {
       }
     }
     return false
+  }
+
+  public onAdditionalPointerAdd(event: AdaptedEvent): void {
+    this.tracker.addToTracker(event);
+    super.onAdditionalPointerAdd(event);
+    this.tryBegin(event);
+    this.offsetX += this.lastX - this.startX;
+    this.offsetY += this.lastY - this.startY;
+    this.lastX = this.tracker.getLastAvgX();
+    this.lastY = this.tracker.getLastAvgY();
+    this.startX = this.lastX;
+    this.startY = this.lastY;
+    if (this.tracker.getTrackedPointersCount() > (this.config.maxPointers ?? 10)) {
+      if (this.currentState === State.ACTIVE) {
+        this.cancel();
+      } else {
+        this.fail();
+      }
+    } else {
+      this.tryActivating();
+    }
+  }
+
+  public onPointerUp(event: AdaptedEvent): void {
+    super.onPointerUp(event);
+    if (this.currentState === State.ACTIVE) {
+      this.lastX = this.tracker.getLastAvgX();
+      this.lastY = this.tracker.getLastAvgY();
+    }
+    this.tracker.removeFromTracker(event.pointerId);
+    if (this.currentState === State.ACTIVE) {
+      this.end();
+    } else {
+      this.resetProgress();
+      this.fail();
+    }
+  }
+
+  public onAdditionalPointerRemove(event: AdaptedEvent): void {
+    super.onAdditionalPointerRemove(event);
+    this.tracker.removeFromTracker(event.pointerId);
+
+    this.offsetX += this.lastX - this.startX;
+    this.offsetY += this.lastY - this.startY;
+
+    this.lastX = this.tracker.getLastAvgX();
+    this.lastY = this.tracker.getLastAvgY();
+
+    this.startX = this.lastX;
+    this.startY = this.lastY;
+
+    if (
+      !(
+        this.currentState === State.ACTIVE &&
+          this.tracker.getTrackedPointersCount() < this.minPointers
+      )
+    ) {
+      this.tryActivating();
+    }
+  }
+
+  public onPointerMove(event: AdaptedEvent): void {
+    this.tracker.track(event);
+    this.lastX = this.tracker.getLastAvgX();
+    this.lastY = this.tracker.getLastAvgY();
+    this.velocityX = this.tracker.getVelocityX(event.pointerId);
+    this.velocityY = this.tracker.getVelocityY(event.pointerId);
+    this.tryActivating();
+    super.onPointerMove(event);
+  }
+
+  public onPointerOutOfBounds(event: AdaptedEvent): void {
+    if (this.shouldCancelWhenOutside) {
+      return;
+    }
+    this.tracker.track(event);
+    this.lastX = this.tracker.getLastAvgX();
+    this.lastY = this.tracker.getLastAvgY();
+    this.velocityX = this.tracker.getVelocityX(event.pointerId);
+    this.velocityY = this.tracker.getVelocityY(event.pointerId);
+    this.tryActivating();
+    if (this.currentState === State.ACTIVE) {
+      super.onPointerOutOfBounds(event);
+    }
+  }
+
+  protected transformNativeEvent() {
+    const rect = this.view.getBoundingRect();
+    const translationX: number = this.getTranslationX();
+    const translationY: number = this.getTranslationY();
+    return {
+      translationX: isNaN(translationX) ? 0 : translationX,
+      translationY: isNaN(translationY) ? 0 : translationY,
+      absoluteX: this.tracker.getLastAvgX(),
+      absoluteY: this.tracker.getLastAvgY(),
+      velocityX: this.velocityX,
+      velocityY: this.velocityY,
+      x: this.tracker.getLastAvgX() - rect.x,
+      y: this.tracker.getLastAvgY() - rect.y,
+    };
   }
 }
