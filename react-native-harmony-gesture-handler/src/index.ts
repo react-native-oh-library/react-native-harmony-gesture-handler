@@ -24,7 +24,7 @@ export { default as GestureHandlerRootView } from './components/GestureHandlerRo
 //   GestureUpdateEvent,
 //   GestureStateChangeEvent,
 // } from './handlers/gestureHandlerCommon';
-// export type { GestureType } from './handlers/gestures/gesture';
+export type { GestureType } from 'react-native-gesture-handler/src/handlers/gestures/gesture';
 // export type {
 //   TapGestureHandlerEventPayload,
 //   TapGestureHandlerProps,
