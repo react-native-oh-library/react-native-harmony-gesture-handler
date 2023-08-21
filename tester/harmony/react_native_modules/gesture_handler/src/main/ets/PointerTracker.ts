@@ -1,5 +1,6 @@
 import VelocityTracker from './VelocityTracker';
 import { TrackerElement, AdaptedEvent } from "./Event"
+import { Vector2D } from './Vector2D';
 
 const MAX_POINTERS = 20;
 
@@ -111,6 +112,10 @@ export class PointerTracker {
     return NaN;
   }
 
+  public getVelocity(pointerId: number) {
+    return new Vector2D({x: this.getVelocityX(pointerId), y: this.getVelocityY(pointerId)})
+  }
+
   public getVelocityX(pointerId: number): number {
     return this.trackedPointers.get(pointerId)?.velocityX as number;
   }
@@ -158,6 +163,10 @@ export class PointerTracker {
     } else {
       return this.trackedPointers.get(this.lastMovedPointerId)?.lastY as number;
     }
+  }
+
+  public getLastAvgPos() {
+    return new Vector2D({x: this.getLastAvgX(), y: this.getLastAvgY()})
   }
 
   // Some handlers use these methods to send average values in native event.

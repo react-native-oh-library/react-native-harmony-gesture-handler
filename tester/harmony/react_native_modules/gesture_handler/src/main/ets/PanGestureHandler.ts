@@ -1,20 +1,17 @@
 import { GestureHandler, GestureConfig, GestureHandlerDependencies, DEFAULT_TOUCH_SLOP } from "./GestureHandler"
 import { AdaptedEvent } from "./Event"
 import { State } from "./State"
+import { Vector2D } from "./Vector2D"
 
 const DEFAULT_MIN_DIST_SQ = DEFAULT_TOUCH_SLOP * DEFAULT_TOUCH_SLOP;
 
 type PanGestureHandlerConfig = GestureConfig
 
 export class PanGestureHandler extends GestureHandler<PanGestureHandlerConfig> {
-  private startX = 0;
-  private startY = 0;
-  private offsetX = 0;
-  private offsetY = 0;
-  private lastX = 0;
-  private lastY = 0;
-  private velocityX = 0;
-  private velocityY = 0;
+  private startPos = new Vector2D();
+  private offset = new Vector2D()
+  private lastPos = new Vector2D();
+  private velocity = new Vector2D();
   private activationTimeout = 0;
 
   private get failOffsetXStart() {
@@ -91,8 +88,7 @@ export class PanGestureHandler extends GestureHandler<PanGestureHandlerConfig> {
   public onPointerDown(e) {
     this.tracker.addToTracker(e);
     super.onPointerDown(e);
-    this.lastX = this.tracker.getLastAvgX();
-    this.lastY = this.tracker.getLastAvgY();
+    this.lastPos = this.tracker.getLastAvgPos()
     this.tryBegin(e);
     this.tryActivating();
   }
@@ -108,8 +104,7 @@ export class PanGestureHandler extends GestureHandler<PanGestureHandlerConfig> {
   }
 
   private shouldFail(): boolean {
-    const dx: number = this.getTranslationX();
-    const dy: number = this.getTranslationY();
+    const {x: dx, y: dy} = this.getTranslation().value;
     const distanceSq = dx * dx + dy * dy;
     if (this.activateAfterLongPress > 0 && distanceSq > DEFAULT_MIN_DIST_SQ) {
       this.clearActivationTimeout();
@@ -127,16 +122,12 @@ export class PanGestureHandler extends GestureHandler<PanGestureHandlerConfig> {
     return (this.failOffsetYEnd !== Number.MAX_SAFE_INTEGER && dy > this.failOffsetYEnd);
   }
 
-  private getTranslationX(): number {
-    return this.lastX - this.startX + this.offsetX;
-  }
-
-  private getTranslationY(): number {
-    return this.lastY - this.startY + this.offsetY;
+  private getTranslation() {
+    return this.lastPos.clone().subtract(this.startPos).add(this.offset)
   }
 
   private shouldActivate(): boolean {
-    const dx: number = this.getTranslationX();
+    const {x: dx, y: dy} = this.getTranslation().value;
     if (this.activeOffsetXStart !== Number.MAX_SAFE_INTEGER && dx < this.activeOffsetXStart
     ) {
       return true;
@@ -144,7 +135,6 @@ export class PanGestureHandler extends GestureHandler<PanGestureHandlerConfig> {
     if (this.activeOffsetXEnd !== Number.MIN_SAFE_INTEGER && dx > this.activeOffsetXEnd) {
       return true;
     }
-    const dy: number = this.getTranslationY();
     if (this.activeOffsetYStart !== Number.MAX_SAFE_INTEGER && dy < this.activeOffsetYStart) {
       return true;
     }
@@ -155,7 +145,7 @@ export class PanGestureHandler extends GestureHandler<PanGestureHandlerConfig> {
     if (this.minDistSq !== Number.MAX_SAFE_INTEGER && distanceSq >= this.minDistSq) {
       return true;
     }
-    const vx: number = this.velocityX;
+    const {x: vx, y: vy} = this.velocity
     if (
       this.minVelocityX !== Number.MAX_SAFE_INTEGER &&
         ((this.minVelocityX < 0 && vx <= this.minVelocityX) ||
@@ -163,7 +153,6 @@ export class PanGestureHandler extends GestureHandler<PanGestureHandlerConfig> {
     ) {
       return true;
     }
-    const vy: number = this.velocityY;
     if (
       this.minVelocityY !== Number.MAX_SAFE_INTEGER &&
         ((this.minVelocityY < 0 && vy <= this.minVelocityY) ||
@@ -188,10 +177,8 @@ export class PanGestureHandler extends GestureHandler<PanGestureHandlerConfig> {
         this.tracker.getTrackedPointersCount() >= this.minPointers
     ) {
       this.resetProgress();
-      this.offsetX = 0;
-      this.offsetY = 0;
-      this.velocityX = 0;
-      this.velocityY = 0;
+      this.offset = new Vector2D();
+      this.velocity = new Vector2D();
 
       this.begin();
 
@@ -201,8 +188,7 @@ export class PanGestureHandler extends GestureHandler<PanGestureHandlerConfig> {
         }, this.activateAfterLongPress);
       }
     } else {
-      this.velocityX = this.tracker.getVelocityX(e.pointerId);
-      this.velocityY = this.tracker.getVelocityY(e.pointerId);
+      this.velocity = this.tracker.getVelocity(e.pointerId)
     }
   }
 
@@ -248,12 +234,9 @@ export class PanGestureHandler extends GestureHandler<PanGestureHandlerConfig> {
     this.tracker.addToTracker(event);
     super.onAdditionalPointerAdd(event);
     this.tryBegin(event);
-    this.offsetX += this.lastX - this.startX;
-    this.offsetY += this.lastY - this.startY;
-    this.lastX = this.tracker.getLastAvgX();
-    this.lastY = this.tracker.getLastAvgY();
-    this.startX = this.lastX;
-    this.startY = this.lastY;
+    this.offset.add(this.lastPos).subtract(this.startPos)
+    this.lastPos = this.tracker.getLastAvgPos()
+    this.startPos = this.lastPos.clone()
     if (this.tracker.getTrackedPointersCount() > (this.config.maxPointers ?? 10)) {
       if (this.currentState === State.ACTIVE) {
         this.cancel();
@@ -268,8 +251,7 @@ export class PanGestureHandler extends GestureHandler<PanGestureHandlerConfig> {
   public onPointerUp(event: AdaptedEvent): void {
     super.onPointerUp(event);
     if (this.currentState === State.ACTIVE) {
-      this.lastX = this.tracker.getLastAvgX();
-      this.lastY = this.tracker.getLastAvgY();
+      this.lastPos = this.tracker.getLastAvgPos();
     }
     this.tracker.removeFromTracker(event.pointerId);
     if (this.currentState === State.ACTIVE) {
@@ -283,16 +265,9 @@ export class PanGestureHandler extends GestureHandler<PanGestureHandlerConfig> {
   public onAdditionalPointerRemove(event: AdaptedEvent): void {
     super.onAdditionalPointerRemove(event);
     this.tracker.removeFromTracker(event.pointerId);
-
-    this.offsetX += this.lastX - this.startX;
-    this.offsetY += this.lastY - this.startY;
-
-    this.lastX = this.tracker.getLastAvgX();
-    this.lastY = this.tracker.getLastAvgY();
-
-    this.startX = this.lastX;
-    this.startY = this.lastY;
-
+    this.offset.add(this.lastPos).subtract(this.startPos)
+    this.lastPos = this.tracker.getLastAvgPos()
+    this.startPos = this.lastPos.clone()
     if (
       !(
         this.currentState === State.ACTIVE &&
@@ -305,10 +280,8 @@ export class PanGestureHandler extends GestureHandler<PanGestureHandlerConfig> {
 
   public onPointerMove(event: AdaptedEvent): void {
     this.tracker.track(event);
-    this.lastX = this.tracker.getLastAvgX();
-    this.lastY = this.tracker.getLastAvgY();
-    this.velocityX = this.tracker.getVelocityX(event.pointerId);
-    this.velocityY = this.tracker.getVelocityY(event.pointerId);
+    this.lastPos = this.tracker.getLastAvgPos()
+    this.velocity = this.tracker.getVelocity(event.pointerId)
     this.tryActivating();
     super.onPointerMove(event);
   }
@@ -318,10 +291,8 @@ export class PanGestureHandler extends GestureHandler<PanGestureHandlerConfig> {
       return;
     }
     this.tracker.track(event);
-    this.lastX = this.tracker.getLastAvgX();
-    this.lastY = this.tracker.getLastAvgY();
-    this.velocityX = this.tracker.getVelocityX(event.pointerId);
-    this.velocityY = this.tracker.getVelocityY(event.pointerId);
+    this.lastPos = this.tracker.getLastAvgPos()
+    this.velocity = this.tracker.getVelocity(event.pointerId)
     this.tryActivating();
     if (this.currentState === State.ACTIVE) {
       super.onPointerOutOfBounds(event);
@@ -330,15 +301,14 @@ export class PanGestureHandler extends GestureHandler<PanGestureHandlerConfig> {
 
   protected transformNativeEvent() {
     const rect = this.view.getBoundingRect();
-    const translationX: number = this.getTranslationX();
-    const translationY: number = this.getTranslationY();
+    const translation = this.getTranslation()
     return {
-      translationX: isNaN(translationX) ? 0 : translationX,
-      translationY: isNaN(translationY) ? 0 : translationY,
+      translationX: translation.x,
+      translationY: translation.y,
       absoluteX: this.tracker.getLastAvgX(),
       absoluteY: this.tracker.getLastAvgY(),
-      velocityX: this.velocityX,
-      velocityY: this.velocityY,
+      velocityX: this.velocity.x,
+      velocityY: this.velocity.y,
       x: this.tracker.getLastAvgX() - rect.x,
       y: this.tracker.getLastAvgY() - rect.y,
     };
