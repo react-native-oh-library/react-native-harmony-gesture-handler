@@ -1,6 +1,12 @@
-import { DescriptorRegistry } from "rnoh/ts"
+import { DescriptorRegistry, Descriptor } from "rnoh/ts"
+import { Vector2D } from "./Vector2D"
 
-export type BoundingBox = {x: number, y: number, width: number, height: number}
+export type BoundingBox = {
+  x: number,
+  y: number,
+  width: number,
+  height: number
+}
 
 export class View {
   constructor(private descriptorRegistry: DescriptorRegistry, private viewTag: number) {
@@ -26,9 +32,10 @@ export class View {
 
   public getBoundingRect(): BoundingBox {
     const d = this.getDescriptor()
+    const totalScrollOffset = this.getTotalScrollOffset()
     return {
-      x: d.layoutMetrics.frame.origin.x,
-      y: d.layoutMetrics.frame.origin.y,
+      x: d.layoutMetrics.frame.origin.x - totalScrollOffset.x,
+      y: d.layoutMetrics.frame.origin.y - totalScrollOffset.y,
       width: d.layoutMetrics.frame.size.width,
       height: d.layoutMetrics.frame.size.height
     }
@@ -36,5 +43,24 @@ export class View {
 
   private getDescriptor() {
     return this.descriptorRegistry.getDescriptor(this.viewTag)
+  }
+
+  private getTotalScrollOffset(): Vector2D {
+    const currentOffset = new Vector2D()
+    let parentTag = this.getDescriptor().parentTag
+    while (parentTag !== undefined) {
+      const d = this.descriptorRegistry.getDescriptor(parentTag)
+      currentOffset.add(this.extractScrollOffsetFromDescriptor(d))
+      parentTag = d.parentTag
+    }
+    return currentOffset
+
+  }
+
+  private extractScrollOffsetFromDescriptor(descriptor: Descriptor<any>) {
+    if (descriptor.type !== "ScrollView")
+      return new Vector2D();
+    const scrollViewState: any = descriptor.state;
+    return new Vector2D({ x: scrollViewState.contentOffsetX, y: scrollViewState.contentOffsetY })
   }
 }
