@@ -41,6 +41,7 @@ export class RNGestureHandlerModule extends TurboModule {
     }
     const gestureHandler = this.gestureHandlerFactory.create(handlerName, handlerTag)
     this.gestureHandlerRegistry.addGestureHandler(gestureHandler)
+    gestureHandler.updateGestureConfig(config)
   }
 
   public attachGestureHandler(
