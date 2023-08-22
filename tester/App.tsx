@@ -9,6 +9,7 @@ import {
   GestureHandlerRootView,
   GestureType,
   PanGestureHandler,
+  State,
   TapGestureHandler,
 } from 'react-native-gesture-handler';
 
@@ -115,6 +116,12 @@ function App({}): JSX.Element {
                 }}
               />
             </TestCase>
+            <TestCase
+              itShould="export State object"
+              fn={({expect}) => {
+                expect(State).to.be.not.undefined;
+              }}
+            />
           </TestSuite>
         </Tester>
       </ScrollView>
