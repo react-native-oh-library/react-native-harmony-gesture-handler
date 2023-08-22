@@ -1,6 +1,6 @@
 import { GestureHandler, GestureHandlerDependencies } from "./GestureHandler"
 import { AdaptedEvent, EventType } from "./Event"
-import { State } from "./State"
+import { State, getStateName } from "./State"
 
 const DEFAULT_MAX_DURATION_MS = 500;
 const DEFAULT_NUMBER_OF_TAPS = 1;
@@ -136,6 +136,7 @@ export class TapGestureHandler extends GestureHandler {
         }
         break;
       default:
+        logger.info(`default case - currentState ${getStateName(this.currentState)}`)
         break;
     }
   }
