@@ -52,7 +52,8 @@ export struct RNGestureHandlerRootView {
       .height("100%")
       .onTouch((e) => {
         this.touchHandler.handleTouch(e)}
-      )
+      ).hitTestBehavior(HitTestMode.Transparent)
+
     }
   }
 }
