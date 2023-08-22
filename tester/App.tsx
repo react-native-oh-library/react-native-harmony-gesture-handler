@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
 import React, {useState} from 'react';
-import {ScrollView, StyleSheet, View} from 'react-native';
+import {ScrollView, StyleSheet, Text, View} from 'react-native';
 import {TestCase, TestSuite, Tester} from '@rnoh/testerino';
 import {
   Gesture,
@@ -44,11 +44,43 @@ function App({}): JSX.Element {
             </TestCase>
           </TestSuite>
           <TestSuite name="old API">
-            <TestCase itShould="toggle color on tap">
+            <TestCase itShould="toggle color on double tap">
               <TapExample />
             </TestCase>
-            <TestCase itShould="change color to green when panning">
+            <TestCase itShould="change color to green when panning after 50 px in X direction">
               <PanningExample />
+            </TestCase>
+            <TestCase itShould="display event received by onGestureEvent when dragging over blue rectangle">
+              <ObjectDisplayer
+                renderContent={setObject => {
+                  return (
+                    <PanGestureHandler
+                      onGestureEvent={e => {
+                        setObject({
+                          absoluteX: e.nativeEvent.absoluteX,
+                          absoluteY: e.nativeEvent.absoluteY,
+                          handlerTag: e.nativeEvent.handlerTag,
+                          numberOfPointers: e.nativeEvent.numberOfPointers,
+                          state: e.nativeEvent.state,
+                          translationX: e.nativeEvent.translationX,
+                          translationY: e.nativeEvent.translationY,
+                          velocityX: e.nativeEvent.velocityX,
+                          velocityY: e.nativeEvent.velocityY,
+                          x: e.nativeEvent.x,
+                          y: e.nativeEvent.y,
+                        });
+                      }}>
+                      <View
+                        style={{
+                          width: 100,
+                          height: 32,
+                          backgroundColor: 'blue',
+                        }}
+                      />
+                    </PanGestureHandler>
+                  );
+                }}
+              />
             </TestCase>
           </TestSuite>
         </Tester>
@@ -80,6 +112,7 @@ function TapExample() {
 
   return (
     <TapGestureHandler
+      numberOfTaps={2}
       onActivated={() => {
         setBackgroundColor(prev => (prev === 'red' ? 'green' : 'red'));
       }}>
@@ -93,12 +126,29 @@ function PanningExample() {
 
   return (
     <PanGestureHandler
+      activeOffsetX={[-50, 50]}
       onActivated={() => {
         setBackgroundColor('green');
       }}
       onEnded={() => setBackgroundColor('red')}>
       <View style={{width: 100, height: 32, backgroundColor}} />
     </PanGestureHandler>
+  );
+}
+
+function ObjectDisplayer(props: {
+  renderContent: (setObject: (obj: Object) => void) => any;
+}) {
+  const [object, setObject] = useState<Object>();
+
+  return (
+    <View style={{width: 256, height: '100%'}}>
+      <Text
+        style={{width: 256, height: 128, fontSize: 8, backgroundColor: '#EEE'}}>
+        {object === undefined ? 'undefined' : JSON.stringify(object)}
+      </Text>
+      {props.renderContent(setObject)}
+    </View>
   );
 }
 
