@@ -82,6 +82,39 @@ function App({}): JSX.Element {
                 }}
               />
             </TestCase>
+            <TestCase itShould="display event received by onHandlerStateChange when dragging over blue rectangle">
+              <ObjectDisplayer
+                renderContent={setObject => {
+                  return (
+                    <PanGestureHandler
+                      onHandlerStateChange={e => {
+                        setObject({
+                          oldState: e.nativeEvent.oldState,
+                          state: e.nativeEvent.state,
+                          absoluteX: e.nativeEvent.absoluteX,
+                          absoluteY: e.nativeEvent.absoluteY,
+                          handlerTag: e.nativeEvent.handlerTag,
+                          numberOfPointers: e.nativeEvent.numberOfPointers,
+                          translationX: e.nativeEvent.translationX,
+                          translationY: e.nativeEvent.translationY,
+                          velocityX: e.nativeEvent.velocityX,
+                          velocityY: e.nativeEvent.velocityY,
+                          x: e.nativeEvent.x,
+                          y: e.nativeEvent.y,
+                        });
+                      }}>
+                      <View
+                        style={{
+                          width: 100,
+                          height: 32,
+                          backgroundColor: 'blue',
+                        }}
+                      />
+                    </PanGestureHandler>
+                  );
+                }}
+              />
+            </TestCase>
           </TestSuite>
         </Tester>
       </ScrollView>
@@ -142,7 +175,7 @@ function ObjectDisplayer(props: {
   const [object, setObject] = useState<Object>();
 
   return (
-    <View style={{width: 256, height: '100%'}}>
+    <View style={{width: 256, height: 200}}>
       <Text
         style={{width: 256, height: 128, fontSize: 8, backgroundColor: '#EEE'}}>
         {object === undefined ? 'undefined' : JSON.stringify(object)}
