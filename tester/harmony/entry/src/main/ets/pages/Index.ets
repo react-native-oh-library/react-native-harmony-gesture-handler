@@ -1,5 +1,5 @@
 import { RNApp, ComponentBuilderContext, RNOHContext } from 'rnoh'
-import { RNGestureHandlerRootView } from "rnoh-gesture-handler"
+import { RNGestureHandlerRootView, RNGestureHandlerButton } from "rnoh-gesture-handler"
 
 let storage = LocalStorage.GetShared()
 
@@ -12,6 +12,12 @@ struct Index {
   buildCustomComponent(ctx: ComponentBuilderContext) {
     if (ctx.descriptor.type === RNGestureHandlerRootView.DESCRIPTOR_TYPE) {
       RNGestureHandlerRootView({
+        tag: ctx.descriptor.tag,
+        ctx: ctx.rnohContext,
+        buildCustomComponent: this.buildCustomComponent.bind(this)
+      })
+    } else if (ctx.descriptor.type === RNGestureHandlerButton.DESCRIPTOR_TYPE) {
+      RNGestureHandlerButton({
         tag: ctx.descriptor.tag,
         ctx: ctx.rnohContext,
         buildCustomComponent: this.buildCustomComponent.bind(this)

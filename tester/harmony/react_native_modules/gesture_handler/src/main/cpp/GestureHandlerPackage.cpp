@@ -1,5 +1,6 @@
 #include "GestureHandlerPackage.h"
 #include "RNGestureHandlerRootViewComponentDescriptor.h"
+#include "RNGestureHandlerButtonComponentDescriptor.h"
 #include "RNGestureHandlerModule.h"
 
 using namespace rnoh;
@@ -20,7 +21,10 @@ std::unique_ptr<TurboModuleFactoryDelegate> GestureHandlerPackage::createTurboMo
 }
 
 std::vector<react::ComponentDescriptorProvider> GestureHandlerPackage::createComponentDescriptorProviders() {
-    return {react::concreteComponentDescriptorProvider<react::RNGestureHandlerRootViewComponentDescriptor>()};
+    return {
+      react::concreteComponentDescriptorProvider<react::RNGestureHandlerRootViewComponentDescriptor>(),
+      react::concreteComponentDescriptorProvider<react::RNGestureHandlerButtonComponentDescriptor>(),
+    };
 }
 
 EventEmitRequestHandlers GestureHandlerPackage::createEventEmitRequestHandlers() {

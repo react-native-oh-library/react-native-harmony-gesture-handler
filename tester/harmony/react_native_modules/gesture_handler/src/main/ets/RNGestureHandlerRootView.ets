@@ -3,12 +3,6 @@ import { RNGHRootTouchHandler } from "./RNGHRootTouchHandler"
 import { RNGestureHandlerModule } from "./RNGestureHandlerModule"
 
 export type RNGestureHandlerRootViewDescriptor = Descriptor<"RNGestureHandlerRootView", {
-  source: {
-    uri?: string,
-    html?: string
-  }
-  injectedJavaScript?: string
-  javaScriptEnabled?: boolean
 }>
 
 @Component

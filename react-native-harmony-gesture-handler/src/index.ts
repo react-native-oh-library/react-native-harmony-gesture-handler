@@ -105,7 +105,7 @@ export {
   // TouchableNativeFeedback,
   TouchableOpacity,
   // TouchableWithoutFeedback,
-} from 'react-native-gesture-handler/src/components/touchables';
+} from './components/touchables';
 // export {
 //   ScrollView,
 //   Switch,
