@@ -8,6 +8,7 @@ import {
   GestureDetector,
   GestureHandlerRootView,
   GestureType,
+  PanGestureHandler,
   TapGestureHandler,
 } from 'react-native-gesture-handler';
 
@@ -16,7 +17,7 @@ function App({}): JSX.Element {
     <GestureHandlerRootView>
       <ScrollView style={[styles.container]}>
         <Tester>
-          <TestSuite name="react-native-gesture-handler">
+          <TestSuite name="new API">
             <TestCase itShould="toggle color on tap">
               <Example
                 createGesture={setBackgroundColor => {
@@ -41,8 +42,13 @@ function App({}): JSX.Element {
                 }}
               />
             </TestCase>
-            <TestCase itShould="toggle color on tap (old API TapGH)">
+          </TestSuite>
+          <TestSuite name="old API">
+            <TestCase itShould="toggle color on tap">
               <TapExample />
+            </TestCase>
+            <TestCase itShould="change color to green when panning">
+              <PanningExample />
             </TestCase>
           </TestSuite>
         </Tester>
@@ -79,6 +85,20 @@ function TapExample() {
       }}>
       <View style={{width: 100, height: 32, backgroundColor}} />
     </TapGestureHandler>
+  );
+}
+
+function PanningExample() {
+  const [backgroundColor, setBackgroundColor] = useState('red');
+
+  return (
+    <PanGestureHandler
+      onActivated={() => {
+        setBackgroundColor('green');
+      }}
+      onEnded={() => setBackgroundColor('red')}>
+      <View style={{width: 100, height: 32, backgroundColor}} />
+    </PanGestureHandler>
   );
 }
 
