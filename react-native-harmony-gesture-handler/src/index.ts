@@ -59,7 +59,7 @@ export type { GestureType } from 'react-native-gesture-handler/src/handlers/gest
 export { TapGestureHandler } from './handlers/TapGestureHandler';
 // export { ForceTouchGestureHandler } from './handlers/ForceTouchGestureHandler';
 // export { LongPressGestureHandler } from './handlers/LongPressGestureHandler';
-// export { PanGestureHandler } from './handlers/PanGestureHandler';
+export { PanGestureHandler } from './handlers/PanGestureHandler';
 // export { PinchGestureHandler } from './handlers/PinchGestureHandler';
 // export { RotationGestureHandler } from './handlers/RotationGestureHandler';
 // export { FlingGestureHandler } from './handlers/FlingGestureHandler';
