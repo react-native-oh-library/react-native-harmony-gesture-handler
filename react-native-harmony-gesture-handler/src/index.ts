@@ -56,7 +56,7 @@ export type { GestureType } from 'react-native-gesture-handler/src/handlers/gest
 //   FlingGestureHandlerEventPayload,
 //   FlingGestureHandlerProps,
 // } from './handlers/FlingGestureHandler';
-// export { TapGestureHandler } from './handlers/TapGestureHandler';
+export { TapGestureHandler } from './handlers/TapGestureHandler';
 // export { ForceTouchGestureHandler } from './handlers/ForceTouchGestureHandler';
 // export { LongPressGestureHandler } from './handlers/LongPressGestureHandler';
 // export { PanGestureHandler } from './handlers/PanGestureHandler';
