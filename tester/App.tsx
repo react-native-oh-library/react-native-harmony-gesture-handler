@@ -11,6 +11,7 @@ import {
   PanGestureHandler,
   State,
   TapGestureHandler,
+  TouchableOpacity,
 } from 'react-native-gesture-handler';
 
 function App({}): JSX.Element {
@@ -18,7 +19,7 @@ function App({}): JSX.Element {
     <GestureHandlerRootView>
       <ScrollView style={[styles.container]}>
         <Tester>
-          <TestSuite name="new API">
+          <TestSuite name="react-native-gesture-handler">
             <TestCase itShould="toggle color on tap">
               <Example
                 createGesture={setBackgroundColor => {
@@ -42,6 +43,19 @@ function App({}): JSX.Element {
                     });
                 }}
               />
+            </TestCase>
+            <TestCase itShould="export TouchableOpacity">
+              <TouchableOpacity>
+                <Text
+                  style={{
+                    width: 256,
+                    height: 32,
+                    borderWidth: 1,
+                    fontSize: 12,
+                  }}>
+                  Touchable Opacity content
+                </Text>
+              </TouchableOpacity>
             </TestCase>
           </TestSuite>
           <TestSuite name="old API">
