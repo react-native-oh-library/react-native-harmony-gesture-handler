@@ -100,12 +100,12 @@ export { GestureObjects as Gesture } from 'react-native-gesture-handler/src/hand
 //   BorderlessButton,
 //   PureNativeButton,
 // } from './components/GestureButtons';
-// export {
-//   TouchableHighlight,
-//   TouchableNativeFeedback,
-//   TouchableOpacity,
-//   TouchableWithoutFeedback,
-// } from './components/touchables';
+export {
+  // TouchableHighlight,
+  // TouchableNativeFeedback,
+  TouchableOpacity,
+  // TouchableWithoutFeedback,
+} from 'react-native-gesture-handler/src/components/touchables';
 // export {
 //   ScrollView,
 //   Switch,
