@@ -104,7 +104,7 @@ export {
   // TouchableHighlight,
   // TouchableNativeFeedback,
   TouchableOpacity,
-  // TouchableWithoutFeedback,
+  TouchableWithoutFeedback,
 } from './components/touchables';
 // export {
 //   ScrollView,
