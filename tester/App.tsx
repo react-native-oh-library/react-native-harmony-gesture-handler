@@ -45,17 +45,28 @@ function App({}): JSX.Element {
               />
             </TestCase>
             <TestCase itShould="export TouchableOpacity">
-              <TouchableOpacity>
-                <Text
-                  style={{
-                    width: 256,
-                    height: 32,
-                    borderWidth: 1,
-                    fontSize: 12,
-                  }}>
-                  Touchable Opacity content
-                </Text>
-              </TouchableOpacity>
+              <StateKeeper<string>
+                renderContent={(value, setValue) => {
+                  return (
+                    <TouchableOpacity
+                      onPress={() => {
+                        setValue(prev =>
+                          prev === 'Pressed' ? 'Pressed x' : 'Pressed',
+                        );
+                      }}>
+                      <Text
+                        style={{
+                          width: 256,
+                          height: 32,
+                          borderWidth: 1,
+                          fontSize: 12,
+                        }}>
+                        {value ?? 'Press me'}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                }}
+              />
             </TestCase>
           </TestSuite>
           <TestSuite name="old API">
@@ -204,6 +215,17 @@ function ObjectDisplayer(props: {
       {props.renderContent(setObject)}
     </View>
   );
+}
+
+function StateKeeper<T>(props: {
+  renderContent: (
+    value: T | undefined,
+    setValue: React.Dispatch<React.SetStateAction<T | undefined>>,
+  ) => void;
+}) {
+  const [value, setValue] = useState<T>();
+
+  return <>{props.renderContent(value, setValue)}</>;
 }
 
 const styles = StyleSheet.create({
