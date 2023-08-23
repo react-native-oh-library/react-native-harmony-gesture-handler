@@ -12,6 +12,7 @@ import {
   State,
   TapGestureHandler,
   TouchableOpacity,
+  TouchableWithoutFeedback,
 } from 'react-native-gesture-handler';
 
 function App({}): JSX.Element {
@@ -44,7 +45,7 @@ function App({}): JSX.Element {
                 }}
               />
             </TestCase>
-            <TestCase itShould="export TouchableOpacity">
+            <TestCase itShould="support TouchableOpacity">
               <StateKeeper<string>
                 renderContent={(value, setValue) => {
                   return (
@@ -64,6 +65,30 @@ function App({}): JSX.Element {
                         {value ?? 'Press me'}
                       </Text>
                     </TouchableOpacity>
+                  );
+                }}
+              />
+            </TestCase>
+            <TestCase itShould="support TouchableWithoutFeedback">
+              <StateKeeper<string>
+                renderContent={(value, setValue) => {
+                  return (
+                    <TouchableWithoutFeedback
+                      onPress={() => {
+                        setValue(prev =>
+                          prev === 'Pressed' ? 'Pressed x' : 'Pressed',
+                        );
+                      }}>
+                      <Text
+                        style={{
+                          width: 256,
+                          height: 32,
+                          borderWidth: 1,
+                          fontSize: 12,
+                        }}>
+                        {value ?? 'Press me'}
+                      </Text>
+                    </TouchableWithoutFeedback>
                   );
                 }}
               />
