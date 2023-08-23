@@ -172,6 +172,38 @@ function App({}): JSX.Element {
                 expect(State).to.be.not.undefined;
               }}
             />
+            <TestCase itShould="change text when panning on green rect (hit slop)">
+              <StateKeeper<string>
+                renderContent={(value, setValue) => {
+                  return (
+                    <PanGestureHandler
+                      hitSlop={{right: -64}}
+                      onActivated={() =>
+                        setValue(prev =>
+                          prev === 'Panned' ? 'Panned again' : 'Panned',
+                        )
+                      }>
+                      <View
+                        style={{
+                          backgroundColor: 'red',
+                          width: 128,
+                        }}>
+                        <Text
+                          style={{
+                            width: 64,
+                            height: 32,
+                            borderWidth: 1,
+                            fontSize: 12,
+                            backgroundColor: 'green',
+                          }}>
+                          {value ?? 'Pan me'}
+                        </Text>
+                      </View>
+                    </PanGestureHandler>
+                  );
+                }}
+              />
+            </TestCase>
           </TestSuite>
         </Tester>
       </ScrollView>
@@ -183,6 +215,7 @@ function Example(props: {
   createGesture: (
     setColor: React.Dispatch<React.SetStateAction<string>>,
   ) => GestureType;
+  rightHitSlop?: number;
 }) {
   const [backgroundColor, setBackgroundColor] = useState('red');
 
