@@ -248,6 +248,36 @@ function App({}): JSX.Element {
                 />
               </View>
             </TestCase>
+            <TestCase itShould="change color on tap as long as finger didn't move more than 100px horizontally (maxDeltaX)">
+              <StateKeeper<string>
+                renderContent={(value, setValue) => {
+                  return (
+                    <TapGestureHandler
+                      maxDeltaX={100}
+                      onActivated={() =>
+                        setValue(prev => (prev === 'red' ? 'green' : 'red'))
+                      }>
+                      <View
+                        style={{
+                          backgroundColor: 'gray',
+                          width: 128,
+                          height: 64,
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}>
+                        <View
+                          style={{
+                            backgroundColor: value ?? 'red',
+                            width: 100,
+                            height: 64,
+                          }}
+                        />
+                      </View>
+                    </TapGestureHandler>
+                  );
+                }}
+              />
+            </TestCase>
           </TestSuite>
         </Tester>
       </ScrollView>
