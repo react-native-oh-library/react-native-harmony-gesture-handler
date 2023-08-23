@@ -204,6 +204,50 @@ function App({}): JSX.Element {
                 }}
               />
             </TestCase>
+            <TestCase itShould="change color when panning left rect but not right">
+              <View
+                style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+                <StateKeeper<string>
+                  renderContent={(value, setValue) => {
+                    return (
+                      <PanGestureHandler
+                        onActivated={() => setValue('green')}
+                        onEnded={() => {
+                          setValue('red');
+                        }}>
+                        <View
+                          style={{
+                            backgroundColor: value ?? 'red',
+                            width: 128,
+                            height: 64,
+                          }}
+                        />
+                      </PanGestureHandler>
+                    );
+                  }}
+                />
+                <StateKeeper<string>
+                  renderContent={(value, setValue) => {
+                    return (
+                      <PanGestureHandler
+                        enabled={false}
+                        onActivated={() => setValue('green')}
+                        onEnded={() => {
+                          setValue('red');
+                        }}>
+                        <View
+                          style={{
+                            backgroundColor: value ?? 'red',
+                            width: 128,
+                            height: 64,
+                          }}
+                        />
+                      </PanGestureHandler>
+                    );
+                  }}
+                />
+              </View>
+            </TestCase>
           </TestSuite>
         </Tester>
       </ScrollView>
