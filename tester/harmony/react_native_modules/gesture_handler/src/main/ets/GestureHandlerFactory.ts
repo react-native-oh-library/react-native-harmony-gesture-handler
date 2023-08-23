@@ -8,6 +8,7 @@ import { InteractionManager } from './InteractionManager';
 import { RNGHLogger } from './RNGHLogger';
 import { TapGestureHandler } from './TapGestureHandler';
 import { PanGestureHandler } from "./PanGestureHandler"
+import { NativeViewGestureHandler } from "./NativeViewGestureHandler"
 
 export class GestureHandlerFactory {
   private orchestrator: GestureHandlerOrchestrator
@@ -34,6 +35,8 @@ export class GestureHandlerFactory {
         return new TapGestureHandler(deps)
       case "PanGestureHandler":
         return new PanGestureHandler(deps)
+      case "NativeViewGestureHandler":
+        return new NativeViewGestureHandler(deps)
       default:
         const msg = `Unknown handler type: ${handlerName}`
         this.factoryLogger.info(msg)
