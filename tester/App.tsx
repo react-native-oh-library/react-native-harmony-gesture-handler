@@ -278,6 +278,31 @@ function App({}): JSX.Element {
                 }}
               />
             </TestCase>
+            <TestCase itShould="activate panning after moving more than 50px horizontally (activeOffsetX)">
+              <StateKeeper<string>
+                renderContent={(value, setValue) => {
+                  return (
+                    <PanGestureHandler
+                      activeOffsetX={[-50, 50]}
+                      onActivated={() => setValue('green')}
+                      onEnded={() => {
+                        setValue('red');
+                      }}>
+                      <View
+                        style={{
+                          backgroundColor: value ?? 'red',
+                          width: 128,
+                          height: 128,
+                        }}>
+                        <Text style={{width: '100%', height: '100%'}}>
+                          (This view has size of 128px)
+                        </Text>
+                      </View>
+                    </PanGestureHandler>
+                  );
+                }}
+              />
+            </TestCase>
           </TestSuite>
         </Tester>
       </ScrollView>
