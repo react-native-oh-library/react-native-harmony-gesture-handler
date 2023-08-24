@@ -12,7 +12,9 @@
   "scripts": {
     "prepack": "bob build",
     "test": "jest",
-    "build": "tsc -p tsconfig.build.json"
+    "pack:harmony": "react-native pack-harmony --oh-module-path ../tester/harmony/react_native_modules/gesture_handler --harmony-dir-path ./harmony --package-json-path ./package.json",
+    "pack:prod": "npm run pack:harmony && npm pack",
+    "prepublishOnly": "npm run prepack && npm run pack:harmony"
   },
   "peerDependencies": {
     "react": "*",
@@ -40,9 +42,9 @@
     "typescript": "4.5.5"
   },
   "files": [
+    "./harmony.tar.gz",
     "src",
-    "lib",
-    "harmony"
+    "lib"
   ],
   "react-native-builder-bob": {
     "source": "src",
