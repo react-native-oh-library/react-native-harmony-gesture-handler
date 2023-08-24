@@ -98,7 +98,7 @@ function App({}): JSX.Element {
             <TestCase itShould="toggle color on double tap">
               <TapExample />
             </TestCase>
-            <TestCase itShould="change color to green when panning after 50 px in X direction">
+            <TestCase itShould="change color to green when panning after 50 px in X direction (panning + activeOffsetX)">
               <PanningExample />
             </TestCase>
             <TestCase itShould="display event received by onGestureEvent when dragging over blue rectangle">
@@ -274,31 +274,6 @@ function App({}): JSX.Element {
                         />
                       </View>
                     </TapGestureHandler>
-                  );
-                }}
-              />
-            </TestCase>
-            <TestCase itShould="activate panning after moving more than 50px horizontally (activeOffsetX)">
-              <StateKeeper<string>
-                renderContent={(value, setValue) => {
-                  return (
-                    <PanGestureHandler
-                      activeOffsetX={[-50, 50]}
-                      onActivated={() => setValue('green')}
-                      onEnded={() => {
-                        setValue('red');
-                      }}>
-                      <View
-                        style={{
-                          backgroundColor: value ?? 'red',
-                          width: 128,
-                          height: 128,
-                        }}>
-                        <Text style={{width: '100%', height: '100%'}}>
-                          (This view has size of 128px)
-                        </Text>
-                      </View>
-                    </PanGestureHandler>
                   );
                 }}
               />
