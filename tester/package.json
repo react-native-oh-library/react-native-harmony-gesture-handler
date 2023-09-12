@@ -25,7 +25,7 @@
     "@react-native-community/eslint-config": "^3.2.0",
     "@react-native/metro-config": "^0.72.9",
     "@rnoh/testerino": "^0.0.1",
-    "@tsconfig/react-native": "^2.0.2",
+    "@tsconfig/react-native": "^2.0.3",
     "@types/chai": "^4.3.5",
     "@types/jest": "^29.2.1",
     "@types/react": "^18.0.24",
