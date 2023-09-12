@@ -62,7 +62,6 @@ export type GestureHandlerDependencies = {
   handlerTag: number
   orchestrator: GestureHandlerOrchestrator
   tracker: PointerTracker
-  eventDispatcher: EventDispatcher
   interactionManager: InteractionManager
   logger: RNGHLogger
 }
@@ -92,9 +91,14 @@ export abstract class GestureHandler<TGestureConfig extends GestureConfig = Gest
     this.handlerTag = deps.handlerTag
     this.orchestrator = deps.orchestrator
     this.tracker = deps.tracker
-    this.eventDispatcher = deps.eventDispatcher
     this.interactionManager = deps.interactionManager
     this.logger = deps.logger
+  }
+
+  public setEventDispatcher(eventDispatcher: EventDispatcher) {
+    // TurboModule provides info about kind of event dispatcher when attaching GH to a view, not when GH is created.
+    // This method must be called before any other
+    this.eventDispatcher = eventDispatcher
   }
 
   public onPointerDown(e: AdaptedEvent) {
