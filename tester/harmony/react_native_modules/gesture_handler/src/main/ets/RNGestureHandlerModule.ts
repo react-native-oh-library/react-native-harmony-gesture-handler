@@ -3,6 +3,7 @@ import { GestureHandlerRegistry } from './GestureHandlerRegistry';
 import { GestureHandlerFactory } from "./GestureHandlerFactory"
 import { ViewRegistry } from './ViewRegistry';
 import { RNGHLogger } from './RNGHLogger';
+import { EventDispatcher } from './EventDispatcher'
 
 export enum ActionType {
   REANIMATED_WORKLET = 1,
@@ -27,7 +28,7 @@ export class RNGestureHandlerModule extends TurboModule {
 
   public install() {
     this.viewRegistry = new ViewRegistry(this.ctx.descriptorRegistry)
-    this.gestureHandlerFactory = new GestureHandlerFactory(this.ctx.rnInstanceManager, this.logger)
+    this.gestureHandlerFactory = new GestureHandlerFactory(this.logger)
   }
 
   public createGestureHandler(
@@ -49,6 +50,19 @@ export class RNGestureHandlerModule extends TurboModule {
     newView: number,
     actionType: ActionType
   ) {
+    const eventDispatcher = this.createEventDispatcher(actionType)
+    if (!eventDispatcher) {
+      this.ctx.logger.error("RNGH: Couldn't create EventDispatcher")
+      return
+    }
+    const view = this.viewRegistry.getViewByTag(newView)
+    this.gestureHandlerRegistry.bindGestureHandlerWithView(handlerTag, view)
+    this.gestureHandlerRegistry
+      .getGestureHandlerByHandlerTag(handlerTag)
+      .setEventDispatcher(eventDispatcher)
+  }
+
+  private createEventDispatcher(actionType: ActionType): EventDispatcher | null {
     switch (actionType) {
       case ActionType.REANIMATED_WORKLET:
         this.ctx.logger.error("RNGH: Reanimated Worklets are not supported")
@@ -58,10 +72,9 @@ export class RNGestureHandlerModule extends TurboModule {
         break;
       case ActionType.JS_FUNCTION_OLD_API:
       case ActionType.JS_FUNCTION_NEW_API:
-        const view = this.viewRegistry.getViewByTag(newView)
-        this.gestureHandlerRegistry.bindGestureHandlerWithView(handlerTag, view)
-        break;
+        return new EventDispatcher(this.ctx.rnInstanceManager, this.logger.cloneWithPrefix('EventDispatcher'));
     }
+    return null
   }
 
   public updateGestureHandler(

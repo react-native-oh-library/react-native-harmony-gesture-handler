@@ -15,7 +15,7 @@ export class GestureHandlerFactory {
   private interactionManager = new InteractionManager()
   private factoryLogger: RNGHLogger
 
-  constructor(private rnInstanceManager: RNInstanceManager, private logger: RNGHLogger) {
+  constructor(private logger: RNGHLogger) {
     this.factoryLogger = logger.cloneWithPrefix("Factory")
     this.orchestrator = new GestureHandlerOrchestrator(logger.cloneWithPrefix("Orchestrator"))
   }
@@ -26,7 +26,6 @@ export class GestureHandlerFactory {
       tracker: new PointerTracker(),
       orchestrator: this.orchestrator,
       handlerTag,
-      eventDispatcher: new EventDispatcher(this.rnInstanceManager, this.logger.cloneWithPrefix("EventDispatcher")),
       interactionManager: this.interactionManager,
       logger: this.logger.cloneWithPrefix("GestureHandler")
     }

@@ -22,7 +22,7 @@
     },
     {
       name: 'gesture_handler',
-      srcPath: './gesture_handler',
+      srcPath: './react_native_modules/gesture_handler',
     },
     {
       name: 'rnoh',
