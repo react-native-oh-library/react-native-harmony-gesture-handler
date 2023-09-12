@@ -3,7 +3,7 @@ import { GestureHandlerRegistry } from './GestureHandlerRegistry';
 import { GestureHandlerFactory } from "./GestureHandlerFactory"
 import { ViewRegistry } from './ViewRegistry';
 import { RNGHLogger } from './RNGHLogger';
-import { EventDispatcher } from './EventDispatcher'
+import { EventDispatcher, JSEventDispatcher, AnimatedEventDispatcher } from './EventDispatcher'
 
 export enum ActionType {
   REANIMATED_WORKLET = 1,
@@ -50,7 +50,7 @@ export class RNGestureHandlerModule extends TurboModule {
     newView: number,
     actionType: ActionType
   ) {
-    const eventDispatcher = this.createEventDispatcher(actionType)
+    const eventDispatcher = this.createEventDispatcher(actionType, newView)
     if (!eventDispatcher) {
       this.ctx.logger.error("RNGH: Couldn't create EventDispatcher")
       return
@@ -62,17 +62,16 @@ export class RNGestureHandlerModule extends TurboModule {
       .setEventDispatcher(eventDispatcher)
   }
 
-  private createEventDispatcher(actionType: ActionType): EventDispatcher | null {
+  private createEventDispatcher(actionType: ActionType, viewTag: number): EventDispatcher | null {
     switch (actionType) {
       case ActionType.REANIMATED_WORKLET:
         this.ctx.logger.error("RNGH: Reanimated Worklets are not supported")
         break;
       case ActionType.NATIVE_ANIMATED_EVENT:
-        this.ctx.logger.error("RNGH: Native animated events are not supported")
-        break;
+        return new AnimatedEventDispatcher(this.ctx.rnInstanceManager, this.logger.cloneWithPrefix('AnimatedEventDispatcher'), viewTag)
       case ActionType.JS_FUNCTION_OLD_API:
       case ActionType.JS_FUNCTION_NEW_API:
-        return new EventDispatcher(this.ctx.rnInstanceManager, this.logger.cloneWithPrefix('EventDispatcher'));
+        return new JSEventDispatcher(this.ctx.rnInstanceManager, this.logger.cloneWithPrefix('JSEventDispatcher'));
     }
     return null
   }
