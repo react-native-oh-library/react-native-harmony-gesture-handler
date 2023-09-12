@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
-import React, {useState} from 'react';
-import {ScrollView, StyleSheet, Text, View} from 'react-native';
+import React, {useRef, useState} from 'react';
+import {Animated, ScrollView, StyleSheet, Text, View} from 'react-native';
 import {TestCase, TestSuite, Tester} from '@rnoh/testerino';
 import {
   Gesture,
@@ -278,6 +278,9 @@ function App({}): JSX.Element {
                 }}
               />
             </TestCase>
+            <TestCase itShould="scale vertically when dragged horizontally (NativeAnimatedEvent)">
+              <NativeAnimatedEventExample />
+            </TestCase>
           </TestSuite>
         </Tester>
       </ScrollView>
@@ -332,6 +335,28 @@ function PanningExample() {
     </PanGestureHandler>
   );
 }
+
+const NativeAnimatedEventExample = () => {
+  const animatedValue = useRef(new Animated.Value(100)).current;
+
+  return (
+    <PanGestureHandler
+      onGestureEvent={Animated.event(
+        [{nativeEvent: {absoluteX: animatedValue}}],
+        {useNativeDriver: true},
+      )}>
+      <Animated.View
+        style={{
+          backgroundColor: 'red',
+          width: 100,
+          height: 100,
+          alignSelf: 'center',
+          transform: [{scaleY: Animated.divide(animatedValue, 100)}],
+        }}
+      />
+    </PanGestureHandler>
+  );
+};
 
 function ObjectDisplayer(props: {
   renderContent: (setObject: (obj: Object) => void) => any;
