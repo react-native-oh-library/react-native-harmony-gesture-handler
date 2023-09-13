@@ -2,7 +2,7 @@ import { TurboModule, TurboModuleContext } from 'rnoh/ts';
 import { GestureHandlerRegistry } from './GestureHandlerRegistry';
 import { GestureHandlerFactory } from "./GestureHandlerFactory"
 import { ViewRegistry } from './ViewRegistry';
-import { RNGHLogger } from './RNGHLogger';
+import { RNGHLogger, StandardRNGHLogger, FakeRNGHLogger } from './RNGHLogger';
 import { EventDispatcher, JSEventDispatcher, AnimatedEventDispatcher } from './EventDispatcher'
 
 export enum ActionType {
@@ -23,7 +23,8 @@ export class RNGestureHandlerModule extends TurboModule {
 
   constructor(ctx: TurboModuleContext) {
     super(ctx)
-    this.logger = new RNGHLogger(ctx.logger, "RNGH")
+    const debug = false
+    this.logger = debug ? new StandardRNGHLogger(ctx.logger, "RNGH") : new FakeRNGHLogger()
   }
 
   public install() {

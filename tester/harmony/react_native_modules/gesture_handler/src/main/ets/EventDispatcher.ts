@@ -12,12 +12,12 @@ export class JSEventDispatcher implements EventDispatcher {
   }
 
   public onGestureHandlerStateChange(event: GestureStateChangeEvent) {
-    this.logger.info(`onGestureHandlerStateChange: ${JSON.stringify(event)}`)
+    this.logger.info(`onGestureHandlerStateChange`)
     this.rnInstanceManager.emitDeviceEvent("onGestureHandlerStateChange", event)
   }
 
   public onGestureHandlerEvent(event: GestureStateChangeEvent | GestureUpdateEvent | GestureTouchEvent) {
-    this.logger.info(`onGestureHandlerEvent: ${JSON.stringify(event)}`)
+    this.logger.info(`onGestureHandlerEvent`)
     this.rnInstanceManager.emitDeviceEvent("onGestureHandlerEvent", event)
   }
 }
@@ -27,13 +27,12 @@ export class AnimatedEventDispatcher implements EventDispatcher {
   }
 
   public onGestureHandlerStateChange(event: GestureStateChangeEvent) {
-    this.logger.info(`onGestureHandlerStateChange: ${JSON.stringify(event)}`)
+    this.logger.info(`onGestureHandlerStateChange`)
     this.rnInstanceManager.emitDeviceEvent("onGestureHandlerStateChange", event)
   }
 
   public onGestureHandlerEvent(event: GestureStateChangeEvent | GestureUpdateEvent | GestureTouchEvent) {
-    // TODO: update event?
-    this.logger.info(`onGestureHandlerEvent: ${JSON.stringify(event)}`)
+    this.logger.info(`onGestureHandlerEvent`)
     this.rnInstanceManager.emitComponentEvent(this.viewTag, "onGestureHandlerEvent", event)
   }
 }
