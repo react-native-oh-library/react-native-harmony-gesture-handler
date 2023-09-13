@@ -1,6 +1,12 @@
 import { RNOHContext } from "rnoh/ts"
 
-export class RNGHLogger {
+export interface RNGHLogger {
+  info(msg: string): void
+
+  cloneWithPrefix(prefix: string): RNGHLogger
+}
+
+export class StandardRNGHLogger implements RNGHLogger {
   constructor(private rnohLogger: RNOHContext["logger"], private prefix: string) {
   }
 
@@ -9,6 +15,15 @@ export class RNGHLogger {
   }
 
   cloneWithPrefix(prefix: string) {
-    return new RNGHLogger(this.rnohLogger, `${this.prefix}::${prefix}`)
+    return new StandardRNGHLogger(this.rnohLogger, `${this.prefix}::${prefix}`)
+  }
+}
+
+export class FakeRNGHLogger implements RNGHLogger {
+  info(msg: string) {
+  }
+
+  cloneWithPrefix(prefix: string) {
+    return new FakeRNGHLogger()
   }
 }
