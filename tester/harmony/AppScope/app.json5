@@ -1,6 +1,6 @@
 {
   app: {
-    bundleName: 'com.rnoh.tester',
+    bundleName: 'com.rnoh.gesture_handler',
     vendor: 'example',
     versionCode: 1000000,
     versionName: '1.0.0',
