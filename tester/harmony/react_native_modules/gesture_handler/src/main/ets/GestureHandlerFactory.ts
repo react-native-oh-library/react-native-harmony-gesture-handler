@@ -1,4 +1,4 @@
-import { RNInstanceManager } from "rnoh/ts"
+import { RNInstance } from "rnoh/ts"
 import { GestureHandlerOrchestrator } from './GestureHandlerOrchestrator';
 import { GestureHandler, GestureHandlerDependencies } from "./GestureHandler"
 import { PointerTracker } from './PointerTracker';
