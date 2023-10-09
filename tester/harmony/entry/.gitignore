@@ -3,3 +3,4 @@
 /build
 /.cxx
 package-lock.json
+/src/main/resources/rawfile/assets

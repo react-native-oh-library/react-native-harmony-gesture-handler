@@ -1,4 +1,4 @@
-import { RNInstanceManager } from "rnoh/ts"
+import { RNInstance } from "rnoh/ts"
 import { GestureStateChangeEvent, GestureUpdateEvent, GestureTouchEvent } from "./OutgoingEvent"
 import { RNGHLogger } from './RNGHLogger'
 
@@ -8,31 +8,31 @@ export interface EventDispatcher {
 }
 
 export class JSEventDispatcher implements EventDispatcher {
-  constructor(private rnInstanceManager: RNInstanceManager, private logger: RNGHLogger) {
+  constructor(private rnInstance: RNInstance, private logger: RNGHLogger) {
   }
 
   public onGestureHandlerStateChange(event: GestureStateChangeEvent) {
     this.logger.info(`onGestureHandlerStateChange`)
-    this.rnInstanceManager.emitDeviceEvent("onGestureHandlerStateChange", event)
+    this.rnInstance.emitDeviceEvent("onGestureHandlerStateChange", event)
   }
 
   public onGestureHandlerEvent(event: GestureStateChangeEvent | GestureUpdateEvent | GestureTouchEvent) {
     this.logger.info(`onGestureHandlerEvent`)
-    this.rnInstanceManager.emitDeviceEvent("onGestureHandlerEvent", event)
+    this.rnInstance.emitDeviceEvent("onGestureHandlerEvent", event)
   }
 }
 
 export class AnimatedEventDispatcher implements EventDispatcher {
-  constructor(private rnInstanceManager: RNInstanceManager, private logger: RNGHLogger, private viewTag: number) {
+  constructor(private rnInstance: RNInstance, private logger: RNGHLogger, private viewTag: number) {
   }
 
   public onGestureHandlerStateChange(event: GestureStateChangeEvent) {
     this.logger.info(`onGestureHandlerStateChange`)
-    this.rnInstanceManager.emitDeviceEvent("onGestureHandlerStateChange", event)
+    this.rnInstance.emitDeviceEvent("onGestureHandlerStateChange", event)
   }
 
   public onGestureHandlerEvent(event: GestureStateChangeEvent | GestureUpdateEvent | GestureTouchEvent) {
     this.logger.info(`onGestureHandlerEvent`)
-    this.rnInstanceManager.emitComponentEvent(this.viewTag, "onGestureHandlerEvent", event)
+    this.rnInstance.emitComponentEvent(this.viewTag, "onGestureHandlerEvent", event)
   }
 }

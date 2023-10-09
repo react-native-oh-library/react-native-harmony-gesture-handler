@@ -1,12 +1,18 @@
-import { RNApp, ComponentBuilderContext, RNOHContext } from 'rnoh'
-import { RNGestureHandlerRootView, RNGestureHandlerButton } from "rnoh-gesture-handler"
+import {
+  RNApp,
+  ComponentBuilderContext,
+  RNAbility,
+  AnyJSBundleProvider,
+  ResourceJSBundleProvider,
+  MetroJSBundleProvider
+} from 'rnoh'
+import { RNGestureHandlerRootView, RNGestureHandlerButton, GestureHandlerPackage } from "rnoh-gesture-handler"
 
-let storage = LocalStorage.GetShared()
 
-@Entry(storage)
+@Entry
 @Component
 struct Index {
-  @LocalStorageProp('RNOHContext') rnohContext: RNOHContext | undefined = undefined
+  @StorageLink('RNAbility') rnAbility: RNAbility | undefined = undefined
 
   @Builder
   buildCustomComponent(ctx: ComponentBuilderContext) {
@@ -28,9 +34,14 @@ struct Index {
   build() {
     Column() {
       RNApp({
-        rnohContext: this.rnohContext!,
-        appName: "app_name",
-        buildCustomComponent: this.buildCustomComponent.bind(this)
+        appKey: "app_name",
+        rnInstance: { createRNPackages: (ctx) => [
+          new GestureHandlerPackage(ctx)
+        ] },
+        buildCustomComponent: this.buildCustomComponent.bind(this),
+        jsBundleProvider: new AnyJSBundleProvider([
+          new MetroJSBundleProvider(),
+          new ResourceJSBundleProvider(this.rnAbility.context.resourceManager, 'bundle.harmony.js')]),
       })
     }
     .height('100%')
