@@ -1,3 +1,4 @@
+import { Point } from "rnoh"
 import { GestureHandler } from "./GestureHandler"
 import { AdaptedEvent, EventType, PointerType, TouchEventType, Touch } from "./Event"
 import { View } from "./View"
@@ -6,9 +7,15 @@ import { RNGHLogger } from "./RNGHLogger"
 export class GestureHandlerArkUIAdapter {
   private activePointersCounter = 0
   private pointersIdInBounds = new Set<number>()
+  private gestureHandler: GestureHandler
+  private view: View
+  private logger: RNGHLogger
 
-  constructor(private gestureHandler: GestureHandler, private view: View, private logger: RNGHLogger) {
-    this.logger.info("constructor")
+  constructor(gestureHandler: GestureHandler, view: View, logger: RNGHLogger) {
+    logger.info("constructor")
+    this.gestureHandler = gestureHandler
+    this.view = view
+    this.logger = logger
   }
 
   handleTouch(e: TouchEvent) {
@@ -55,18 +62,18 @@ export class GestureHandlerArkUIAdapter {
   }
 
   private adaptTouchEvent(e: TouchEvent, changedTouch: TouchObject): AdaptedEvent {
-    const eventType = this.mapTouchTypeToEventType({
-      touchType: changedTouch.type,
-      activePointersCounter: this.activePointersCounter,
-      isCurrentlyInBounds: this.isInBounds({ x: changedTouch.x, y: changedTouch.y }),
-      wasInBounds: this.pointersIdInBounds.has(changedTouch.id)
-    })
-    this.updateIsInBoundsByPointerId({
-      touchType: changedTouch.type,
-      pointerId: changedTouch.id,
-      x: changedTouch.x,
-      y: changedTouch.y
-    })
+    const eventType = this.mapTouchTypeToEventType(
+      changedTouch.type,
+      this.activePointersCounter,
+      this.isInBounds({ x: changedTouch.x, y: changedTouch.y }),
+      this.pointersIdInBounds.has(changedTouch.id)
+    )
+    this.updateIsInBoundsByPointerId(
+      changedTouch.type,
+      changedTouch.id,
+      changedTouch.x,
+      changedTouch.y
+    )
     this.activePointersCounter = this.getUpdatedActivePointersCounter(changedTouch.type)
     return {
       x: changedTouch.x,
@@ -78,18 +85,18 @@ export class GestureHandlerArkUIAdapter {
       pointerType: PointerType.TOUCH,
       buttons: 0,
       time: e.timestamp,
-      allTouches: e.touches.map(this.mapTouchObjectToTouch.bind(this)),
-      changedTouches: e.changedTouches.map(this.mapTouchObjectToTouch.bind(this)),
+      allTouches: e.touches.map((touch) => this.mapTouchObjectToTouch(touch)),
+      changedTouches: e.changedTouches.map((touch) => this.mapTouchObjectToTouch(touch)),
       touchEventType: this.mapTouchTypeToTouchEventType(changedTouch.type)
     }
   }
 
-  private updateIsInBoundsByPointerId({touchType, pointerId, x, y}: {
+  private updateIsInBoundsByPointerId(
     touchType: TouchType,
     pointerId: number,
     x: number,
     y: number
-  }) {
+  ) {
     switch (touchType) {
       case TouchType.Down:
         if (this.isInBounds({ x, y }))
@@ -110,16 +117,15 @@ export class GestureHandlerArkUIAdapter {
     }
   }
 
-  private isInBounds({x, y}: {
-    x: number,
-    y: number
-  }) {
+  private isInBounds(point: Point): boolean {
+    const x = point.x
+    const y = point.y
     const rect = this.view.getBoundingRect()
     const result = x >= rect.x && x <= (rect.x + rect.width) && y >= rect.y && y <= (rect.y + rect.height)
     return result;
   }
 
-  private getUpdatedActivePointersCounter(touchType: TouchType) {
+  private getUpdatedActivePointersCounter(touchType: TouchType): number {
     switch (touchType) {
       case TouchType.Down:
         return this.activePointersCounter + 1
@@ -127,6 +133,8 @@ export class GestureHandlerArkUIAdapter {
         return this.activePointersCounter - 1
       case TouchType.Cancel:
         return 0
+      default:
+        return this.activePointersCounter
     }
   }
 
@@ -140,12 +148,12 @@ export class GestureHandlerArkUIAdapter {
     }
   }
 
-  private mapTouchTypeToEventType({touchType, activePointersCounter, isCurrentlyInBounds, wasInBounds}: {
+  private mapTouchTypeToEventType(
     touchType: TouchType,
     activePointersCounter: number,
     isCurrentlyInBounds: boolean,
     wasInBounds: boolean
-  }): EventType {
+  ): EventType {
     switch (touchType) {
       case TouchType.Down:
         if (activePointersCounter > 0)
@@ -166,7 +174,8 @@ export class GestureHandlerArkUIAdapter {
       case TouchType.Cancel:
         return EventType.CANCEL
       default:
-        console.error("RNGH", "Unknown touchType")
+        console.error("RNGH", "Unknown touchType:", touchType)
+        throw new Error("Unknown touchType")
     }
   }
 

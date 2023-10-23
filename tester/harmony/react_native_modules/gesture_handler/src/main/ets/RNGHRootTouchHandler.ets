@@ -10,10 +10,15 @@ export class RNGHRootTouchHandler {
   }
 
   private adapterByViewTag: Map<number, GestureHandlerArkUIAdapter> = new Map() // TODO: remove an adapter when a view or gesture handler is removed
-
   private activeViewTags: number[] = []
+  private viewRegistry: ViewRegistry
+  private gestureHandlerRegistry: GestureHandlerRegistry
+  private logger: RNGHLogger
 
-  constructor(private viewRegistry: ViewRegistry, private gestureHandlerRegistry: GestureHandlerRegistry, private logger: RNGHLogger) {
+  constructor(viewRegistry: ViewRegistry, gestureHandlerRegistry: GestureHandlerRegistry, logger: RNGHLogger) {
+    this.viewRegistry = viewRegistry
+    this.gestureHandlerRegistry = gestureHandlerRegistry
+    this.logger = logger
   }
 
   public handleTouch(e: TouchEvent) {
@@ -27,7 +32,12 @@ export class RNGHRootTouchHandler {
           if (!this.adapterByViewTag.has(view.getTag()))
             this.adapterByViewTag.set(view.getTag(), new GestureHandlerArkUIAdapter(handler, view, this.logger.cloneWithPrefix("ArkUIAdapter")))
           if (!this.activeViewTags.includes(view.getTag())) {
-            this.adapterByViewTag.get(view.getTag()).handleTouch(e)
+            const adapter = this.adapterByViewTag.get(view.getTag())
+            if (adapter) {
+              adapter.handleTouch(e)
+            } else {
+              console.warn("RNGH: Couldn't find adapter")
+            }
           }
           if (e.type === TouchType.Down) {
             this.activeViewTags.push(view.getTag())

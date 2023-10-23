@@ -19,7 +19,7 @@
   "peerDependencies": {
     "react": "*",
     "react-native": "*",
-    "react-native-harmony": "npm:@rnoh/react-native-harmony@^0.72.6"
+    "react-native-harmony": "npm:@rnoh/react-native-harmony@^0.72.8"
   },
   "keywords": [],
   "author": "",
@@ -38,7 +38,7 @@
     "react": "^18.2.0",
     "react-native": "^0.72.0",
     "react-native-builder-bob": "^0.21.3",
-    "react-native-harmony": "^0.72.4",
+    "react-native-harmony": "npm:@rnoh/react-native-harmony@0.72.8",
     "typescript": "4.5.5"
   },
   "files": [

@@ -1,7 +1,7 @@
 {
-  hvigorVersion: 'file:./hvigor-3.0.2-s.tgz',
+  hvigorVersion: 'file:./hvigor-3.0.9-s.tgz',
   dependencies: {
-    '@ohos/hvigor-ohos-plugin': 'file:./hvigor-ohos-plugin-3.0.2-s.tgz',
+    '@ohos/hvigor-ohos-plugin': 'file:./hvigor-ohos-plugin-3.0.9-s.tgz',
     rollup: 'file:./rollup.tgz',
   },
   execution: {
