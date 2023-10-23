@@ -1,15 +1,14 @@
-import { Descriptor, RNOHContext, RNViewBase, ComponentBuilderContext, RNComponentFactory } from "rnoh"
+import { Descriptor, RNOHContext, RNViewBase, ComponentBuilderContext, RNComponentFactory, Tag } from "rnoh"
 import { RNGHRootTouchHandler } from "./RNGHRootTouchHandler"
 import { RNGestureHandlerModule } from "./RNGestureHandlerModule"
 
-export type RNGestureHandlerRootViewDescriptor = Descriptor<"RNGestureHandlerRootView", {
-}>
+export type RNGestureHandlerRootViewDescriptor = Descriptor<"RNGestureHandlerRootView">
 
 @Component
 export struct RNGestureHandlerRootView {
-  static DESCRIPTOR_TYPE = "RNGestureHandlerRootView" as const
-  ctx: RNOHContext
-  tag: number
+  static readonly DESCRIPTOR_TYPE = "RNGestureHandlerRootView"
+  ctx!: RNOHContext
+  tag: number = -1
   @BuilderParam buildCustomComponent: (componentBuilderContext: ComponentBuilderContext) => void
   @State descriptor: RNGestureHandlerRootViewDescriptor = {} as RNGestureHandlerRootViewDescriptor
   private unsubscribes: (() => void)[] = []
@@ -32,20 +31,16 @@ export struct RNGestureHandlerRootView {
     this.descriptor = newDescriptor
   }
 
-  private dispatchEvent(eventName: string, payload: any) {
-    this.ctx.rnInstanceManager.emitComponentEvent(this.tag, `RNGestureHandlerRootViewtop${eventName}`, payload)
-  }
-
   build() {
     RNViewBase({ ctx: this.ctx, tag: this.tag }) {
-      ForEach(this.descriptor.childrenTags, (childrenTag) => {
+      ForEach(this.descriptor.childrenTags, (childrenTag: Tag) => {
         RNComponentFactory({ ctx: this.ctx, tag: childrenTag, buildCustomComponent: this.buildCustomComponent })
-      }, childrenTag => childrenTag)
+      })
       Stack() {}
       .width("100%")
       .height("100%")
       .onTouch((e) => {
-        this.touchHandler.handleTouch(e)}
+        this.touchHandler?.handleTouch(e)}
       ).hitTestBehavior(HitTestMode.Transparent)
 
     }

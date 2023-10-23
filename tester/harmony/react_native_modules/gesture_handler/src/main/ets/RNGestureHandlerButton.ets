@@ -1,15 +1,15 @@
-import { Descriptor, RNOHContext, RNViewBase, ComponentBuilderContext, RNComponentFactory } from "rnoh"
+import { Descriptor, RNOHContext, RNViewBase, ComponentBuilderContext, RNComponentFactory, Tag } from "rnoh"
 
-export type RNGestureHandlerButtonDescriptor = Descriptor<"RNGestureHandlerButton", {
-}>
+export type RNGestureHandlerButtonDescriptor = Descriptor<"RNGestureHandlerButton">
 
 @Component
 export struct RNGestureHandlerButton {
-  static DESCRIPTOR_TYPE = "RNGestureHandlerButton" as const
-  ctx: RNOHContext
-  tag: number
-  @BuilderParam buildCustomComponent: (componentBuilderContext: ComponentBuilderContext) => void
-  @State descriptor: RNGestureHandlerButtonDescriptor = {} as RNGestureHandlerButtonDescriptor
+  static readonly DESCRIPTOR_TYPE = "RNGestureHandlerButton"
+  public ctx!: RNOHContext
+  public tag: number = -1
+  @BuilderParam public buildCustomComponent: (componentBuilderContext: ComponentBuilderContext) => void
+
+  @State private descriptor: RNGestureHandlerButtonDescriptor = {} as RNGestureHandlerButtonDescriptor
   private unsubscribes: (() => void)[] = []
 
   aboutToAppear() {
@@ -27,15 +27,11 @@ export struct RNGestureHandlerButton {
     this.descriptor = newDescriptor
   }
 
-  private dispatchEvent(eventName: string, payload: any) {
-    this.ctx.rnInstanceManager.emitComponentEvent(this.tag, `RNGestureHandlerButtontop${eventName}`, payload)
-  }
-
   build() {
     RNViewBase({ ctx: this.ctx, tag: this.tag }) {
-      ForEach(this.descriptor.childrenTags, (childrenTag) => {
+      ForEach(this.descriptor.childrenTags, (childrenTag: Tag) => {
         RNComponentFactory({ ctx: this.ctx, tag: childrenTag, buildCustomComponent: this.buildCustomComponent })
-      }, childrenTag => childrenTag)
+      })
     }
   }
 }
