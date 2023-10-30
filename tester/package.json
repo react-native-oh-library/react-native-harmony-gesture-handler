@@ -12,6 +12,7 @@
     "postinstall": "react-native unpack-harmony"
   },
   "dependencies": {
+    "@rnoh/testerino": "^0.0.8",
     "react": "18.2.0",
     "react-native": "0.72.5",
     "react-native-gesture-handler": "^2.12.1",
@@ -24,7 +25,6 @@
     "@babel/runtime": "^7.20.0",
     "@react-native-community/eslint-config": "^3.2.0",
     "@react-native/metro-config": "^0.72.9",
-    "@rnoh/testerino": "^0.0.1",
     "@tsconfig/react-native": "^2.0.3",
     "@types/chai": "^4.3.5",
     "@types/jest": "^29.2.1",
