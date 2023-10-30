@@ -122,8 +122,9 @@ export class TapGestureHandler extends GestureHandler {
     }
     switch (this.currentState) {
       case State.UNDETERMINED:
-        if (event.eventType === EventType.DOWN)
+        if (event.eventType === EventType.DOWN) {
           this.begin()
+        }
         this.startTap();
         break;
       case State.BEGAN:
@@ -161,9 +162,8 @@ export class TapGestureHandler extends GestureHandler {
       return true;
     }
     const distSq = dy * dy + dx * dx;
-    return (
-      maxDistSq !== Number.MIN_SAFE_INTEGER && distSq > maxDistSq
-    );
+    const result = maxDistSq !== Number.MIN_SAFE_INTEGER && distSq > maxDistSq
+    return result;
   }
 
   private startTap() {
