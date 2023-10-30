@@ -23,7 +23,7 @@ export class RNGestureHandlerModule extends TurboModule {
 
   constructor(ctx: TurboModuleContext) {
     super(ctx)
-    const debug = false
+    const debug = true // TODO: set me to false before releasing
     this.logger = debug ? new StandardRNGHLogger(ctx.logger, "RNGH") : new FakeRNGHLogger()
   }
 
