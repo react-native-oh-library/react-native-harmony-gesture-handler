@@ -5,7 +5,7 @@ import { View } from "./View"
 import { RNGHLogger } from "./RNGHLogger"
 
 export class GestureHandlerArkUIAdapter {
-  private activePointersCounter = 0
+  private activePointerIds = new Set<number>()
   private pointersIdInBounds = new Set<number>()
   private gestureHandler: GestureHandler
   private view: View
@@ -23,7 +23,7 @@ export class GestureHandlerArkUIAdapter {
       if (this.shouldSkipTouch(changedTouch)) continue;
       const wasInBounds = this.pointersIdInBounds.has(changedTouch.id)
       const isInBounds = this.isInBounds(changedTouch)
-      this.logger.info(`handleTouch: ${JSON.stringify({ wasInBounds, isInBounds })}`)
+      this.logger.info(`handleTouch: ${JSON.stringify({ type: changedTouch.type, wasInBounds, isInBounds })}`)
       const adaptedEvent = this.adaptTouchEvent(e, changedTouch)
       switch (adaptedEvent.eventType) {
         case EventType.DOWN:
@@ -64,7 +64,7 @@ export class GestureHandlerArkUIAdapter {
   private adaptTouchEvent(e: TouchEvent, changedTouch: TouchObject): AdaptedEvent {
     const eventType = this.mapTouchTypeToEventType(
       changedTouch.type,
-      this.activePointersCounter,
+      this.activePointerIds.size,
       this.isInBounds({ x: changedTouch.x, y: changedTouch.y }),
       this.pointersIdInBounds.has(changedTouch.id)
     )
@@ -74,7 +74,7 @@ export class GestureHandlerArkUIAdapter {
       changedTouch.x,
       changedTouch.y
     )
-    this.activePointersCounter = this.getUpdatedActivePointersCounter(changedTouch.type)
+    this.updateActivePointers(changedTouch.type, changedTouch.id)
     return {
       x: changedTouch.x,
       y: changedTouch.y,
@@ -125,16 +125,16 @@ export class GestureHandlerArkUIAdapter {
     return result;
   }
 
-  private getUpdatedActivePointersCounter(touchType: TouchType): number {
+  private updateActivePointers(touchType: TouchType, pointerId: number): void {
     switch (touchType) {
       case TouchType.Down:
-        return this.activePointersCounter + 1
+        this.activePointerIds.add(pointerId)
       case TouchType.Up:
-        return this.activePointersCounter - 1
+        this.activePointerIds.delete(pointerId)
       case TouchType.Cancel:
-        return 0
+        this.activePointerIds.clear()
       default:
-        return this.activePointersCounter
+        return
     }
   }
 
