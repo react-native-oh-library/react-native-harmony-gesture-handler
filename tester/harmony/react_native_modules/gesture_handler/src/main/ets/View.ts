@@ -1,4 +1,4 @@
-import { DescriptorRegistry, Descriptor } from "rnoh/ts"
+import { DescriptorRegistry, Descriptor, Tag } from "rnoh/ts"
 import { Vector2D } from "./Vector2D"
 
 export type BoundingBox = {
@@ -18,7 +18,7 @@ export class View {
     })
   }
 
-  public getTag() {
+  public getTag(): Tag {
     return this.viewTag
   }
 
@@ -32,10 +32,10 @@ export class View {
 
   public getBoundingRect(): BoundingBox {
     const d = this.getDescriptor()
-    const totalScrollOffset = this.getTotalScrollOffset()
+    const offsetToAbsolutePosition = this.getOffsetToAbsolutePosition()
     return {
-      x: d.layoutMetrics.frame.origin.x - totalScrollOffset.x,
-      y: d.layoutMetrics.frame.origin.y - totalScrollOffset.y,
+      x: d.layoutMetrics.frame.origin.x - offsetToAbsolutePosition.x,
+      y: d.layoutMetrics.frame.origin.y - offsetToAbsolutePosition.y,
       width: d.layoutMetrics.frame.size.width,
       height: d.layoutMetrics.frame.size.height
     }
@@ -45,16 +45,17 @@ export class View {
     return this.descriptorRegistry.getDescriptor(this.viewTag)
   }
 
-  private getTotalScrollOffset(): Vector2D {
+
+  private getOffsetToAbsolutePosition(): Vector2D {
     const currentOffset = new Vector2D()
-    let parentTag = this.getDescriptor().parentTag
+    let parentTag = this.getDescriptor()?.parentTag
     while (parentTag !== undefined) {
       const d = this.descriptorRegistry.getDescriptor(parentTag)
       currentOffset.add(this.extractScrollOffsetFromDescriptor(d))
+      currentOffset.subtract(new Vector2D(d.layoutMetrics.frame.origin))
       parentTag = d.parentTag
     }
     return currentOffset
-
   }
 
   private extractScrollOffsetFromDescriptor(descriptor: Descriptor<any>) {

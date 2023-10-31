@@ -1,30 +1,28 @@
-import { DescriptorRegistry } from "rnoh/ts"
+import { DescriptorRegistry, ComponentManagerRegistry, Tag } from "rnoh/ts"
 import { View } from "./View"
 
 export class ViewRegistry {
-  constructor(private descriptorRegistry: DescriptorRegistry) {
+  constructor(private descriptorRegistry: DescriptorRegistry, private componentManagerRegistry: ComponentManagerRegistry) {
   }
 
-  public getViewByTag(viewTag: number) {
-    return new View(this.descriptorRegistry, viewTag)
+  public getViewByTag(viewTag: Tag) {
+    return this.createView(viewTag)
+  }
+
+  private createView(tag: Tag): View {
+    return new View(this.descriptorRegistry, tag)
   }
 
   public getTouchableViewsAt(pos: {
     x: number,
     y: number
-  }) {
+  }, rootTag: Tag): View[] {
+    const rootView = this.createView(rootTag)
     const results: View[] = []
-    for (const rootView of this.getRootViews()) {
-      for (const view of this.getTouchableViewsAtPosInView(pos, rootView)) {
-        results.push(view)
-      }
+    for (const view of this.getTouchableViewsAtPosInView(pos, rootView)) {
+      results.push(view)
     }
     return results
-  }
-
-  private getRootViews(): View[] {
-    const rootTag = 1; // TODO: remove hardcoded rootTag with a loop that iterates over root descriptors
-    return [new View(this.descriptorRegistry, rootTag)]
   }
 
   private getTouchableViewsAtPosInView(pos: {
@@ -33,7 +31,6 @@ export class ViewRegistry {
   }, view: View) {
     if (!view.isPositionInBounds(pos))
       return [];
-
     const results: View[] = []
     results.push(view)
     for (const child of view.getChildren()) {
