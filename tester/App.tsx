@@ -23,7 +23,7 @@ import {
   TouchableWithoutFeedback,
 } from 'react-native-gesture-handler';
 
-function App({}): JSX.Element {
+function App({}): JSX.Element | null {
   const [isTesterVisible, setIsTesterVisible] = useState(true);
 
   if (!isTesterVisible) return null;
