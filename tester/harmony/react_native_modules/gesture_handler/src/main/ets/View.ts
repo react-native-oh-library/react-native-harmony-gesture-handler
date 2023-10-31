@@ -1,4 +1,5 @@
-import { ComponentManagerRegistry, RNViewManager, DescriptorRegistry } from "rnoh/ts"
+import { ComponentManagerRegistry, RNViewManager, DescriptorRegistry, Descriptor } from "rnoh/ts"
+import { Vector2D } from './Vector2D'
 
 export type BoundingBox = {
   x: number,
@@ -33,10 +34,30 @@ export class View {
 
   public getBoundingRect(): BoundingBox {
     const { top, left, right, bottom } = this.viewManager.getBoundingBox()
-    return { x: left, y: top, width: right - left, height: bottom - top }
+    const scrollOffset = this.getTotalScrollOffset()
+    return { x: left - scrollOffset.x, y: top - scrollOffset.y, width: right - left, height: bottom - top }
   }
 
   private getDescriptor() {
     return this.descriptorRegistry.getDescriptor(this.viewTag)
+  }
+
+  private getTotalScrollOffset(): Vector2D {
+    const currentOffset = new Vector2D()
+    let parentTag = this.getDescriptor().parentTag
+    while (parentTag !== undefined) {
+      const d = this.descriptorRegistry.getDescriptor(parentTag)
+      currentOffset.add(this.extractScrollOffsetFromDescriptor(d))
+      parentTag = d.parentTag
+    }
+    return currentOffset
+
+  }
+
+  private extractScrollOffsetFromDescriptor(descriptor: Descriptor<any>) {
+    if (descriptor.type !== "ScrollView")
+      return new Vector2D();
+    const scrollViewState: any = descriptor.state;
+    return new Vector2D({ x: scrollViewState.contentOffsetX, y: scrollViewState.contentOffsetY })
   }
 }

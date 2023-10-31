@@ -59,7 +59,6 @@ export struct RNGestureHandlerRootView {
         this.touchHandler?.handleTouch(e)
       }
       ).hitTestBehavior(HitTestMode.Transparent)
-
     }
   }
 }
