@@ -1,4 +1,4 @@
-import { TurboModule, TurboModuleContext } from 'rnoh/ts';
+import { TurboModule, TurboModuleContext, TouchTargetHelper } from 'rnoh/ts';
 import { GestureHandlerRegistry } from './GestureHandlerRegistry';
 import { GestureHandlerFactory } from "./GestureHandlerFactory"
 import { ViewRegistry } from './ViewRegistry';
@@ -28,7 +28,7 @@ export class RNGestureHandlerModule extends TurboModule {
   }
 
   public install() {
-    this.viewRegistry = new ViewRegistry(this.ctx.descriptorRegistry)
+    this.viewRegistry = new ViewRegistry(this.ctx.componentManagerRegistry, this.ctx.descriptorRegistry )
     this.gestureHandlerFactory = new GestureHandlerFactory(this.logger)
   }
 
@@ -48,15 +48,19 @@ export class RNGestureHandlerModule extends TurboModule {
 
   public attachGestureHandler(
     handlerTag: number,
-    newView: number,
+    viewTag: number,
     actionType: ActionType
   ) {
-    const eventDispatcher = this.createEventDispatcher(actionType, newView)
+    const eventDispatcher = this.createEventDispatcher(actionType, viewTag)
     if (!eventDispatcher) {
       this.ctx.logger.error("RNGH: Couldn't create EventDispatcher")
       return
     }
-    const view = this.viewRegistry.getViewByTag(newView)
+    const view = this.viewRegistry.getViewByTag(viewTag)
+    if (!view) {
+      this.warn(`Couldn't bind view (${viewTag}) with a handler ${handlerTag}`)
+      return;
+    }
     this.gestureHandlerRegistry.bindGestureHandlerWithView(handlerTag, view)
     this.gestureHandlerRegistry
       .getGestureHandlerByHandlerTag(handlerTag)
@@ -112,5 +116,9 @@ export class RNGestureHandlerModule extends TurboModule {
 
   public getLogger() {
     return this.logger
+  }
+
+  public getViewRegistry() {
+    return this.viewRegistry
   }
 }
