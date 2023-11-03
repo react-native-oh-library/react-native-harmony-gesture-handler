@@ -3,7 +3,7 @@
   "harmony": {
     "alias": "react-native-gesture-handler"
   },
-  "version": "2.12.2",
+  "version": "2.12.3",
   "description": "",
   "react-native": "src/index.ts",
   "main": "lib/commonjs/index.js",
