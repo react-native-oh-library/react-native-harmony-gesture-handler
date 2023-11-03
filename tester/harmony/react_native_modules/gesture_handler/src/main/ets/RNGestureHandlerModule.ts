@@ -4,6 +4,7 @@ import { GestureHandlerFactory } from "./GestureHandlerFactory"
 import { ViewRegistry } from './ViewRegistry';
 import { RNGHLogger, StandardRNGHLogger, FakeRNGHLogger } from './RNGHLogger';
 import { EventDispatcher, JSEventDispatcher, AnimatedEventDispatcher } from './EventDispatcher'
+import { RNOHScrollLocker } from "./RNOHScrollLocker"
 
 export enum ActionType {
   REANIMATED_WORKLET = 1,
@@ -29,7 +30,7 @@ export class RNGestureHandlerModule extends TurboModule {
 
   public install() {
     this.viewRegistry = new ViewRegistry(this.ctx.descriptorRegistry, this.ctx.componentManagerRegistry)
-    this.gestureHandlerFactory = new GestureHandlerFactory(this.logger)
+    this.gestureHandlerFactory = new GestureHandlerFactory(this.logger, new RNOHScrollLocker(this.ctx.componentManagerRegistry))
   }
 
   public createGestureHandler(

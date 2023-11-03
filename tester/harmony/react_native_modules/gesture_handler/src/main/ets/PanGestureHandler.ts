@@ -81,6 +81,8 @@ export class PanGestureHandler extends GestureHandler<PanGestureHandlerConfig> {
     return this.config.minPointers ?? 1
   }
 
+  private unlockScrolls: (() => void) | undefined
+
   public constructor(deps: GestureHandlerDependencies) {
     super({ ...deps, logger: deps.logger.cloneWithPrefix("PanGestureHandler") })
   }
@@ -312,5 +314,14 @@ export class PanGestureHandler extends GestureHandler<PanGestureHandlerConfig> {
       x: this.tracker.getLastAvgX() - rect.x,
       y: this.tracker.getLastAvgY() - rect.y,
     };
+  }
+
+  protected stateDidChange(newState: State, oldState: State) {
+    super.stateDidChange(newState, oldState)
+    if (newState === State.BEGAN) {
+      this.unlockScrolls = this.scrollLocker.lockScrollContainingViewTag(this.view.getTag())
+    } else if (newState !== State.ACTIVE) {
+      this.unlockScrolls?.()
+    }
   }
 }
