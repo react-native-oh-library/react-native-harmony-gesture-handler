@@ -57,6 +57,9 @@ export interface GestureConfig {
 
 type PointerId = number
 
+export interface ScrollLocker {
+  lockScrollContainingViewTag(viewTag: number): () => void
+}
 
 export type GestureHandlerDependencies = {
   handlerTag: number
@@ -64,6 +67,7 @@ export type GestureHandlerDependencies = {
   tracker: PointerTracker
   interactionManager: InteractionManager
   logger: RNGHLogger
+  scrollLocker: ScrollLocker
 }
 
 export abstract class GestureHandler<TGestureConfig extends GestureConfig = GestureConfig> {
@@ -85,6 +89,7 @@ export abstract class GestureHandler<TGestureConfig extends GestureConfig = Gest
   protected eventDispatcher: EventDispatcher
   protected interactionManager: InteractionManager
   protected logger: RNGHLogger
+  protected scrollLocker: ScrollLocker
 
   constructor(deps: GestureHandlerDependencies
   ) {
@@ -93,6 +98,7 @@ export abstract class GestureHandler<TGestureConfig extends GestureConfig = Gest
     this.tracker = deps.tracker
     this.interactionManager = deps.interactionManager
     this.logger = deps.logger
+    this.scrollLocker = deps.scrollLocker
   }
 
   public setEventDispatcher(eventDispatcher: EventDispatcher) {
