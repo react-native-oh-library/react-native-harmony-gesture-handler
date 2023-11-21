@@ -29,17 +29,17 @@ function App({}): JSX.Element | null {
   if (!isTesterVisible) return null;
 
   return (
-    <GestureHandlerRootView>
-      <SafeAreaView>
-        <Button
-          title="Reload"
-          onPress={() => {
-            setIsTesterVisible(false);
-            setTimeout(() => {
-              setIsTesterVisible(true);
-            }, 1000);
-          }}
-        />
+    <SafeAreaView>
+      <Button
+        title="Reload"
+        onPress={() => {
+          setIsTesterVisible(false);
+          setTimeout(() => {
+            setIsTesterVisible(true);
+          }, 1000);
+        }}
+      />
+      <GestureHandlerRootView>
         <ScrollView style={[styles.container]}>
           <Tester>
             <TestSuite name="react-native-gesture-handler">
@@ -309,8 +309,8 @@ function App({}): JSX.Element | null {
             </TestSuite>
           </Tester>
         </ScrollView>
-      </SafeAreaView>
-    </GestureHandlerRootView>
+      </GestureHandlerRootView>
+    </SafeAreaView>
   );
 }
 

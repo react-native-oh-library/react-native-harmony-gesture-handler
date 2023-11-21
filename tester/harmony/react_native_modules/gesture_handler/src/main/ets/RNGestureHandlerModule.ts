@@ -74,10 +74,10 @@ export class RNGestureHandlerModule extends TurboModule {
         this.ctx.logger.error("RNGH: Reanimated Worklets are not supported")
         break;
       case ActionType.NATIVE_ANIMATED_EVENT:
-        return new AnimatedEventDispatcher(this.ctx.rnInstanceManager, this.logger.cloneWithPrefix('AnimatedEventDispatcher'), viewTag)
+        return new AnimatedEventDispatcher(this.ctx.rnInstance, this.logger.cloneWithPrefix('AnimatedEventDispatcher'), viewTag)
       case ActionType.JS_FUNCTION_OLD_API:
       case ActionType.JS_FUNCTION_NEW_API:
-        return new JSEventDispatcher(this.ctx.rnInstanceManager, this.logger.cloneWithPrefix('JSEventDispatcher'));
+        return new JSEventDispatcher(this.ctx.rnInstance, this.logger.cloneWithPrefix('JSEventDispatcher'));
     }
     return null
   }
