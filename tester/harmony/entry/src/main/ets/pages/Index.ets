@@ -10,7 +10,7 @@ import { RNGestureHandlerRootView, RNGestureHandlerButton, GestureHandlerPackage
 
 @Builder
 function CustomComponentBuilder(ctx: ComponentBuilderContext) {
-  if (ctx.descriptor.type === RNGestureHandlerRootView.DESCRIPTOR_TYPE) {
+  if (ctx.descriptor.type === RNGestureHandlerRootView.NAME) {
     RNGestureHandlerRootView({
       tag: ctx.descriptor.tag,
       ctx: ctx.rnohContext,

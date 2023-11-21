@@ -1,12 +1,17 @@
 import { Descriptor, RNOHContext, RNViewBase, ComponentBuilderContext, RNComponentFactory, Tag } from "rnoh"
 import { RNGHRootTouchHandler } from "./RNGHRootTouchHandler"
 import { RNGestureHandlerModule } from "./RNGestureHandlerModule"
+import { Vector2D } from "./Vector2D"
 
 export type RNGestureHandlerRootViewDescriptor = Descriptor<"RNGestureHandlerRootView">
 
 @Component
 export struct RNGestureHandlerRootView {
+  /**
+   * @deprecated: Use RNGestureHandlerRootView.NAME instead
+   */
   static readonly DESCRIPTOR_TYPE = "RNGestureHandlerRootView"
+  static readonly NAME = "RNGestureHandlerRootView"
   ctx!: RNOHContext
   tag: number = -1
   @BuilderParam buildCustomComponent: (componentBuilderContext: ComponentBuilderContext) => void
@@ -37,12 +42,20 @@ export struct RNGestureHandlerRootView {
       ForEach(this.descriptor.childrenTags, (childrenTag: Tag) => {
         RNComponentFactory({ ctx: this.ctx, tag: childrenTag, buildCustomComponent: this.buildCustomComponent })
       })
-      Stack() {}
+      Stack() {
+      }
       .width("100%")
       .height("100%")
+      .onAreaChange((_oldArea, newArea) => {
+        this.touchHandler?.setRNGHRootViewOffset(new Vector2D({
+          x: newArea.globalPosition.x as number,
+          y: newArea.globalPosition.y as number
+        }))
+      })
       .onTouch((e) => {
-        this.touchHandler?.handleTouch(e)}
-      ).hitTestBehavior(HitTestMode.Transparent)
+        this.touchHandler?.handleTouch(e)
+      })
+      .hitTestBehavior(HitTestMode.Transparent)
 
     }
   }

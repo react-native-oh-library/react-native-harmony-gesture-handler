@@ -3,6 +3,8 @@ import { GestureHandlerRegistry } from "./GestureHandlerRegistry"
 import { GestureHandlerArkUIAdapter } from "./GestureHandlerArkUIAdapter"
 import { ViewRegistry } from "./ViewRegistry"
 import { RNGHLogger } from './RNGHLogger'
+import { Vector2D } from "./Vector2D"
+
 
 export class RNGHRootTouchHandler {
   private adapterByViewTag: Map<number, GestureHandlerArkUIAdapter> = new Map() // TODO: remove an adapter when a view or gesture handler is removed
@@ -19,12 +21,18 @@ export class RNGHRootTouchHandler {
     this.logger = logger
   }
 
+  public setRNGHRootViewOffset(offset: Vector2D) {
+    this.adapterByViewTag.forEach(adapter => {
+      adapter.setRNGHRootViewOffset(offset)
+    })
+  }
+
   public handleTouch(e: TouchEvent) {
     if (e.type === TouchType.Down) {
       this.activeViewTags = []
     }
     for (const changedTouch of e.changedTouches) {
-      const views = this.viewRegistry.getTouchableViewsAt(changedTouch, this.rootTag)
+      const views = this.viewRegistry.getTouchableViewsAt({x: changedTouch.windowX, y: changedTouch.windowY}, this.rootTag)
       for (const view of views) {
         for (const handler of this.gestureHandlerRegistry.getGestureHandlersByViewTag(view.getTag())) {
           this.logger.info(`Found GestureHandler ${handler.getTag()} for view ${view.getTag()}`)

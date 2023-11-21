@@ -3,6 +3,7 @@ import { GestureHandler } from "./GestureHandler"
 import { AdaptedEvent, EventType, PointerType, TouchEventType, Touch } from "./Event"
 import { View } from "./View"
 import { RNGHLogger } from "./RNGHLogger"
+import { Vector2D } from "./Vector2D"
 
 export class GestureHandlerArkUIAdapter {
   private activePointerIds = new Set<number>()
@@ -10,6 +11,7 @@ export class GestureHandlerArkUIAdapter {
   private gestureHandler: GestureHandler
   private view: View
   private logger: RNGHLogger
+  private rnghRootViewOffset: Vector2D = new Vector2D()
 
   constructor(gestureHandler: GestureHandler, view: View, logger: RNGHLogger) {
     logger.info("constructor")
@@ -18,11 +20,15 @@ export class GestureHandlerArkUIAdapter {
     this.logger = logger
   }
 
+  setRNGHRootViewOffset(offset: Vector2D) {
+    this.rnghRootViewOffset = offset
+  }
+
   handleTouch(e: TouchEvent) {
     for (const changedTouch of e.changedTouches) {
       if (this.shouldSkipTouch(changedTouch)) continue;
       const wasInBounds = this.pointersIdInBounds.has(changedTouch.id)
-      const isInBounds = this.isInBounds(changedTouch)
+      const isInBounds = this.isInBounds({ x: changedTouch.windowX, y: changedTouch.windowY })
       this.logger.info(`handleTouch: ${JSON.stringify({ type: changedTouch.type, wasInBounds, isInBounds })}`)
       const adaptedEvent = this.adaptTouchEvent(e, changedTouch)
       switch (adaptedEvent.eventType) {
@@ -58,28 +64,31 @@ export class GestureHandlerArkUIAdapter {
   }
 
   private shouldSkipTouch(changedTouch: TouchObject): boolean {
-    return changedTouch.type === TouchType.Down && !this.isInBounds({ x: changedTouch.x, y: changedTouch.y })
+    return changedTouch.type === TouchType.Down && !this.isInBounds({ x: changedTouch.windowX, y: changedTouch.windowY })
   }
 
   private adaptTouchEvent(e: TouchEvent, changedTouch: TouchObject): AdaptedEvent {
+    const xAbsolute = changedTouch.windowX
+    const yAbsolute = changedTouch.windowY
+
     const eventType = this.mapTouchTypeToEventType(
       changedTouch.type,
       this.activePointerIds.size,
-      this.isInBounds({ x: changedTouch.x, y: changedTouch.y }),
+      this.isInBounds({ x: xAbsolute, y: yAbsolute }),
       this.pointersIdInBounds.has(changedTouch.id)
     )
     this.updateIsInBoundsByPointerId(
       changedTouch.type,
       changedTouch.id,
-      changedTouch.x,
-      changedTouch.y
+      xAbsolute,
+      yAbsolute
     )
     this.updateActivePointers(changedTouch.type, changedTouch.id)
     return {
-      x: changedTouch.x,
-      y: changedTouch.y,
-      offsetX: changedTouch.x - this.view.getBoundingRect().x,
-      offsetY: changedTouch.y - this.view.getBoundingRect().y,
+      x: xAbsolute,
+      y: yAbsolute,
+      offsetX: xAbsolute - this.view.getBoundingRect().x,
+      offsetY: yAbsolute - this.view.getBoundingRect().y,
       pointerId: changedTouch.id,
       eventType: eventType,
       pointerType: PointerType.TOUCH,
@@ -143,8 +152,8 @@ export class GestureHandlerArkUIAdapter {
       id: touchObject.id,
       x: touchObject.x,
       y: touchObject.y,
-      absoluteX: touchObject.screenX,
-      absoluteY: touchObject.screenY
+      absoluteX: touchObject.windowX,
+      absoluteY: touchObject.windowY
     }
   }
 
