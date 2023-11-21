@@ -3,7 +3,6 @@ import { GestureHandler } from "./GestureHandler"
 import { AdaptedEvent, EventType, PointerType, TouchEventType, Touch } from "./Event"
 import { View } from "./View"
 import { RNGHLogger } from "./RNGHLogger"
-import { Vector2D } from "./Vector2D"
 
 export class GestureHandlerArkUIAdapter {
   private activePointerIds = new Set<number>()
@@ -11,17 +10,12 @@ export class GestureHandlerArkUIAdapter {
   private gestureHandler: GestureHandler
   private view: View
   private logger: RNGHLogger
-  private rnghRootViewOffset: Vector2D = new Vector2D()
 
   constructor(gestureHandler: GestureHandler, view: View, logger: RNGHLogger) {
     logger.info("constructor")
     this.gestureHandler = gestureHandler
     this.view = view
     this.logger = logger
-  }
-
-  setRNGHRootViewOffset(offset: Vector2D) {
-    this.rnghRootViewOffset = offset
   }
 
   handleTouch(e: TouchEvent) {
@@ -64,7 +58,10 @@ export class GestureHandlerArkUIAdapter {
   }
 
   private shouldSkipTouch(changedTouch: TouchObject): boolean {
-    return changedTouch.type === TouchType.Down && !this.isInBounds({ x: changedTouch.windowX, y: changedTouch.windowY })
+    return changedTouch.type === TouchType.Down && !this.isInBounds({
+      x: changedTouch.windowX,
+      y: changedTouch.windowY
+    })
   }
 
   private adaptTouchEvent(e: TouchEvent, changedTouch: TouchObject): AdaptedEvent {

@@ -46,12 +46,6 @@ export struct RNGestureHandlerRootView {
       }
       .width("100%")
       .height("100%")
-      .onAreaChange((_oldArea, newArea) => {
-        this.touchHandler?.setRNGHRootViewOffset(new Vector2D({
-          x: newArea.globalPosition.x as number,
-          y: newArea.globalPosition.y as number
-        }))
-      })
       .onTouch((e) => {
         this.touchHandler?.handleTouch(e)
       })
