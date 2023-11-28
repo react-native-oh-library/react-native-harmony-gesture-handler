@@ -39,10 +39,10 @@ function App({}): JSX.Element | null {
           }, 1000);
         }}
       />
-      {/* <GestureHandlerRootView> */}
-      <ScrollView style={[styles.container]}>
-        <Tester>
-          {/* <TestSuite name="react-native-gesture-handler">
+      <GestureHandlerRootView>
+        <ScrollView style={[styles.container]}>
+          <Tester>
+            <TestSuite name="react-native-gesture-handler">
               <TestCase itShould="toggle color on tap">
                 <Example
                   createGesture={setBackgroundColor => {
@@ -115,201 +115,201 @@ function App({}): JSX.Element | null {
                   }}
                 />
               </TestCase>
-            </TestSuite> */}
-          <TestSuite name="old API">
-            <TestCase itShould="toggle color on double tap">
-              <TapExample />
-            </TestCase>
-            <TestCase itShould="change color to green when panning after 50 px in X direction (panning + activeOffsetX)">
-              <PanningExample />
-            </TestCase>
-            <TestCase itShould="display event received by onGestureEvent when dragging over blue rectangle">
-              <ObjectDisplayer
-                renderContent={setObject => {
-                  return (
-                    <PanGestureHandler
-                      onGestureEvent={e => {
-                        setObject({
-                          absoluteX: e.nativeEvent.absoluteX,
-                          absoluteY: e.nativeEvent.absoluteY,
-                          handlerTag: e.nativeEvent.handlerTag,
-                          numberOfPointers: e.nativeEvent.numberOfPointers,
-                          state: e.nativeEvent.state,
-                          translationX: e.nativeEvent.translationX,
-                          translationY: e.nativeEvent.translationY,
-                          velocityX: e.nativeEvent.velocityX,
-                          velocityY: e.nativeEvent.velocityY,
-                          x: e.nativeEvent.x,
-                          y: e.nativeEvent.y,
-                        });
-                      }}>
-                      <View
-                        style={{
-                          width: 100,
-                          height: 32,
-                          backgroundColor: 'blue',
-                        }}
-                      />
-                    </PanGestureHandler>
-                  );
-                }}
-              />
-            </TestCase>
-            <TestCase itShould="display event received by onHandlerStateChange when dragging over blue rectangle">
-              <ObjectDisplayer
-                renderContent={setObject => {
-                  return (
-                    <PanGestureHandler
-                      onHandlerStateChange={e => {
-                        setObject({
-                          oldState: e.nativeEvent.oldState,
-                          state: e.nativeEvent.state,
-                          absoluteX: e.nativeEvent.absoluteX,
-                          absoluteY: e.nativeEvent.absoluteY,
-                          handlerTag: e.nativeEvent.handlerTag,
-                          numberOfPointers: e.nativeEvent.numberOfPointers,
-                          translationX: e.nativeEvent.translationX,
-                          translationY: e.nativeEvent.translationY,
-                          velocityX: e.nativeEvent.velocityX,
-                          velocityY: e.nativeEvent.velocityY,
-                          x: e.nativeEvent.x,
-                          y: e.nativeEvent.y,
-                        });
-                      }}>
-                      <View
-                        style={{
-                          width: 100,
-                          height: 32,
-                          backgroundColor: 'blue',
-                        }}
-                      />
-                    </PanGestureHandler>
-                  );
-                }}
-              />
-            </TestCase>
-            <TestCase
-              itShould="export State object"
-              fn={({expect}) => {
-                expect(State).to.be.not.undefined;
-              }}
-            />
-            <TestCase itShould="change text when panning on green rect (hit slop)">
-              <StateKeeper<string>
-                renderContent={(value, setValue) => {
-                  return (
-                    <PanGestureHandler
-                      hitSlop={{right: -64}}
-                      onActivated={() =>
-                        setValue(prev =>
-                          prev === 'Panned' ? 'Panned again' : 'Panned',
-                        )
-                      }>
-                      <View
-                        style={{
-                          backgroundColor: 'red',
-                          width: 128,
-                        }}>
-                        <Text
-                          style={{
-                            width: 64,
-                            height: 32,
-                            borderWidth: 1,
-                            fontSize: 12,
-                            backgroundColor: 'green',
-                          }}>
-                          {value ?? 'Pan me'}
-                        </Text>
-                      </View>
-                    </PanGestureHandler>
-                  );
-                }}
-              />
-            </TestCase>
-            <TestCase itShould="change color when panning left rect but not right">
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                }}>
-                <StateKeeper<string>
-                  renderContent={(value, setValue) => {
+            </TestSuite>
+            <TestSuite name="old API">
+              <TestCase itShould="toggle color on double tap">
+                <TapExample />
+              </TestCase>
+              <TestCase itShould="change color to green when panning after 50 px in X direction (panning + activeOffsetX)">
+                <PanningExample />
+              </TestCase>
+              <TestCase itShould="display event received by onGestureEvent when dragging over blue rectangle">
+                <ObjectDisplayer
+                  renderContent={setObject => {
                     return (
                       <PanGestureHandler
-                        onActivated={() => setValue('green')}
-                        onEnded={() => {
-                          setValue('red');
+                        onGestureEvent={e => {
+                          setObject({
+                            absoluteX: e.nativeEvent.absoluteX,
+                            absoluteY: e.nativeEvent.absoluteY,
+                            handlerTag: e.nativeEvent.handlerTag,
+                            numberOfPointers: e.nativeEvent.numberOfPointers,
+                            state: e.nativeEvent.state,
+                            translationX: e.nativeEvent.translationX,
+                            translationY: e.nativeEvent.translationY,
+                            velocityX: e.nativeEvent.velocityX,
+                            velocityY: e.nativeEvent.velocityY,
+                            x: e.nativeEvent.x,
+                            y: e.nativeEvent.y,
+                          });
                         }}>
                         <View
                           style={{
-                            backgroundColor: value ?? 'red',
-                            width: 128,
-                            height: 64,
-                          }}
-                        />
-                      </PanGestureHandler>
-                    );
-                  }}
-                />
-                <StateKeeper<string>
-                  renderContent={(value, setValue) => {
-                    return (
-                      <PanGestureHandler
-                        enabled={false}
-                        onActivated={() => setValue('green')}
-                        onEnded={() => {
-                          setValue('red');
-                        }}>
-                        <View
-                          style={{
-                            backgroundColor: value ?? 'red',
-                            width: 128,
-                            height: 64,
-                          }}
-                        />
-                      </PanGestureHandler>
-                    );
-                  }}
-                />
-              </View>
-            </TestCase>
-            <TestCase itShould="change color on tap as long as finger didn't move more than 100px horizontally (maxDeltaX)">
-              <StateKeeper<string>
-                renderContent={(value, setValue) => {
-                  return (
-                    <TapGestureHandler
-                      maxDeltaX={100}
-                      onActivated={() =>
-                        setValue(prev => (prev === 'red' ? 'green' : 'red'))
-                      }>
-                      <View
-                        style={{
-                          backgroundColor: 'gray',
-                          width: 128,
-                          height: 64,
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                        }}>
-                        <View
-                          style={{
-                            backgroundColor: value ?? 'red',
                             width: 100,
-                            height: 64,
+                            height: 32,
+                            backgroundColor: 'blue',
                           }}
                         />
-                      </View>
-                    </TapGestureHandler>
-                  );
+                      </PanGestureHandler>
+                    );
+                  }}
+                />
+              </TestCase>
+              <TestCase itShould="display event received by onHandlerStateChange when dragging over blue rectangle">
+                <ObjectDisplayer
+                  renderContent={setObject => {
+                    return (
+                      <PanGestureHandler
+                        onHandlerStateChange={e => {
+                          setObject({
+                            oldState: e.nativeEvent.oldState,
+                            state: e.nativeEvent.state,
+                            absoluteX: e.nativeEvent.absoluteX,
+                            absoluteY: e.nativeEvent.absoluteY,
+                            handlerTag: e.nativeEvent.handlerTag,
+                            numberOfPointers: e.nativeEvent.numberOfPointers,
+                            translationX: e.nativeEvent.translationX,
+                            translationY: e.nativeEvent.translationY,
+                            velocityX: e.nativeEvent.velocityX,
+                            velocityY: e.nativeEvent.velocityY,
+                            x: e.nativeEvent.x,
+                            y: e.nativeEvent.y,
+                          });
+                        }}>
+                        <View
+                          style={{
+                            width: 100,
+                            height: 32,
+                            backgroundColor: 'blue',
+                          }}
+                        />
+                      </PanGestureHandler>
+                    );
+                  }}
+                />
+              </TestCase>
+              <TestCase
+                itShould="export State object"
+                fn={({expect}) => {
+                  expect(State).to.be.not.undefined;
                 }}
               />
-            </TestCase>
-            <TestCase itShould="scale vertically when dragged horizontally (NativeAnimatedEvent)">
-              <NativeAnimatedEventExample />
-            </TestCase>
-          </TestSuite>
-        </Tester>
-      </ScrollView>
-      {/* </GestureHandlerRootView> */}
+              <TestCase itShould="change text when panning on green rect (hit slop)">
+                <StateKeeper<string>
+                  renderContent={(value, setValue) => {
+                    return (
+                      <PanGestureHandler
+                        hitSlop={{right: -64}}
+                        onActivated={() =>
+                          setValue(prev =>
+                            prev === 'Panned' ? 'Panned again' : 'Panned',
+                          )
+                        }>
+                        <View
+                          style={{
+                            backgroundColor: 'red',
+                            width: 128,
+                          }}>
+                          <Text
+                            style={{
+                              width: 64,
+                              height: 32,
+                              borderWidth: 1,
+                              fontSize: 12,
+                              backgroundColor: 'green',
+                            }}>
+                            {value ?? 'Pan me'}
+                          </Text>
+                        </View>
+                      </PanGestureHandler>
+                    );
+                  }}
+                />
+              </TestCase>
+              <TestCase itShould="change color when panning left rect but not right">
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                  }}>
+                  <StateKeeper<string>
+                    renderContent={(value, setValue) => {
+                      return (
+                        <PanGestureHandler
+                          onActivated={() => setValue('green')}
+                          onEnded={() => {
+                            setValue('red');
+                          }}>
+                          <View
+                            style={{
+                              backgroundColor: value ?? 'red',
+                              width: 128,
+                              height: 64,
+                            }}
+                          />
+                        </PanGestureHandler>
+                      );
+                    }}
+                  />
+                  <StateKeeper<string>
+                    renderContent={(value, setValue) => {
+                      return (
+                        <PanGestureHandler
+                          enabled={false}
+                          onActivated={() => setValue('green')}
+                          onEnded={() => {
+                            setValue('red');
+                          }}>
+                          <View
+                            style={{
+                              backgroundColor: value ?? 'red',
+                              width: 128,
+                              height: 64,
+                            }}
+                          />
+                        </PanGestureHandler>
+                      );
+                    }}
+                  />
+                </View>
+              </TestCase>
+              <TestCase itShould="change color on tap as long as finger didn't move more than 100px horizontally (maxDeltaX)">
+                <StateKeeper<string>
+                  renderContent={(value, setValue) => {
+                    return (
+                      <TapGestureHandler
+                        maxDeltaX={100}
+                        onActivated={() =>
+                          setValue(prev => (prev === 'red' ? 'green' : 'red'))
+                        }>
+                        <View
+                          style={{
+                            backgroundColor: 'gray',
+                            width: 128,
+                            height: 64,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}>
+                          <View
+                            style={{
+                              backgroundColor: value ?? 'red',
+                              width: 100,
+                              height: 64,
+                            }}
+                          />
+                        </View>
+                      </TapGestureHandler>
+                    );
+                  }}
+                />
+              </TestCase>
+              <TestCase itShould="scale vertically when dragged horizontally (NativeAnimatedEvent)">
+                <NativeAnimatedEventExample />
+              </TestCase>
+            </TestSuite>
+          </Tester>
+        </ScrollView>
+      </GestureHandlerRootView>
     </SafeAreaView>
   );
 }

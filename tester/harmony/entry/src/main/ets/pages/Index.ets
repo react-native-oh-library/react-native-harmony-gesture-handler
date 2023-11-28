@@ -6,7 +6,7 @@ import {
   ResourceJSBundleProvider,
   MetroJSBundleProvider
 } from 'rnoh'
-import { RNGestureHandlerRootView, RNGestureHandlerButton, GestureHandlerPackage, RNGestureHandlerModule } from "rnoh-gesture-handler"
+import { RNGestureHandlerRootView, RNGestureHandlerButton, GestureHandlerPackage } from "rnoh-gesture-handler"
 
 @Builder
 function CustomComponentBuilder(ctx: ComponentBuilderContext) {
@@ -45,12 +45,8 @@ struct Index {
           ] },
           buildCustomComponent: CustomComponentBuilder,
           jsBundleProvider: new AnyJSBundleProvider([
-            // new MetroJSBundleProvider(),
+            new MetroJSBundleProvider(),
             new ResourceJSBundleProvider(this.rnAbility.context.resourceManager, 'bundle.harmony.js')]),
-          onSetUp: (rnInstance) => {
-            rnInstance.bindComponentNameToDescriptorType(RNGestureHandlerRootView.NAME, "RootView")
-            rnInstance.getTurboModule<RNGestureHandlerModule>(RNGestureHandlerModule.NAME).install()
-          }
         })
       }
     }
