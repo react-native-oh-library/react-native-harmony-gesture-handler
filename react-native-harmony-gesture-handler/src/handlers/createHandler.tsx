@@ -24,8 +24,9 @@ import {
   GestureEvent,
   HandlerStateChangeEvent,
   findNodeHandle,
-  scheduleFlushOperations,
+  // scheduleFlushOperations, // RNGH: patch
 } from 'react-native-gesture-handler/src/handlers/gestureHandlerCommon';
+import { scheduleFlushOperations } from "../handlers/gestureHandlerCommon" // RNGH: patch
 import { ValueOf } from 'react-native-gesture-handler/src/typeUtils';
 import { isFabric, isJestEnv, tagMessage } from 'react-native-gesture-handler/src/utils';
 import { ActionType } from 'react-native-gesture-handler/src/ActionType';
@@ -406,7 +407,7 @@ export default function createHandler<
     }
 
     render() {
-      if (__DEV__ && !this.context && !isJestEnv() && Platform.OS !== 'web') {
+      if (__DEV__ && !this.context && !isJestEnv() && Platform.OS !== 'web' && (Platform.OS as any) !== "harmony") { // RNOH: patch
         throw new Error(
           name +
             ' must be used as a descendant of GestureHandlerRootView. Otherwise the gestures will not be recognized. See https://docs.swmansion.com/react-native-gesture-handler/docs/installation for more details.'
