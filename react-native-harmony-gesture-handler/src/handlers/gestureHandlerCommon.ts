@@ -6,8 +6,9 @@ export function scheduleFlushOperations() {
   if (!flushOperationsScheduled) {
     flushOperationsScheduled = true;
     queueMicrotask(() => {
-      RNGestureHandlerModule.flushOperations();
-
+      if (RNGestureHandlerModule) {
+        RNGestureHandlerModule.flushOperations();
+      }
       flushOperationsScheduled = false;
     });
   }

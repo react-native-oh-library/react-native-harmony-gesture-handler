@@ -619,7 +619,7 @@ interface GestureDetectorState {
 }
 export const GestureDetector = (props: GestureDetectorProps) => {
   const rootViewContext = useContext(GestureHandlerRootViewContext);
-  if (__DEV__ && !rootViewContext && !isJestEnv() && Platform.OS !== 'web') {
+  if (__DEV__ && !rootViewContext && !isJestEnv() && Platform.OS !== 'web' && (Platform.OS as any) !== "harmony") { // RNOH: patch
     throw new Error(
       'GestureDetector must be used as a descendant of GestureHandlerRootView. Otherwise the gestures will not be recognized. See https://docs.swmansion.com/react-native-gesture-handler/docs/installation for more details.'
     );

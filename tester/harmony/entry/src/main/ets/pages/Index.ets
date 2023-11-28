@@ -6,13 +6,13 @@ import {
   ResourceJSBundleProvider,
   MetroJSBundleProvider
 } from 'rnoh'
-import { RNGestureHandlerRootView, RNGestureHandlerButton, GestureHandlerPackage } from "rnoh-gesture-handler"
+import { RNGestureHandlerRootView, RNGestureHandlerButton, GestureHandlerPackage, RNGestureHandlerModule } from "rnoh-gesture-handler"
 
 @Builder
 function CustomComponentBuilder(ctx: ComponentBuilderContext) {
-  if (ctx.descriptor.type === RNGestureHandlerRootView.NAME) {
+  if (ctx.componentName === RNGestureHandlerRootView.NAME) {
     RNGestureHandlerRootView({
-      tag: ctx.descriptor.tag,
+      tag: ctx.tag,
       ctx: ctx.rnohContext,
       buildCustomComponent: CustomComponentBuilder
     })
@@ -29,10 +29,15 @@ function CustomComponentBuilder(ctx: ComponentBuilderContext) {
 @Component
 struct Index {
   @StorageLink('RNAbility') rnAbility: RNAbility | undefined = undefined
+  @State isVisible: boolean = false
+
+  aboutToAppear() {
+    setTimeout(() => this.isVisible = true, 1500)
+  }
 
   build() {
     Column() {
-      if (this.rnAbility) {
+      if (this.rnAbility && this.isVisible) {
         RNApp({
           appKey: "app_name",
           rnInstanceConfig: { createRNPackages: (ctx) => [
@@ -40,8 +45,12 @@ struct Index {
           ] },
           buildCustomComponent: CustomComponentBuilder,
           jsBundleProvider: new AnyJSBundleProvider([
-            new MetroJSBundleProvider(),
+            // new MetroJSBundleProvider(),
             new ResourceJSBundleProvider(this.rnAbility.context.resourceManager, 'bundle.harmony.js')]),
+          onSetUp: (rnInstance) => {
+            rnInstance.bindComponentNameToDescriptorType(RNGestureHandlerRootView.NAME, "RootView")
+            rnInstance.getTurboModule<RNGestureHandlerModule>(RNGestureHandlerModule.NAME).install()
+          }
         })
       }
     }
