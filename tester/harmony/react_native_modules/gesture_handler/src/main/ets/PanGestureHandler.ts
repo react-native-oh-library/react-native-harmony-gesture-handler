@@ -91,6 +91,7 @@ export class PanGestureHandler extends GestureHandler<PanGestureHandlerConfig> {
     this.tracker.addToTracker(e);
     super.onPointerDown(e);
     this.lastPos = this.tracker.getLastAvgPos()
+    this.startPos = this.lastPos.clone()
     this.tryBegin(e);
     this.tryActivating();
   }
