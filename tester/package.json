@@ -5,7 +5,7 @@
   "scripts": {
     "start": "react-native start",
     "pack:pkg": "cd ../react-native-harmony-gesture-handler && npm run pack:prod && cd ../tester",
-    "install:pkg": "npm uninstall react-native-harmony-gesture-handler && npm run pack:pkg && npm i react-native-harmony-gesture-handler@file:../react-native-harmony-gesture-handler/rnoh-react-native-harmony-gesture-handler-2.12.5.tgz",
+    "install:pkg": "npm uninstall react-native-harmony-gesture-handler && npm run pack:pkg && npm i react-native-harmony-gesture-handler@file:../react-native-harmony-gesture-handler/rnoh-react-native-harmony-gesture-handler-2.12.6.tgz",
     "dev": "npm run install:pkg && react-native bundle-harmony",
     "dev:fast": "react-native bundle-harmony",
     "android": "react-native run-android",
@@ -17,7 +17,7 @@
     "react-native": "0.72.5",
     "react-native-gesture-handler": "^2.12.1",
     "react-native-harmony": "npm:@rnoh/react-native-harmony@^0.72.12",
-    "react-native-harmony-gesture-handler": "file:../react-native-harmony-gesture-handler/rnoh-react-native-harmony-gesture-handler-2.12.5.tgz"
+    "react-native-harmony-gesture-handler": "file:../react-native-harmony-gesture-handler/rnoh-react-native-harmony-gesture-handler-2.12.6.tgz"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
