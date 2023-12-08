@@ -30,7 +30,7 @@ export class RNGestureHandlerModule extends TurboModule {
 
   public install() {
     this.viewRegistry = new ViewRegistry(this.ctx.descriptorRegistry, this.ctx.componentManagerRegistry)
-    this.gestureHandlerFactory = new GestureHandlerFactory(this.logger, new RNOHScrollLocker(this.ctx.componentManagerRegistry))
+    this.gestureHandlerFactory = new GestureHandlerFactory(this.logger, new RNOHScrollLocker(this.ctx.rnInstance))
   }
 
   public createGestureHandler(
