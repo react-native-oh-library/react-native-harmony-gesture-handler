@@ -32,6 +32,9 @@ export class View {
 
   public getBoundingRect(): BoundingBox {
     const d = this.getDescriptor()
+    if (!d) {
+      return { x: 0, y: 0, width: 0, height: 0 }
+    }
     const offsetToAbsolutePosition = this.getOffsetToAbsolutePosition()
     return {
       x: d.layoutMetrics.frame.origin.x - offsetToAbsolutePosition.x,
@@ -59,8 +62,9 @@ export class View {
   }
 
   private extractScrollOffsetFromDescriptor(descriptor: Descriptor<any>) {
-    if (descriptor.type !== "ScrollView")
+    if (descriptor.type !== "ScrollView") {
       return new Vector2D();
+    }
     const scrollViewState: any = descriptor.state;
     return new Vector2D({ x: scrollViewState.contentOffsetX, y: scrollViewState.contentOffsetY })
   }
