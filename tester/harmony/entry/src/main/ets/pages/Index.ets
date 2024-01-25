@@ -44,9 +44,7 @@ struct Index {
             new GestureHandlerPackage(ctx)
           ] },
           buildCustomComponent: CustomComponentBuilder,
-          jsBundleProvider: new AnyJSBundleProvider([
-            new MetroJSBundleProvider(),
-            new ResourceJSBundleProvider(this.rnAbility.context.resourceManager, 'bundle.harmony.js')]),
+          jsBundleProvider: new MetroJSBundleProvider(),
         })
       }
     }
