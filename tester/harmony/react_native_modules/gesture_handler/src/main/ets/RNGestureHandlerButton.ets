@@ -1,10 +1,11 @@
-import { Descriptor, RNOHContext, RNViewBase, ComponentBuilderContext, RNComponentFactory, Tag } from "rnoh"
+import { RNOHContext, RNViewBase, ComponentBuilderContext, RNComponentFactory, Tag } from "rnoh"
+import { RNC } from "rnoh/generated"
 
-export type RNGestureHandlerButtonDescriptor = Descriptor<"RNGestureHandlerButton">
+export type RNGestureHandlerButtonDescriptor = RNC.RNGestureHandlerButton.Descriptor
 
 @Component
 export struct RNGestureHandlerButton {
-  static readonly DESCRIPTOR_TYPE = "RNGestureHandlerButton"
+  static readonly DESCRIPTOR_TYPE = RNC.RNGestureHandlerButton.NAME
   public ctx!: RNOHContext
   public tag: number = -1
   @BuilderParam public buildCustomComponent: (componentBuilderContext: ComponentBuilderContext) => void

@@ -1,6 +1,3 @@
-import {TurboModule, TurboModuleRegistry} from 'react-native';
-import {RNGestureHandlerModuleProps} from "react-native-gesture-handler/src/RNGestureHandlerModule"
+import NativeRNGestureHandlerModule from '../src/specs/NativeRNGestureHandlerModule';
 
-interface Spec extends TurboModule, RNGestureHandlerModuleProps {}
-
-export const RNGestureHandlerModule = TurboModuleRegistry.get<Spec>('RNGestureHandlerModule')!;
+export const RNGestureHandlerModule = NativeRNGestureHandlerModule;

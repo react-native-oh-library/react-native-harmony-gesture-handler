@@ -1,4 +1,5 @@
 import { TurboModule, TurboModuleContext } from 'rnoh/ts';
+import { TM } from "rnoh/generated/ts"
 import { GestureHandlerRegistry } from './GestureHandlerRegistry';
 import { GestureHandlerFactory } from "./GestureHandlerFactory"
 import { ViewRegistry } from './ViewRegistry';
@@ -14,7 +15,7 @@ export enum ActionType {
 }
 
 
-export class RNGestureHandlerModule extends TurboModule {
+export class RNGestureHandlerModule extends TurboModule implements TM.RNGestureHandlerModule.Spec {
   static NAME = "RNGestureHandlerModule"
 
   private gestureHandlerRegistry = new GestureHandlerRegistry()
@@ -31,6 +32,7 @@ export class RNGestureHandlerModule extends TurboModule {
   public install() {
     this.viewRegistry = new ViewRegistry(this.ctx.descriptorRegistry, this.ctx.componentManagerRegistry)
     this.gestureHandlerFactory = new GestureHandlerFactory(this.logger, new RNOHScrollLocker(this.ctx.rnInstance))
+    return true
   }
 
   public createGestureHandler(
