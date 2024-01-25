@@ -1,7 +1,8 @@
 import { Descriptor, RNOHContext, RNViewBase, ComponentBuilderContext, RNComponentFactory, Tag } from "rnoh"
+import { RNC } from "rnoh/generated/ts"
 import { RNGHRootTouchHandler } from "./RNGHRootTouchHandler"
 import { RNGestureHandlerModule } from "./RNGestureHandlerModule"
-import { Vector2D } from "./Vector2D"
+
 
 export type RNGestureHandlerRootViewDescriptor = Descriptor<"RNGestureHandlerRootView">
 

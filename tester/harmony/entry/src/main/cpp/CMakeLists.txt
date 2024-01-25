@@ -6,14 +6,12 @@ set(RNOH_CPP_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../../../node_modules/react-
 
 file(GLOB GENERATED_CPP_FILES "./generated/*.cpp")
 add_subdirectory("${RNOH_CPP_DIR}" ./rn)
-add_subdirectory("${OH_MODULES_DIR}/rnoh-gesture-handler/src/main/cpp" ./gesture_handler)
 add_library(rnoh_app SHARED
     ${GENERATED_CPP_FILES}
     "./PackageProvider.cpp"
     "${RNOH_CPP_DIR}/RNOHAppNapiBridge.cpp"
 )
 target_link_libraries(rnoh_app PUBLIC rnoh)
-target_link_libraries(rnoh_app PUBLIC rnoh_gesture_handler)
 
 
 
