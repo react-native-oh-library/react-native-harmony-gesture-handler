@@ -120,6 +120,10 @@ export class RNGestureHandlerModule extends TurboModule {
   }
 
   public getViewRegistry() {
+    if (!this.viewRegistry) {
+      this.logger.info("Tried to get viewRegistry before it was initialized")
+      throw new Error("Tried to get viewRegistry before it was initialized")
+    }
     return this.viewRegistry
   }
 }
