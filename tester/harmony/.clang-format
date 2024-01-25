@@ -11,6 +11,8 @@ IndentCaseBlocks: false
 IndentCaseLabels: false
 IndentGotoLabels: true
 IndentWrappedFunctionNames: false
+SortUsingDeclarations: false
+NamespaceIndentation: All
 SpaceAfterCStyleCast: false
 SpaceAfterLogicalNot: false
 SpaceAfterTemplateKeyword: true
