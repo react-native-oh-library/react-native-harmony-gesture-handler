@@ -2,8 +2,6 @@ import {
   RNApp,
   ComponentBuilderContext,
   RNAbility,
-  AnyJSBundleProvider,
-  ResourceJSBundleProvider,
   MetroJSBundleProvider
 } from 'rnoh'
 import { RNGestureHandlerRootView, RNGestureHandlerButton, GestureHandlerPackage } from "rnoh-gesture-handler"
@@ -13,13 +11,13 @@ function CustomComponentBuilder(ctx: ComponentBuilderContext) {
   if (ctx.componentName === RNGestureHandlerRootView.NAME) {
     RNGestureHandlerRootView({
       tag: ctx.tag,
-      ctx: ctx.rnohContext,
+      ctx: ctx.rnComponentContext,
       buildCustomComponent: CustomComponentBuilder
     })
-  } else if (ctx.descriptor.type === RNGestureHandlerButton.DESCRIPTOR_TYPE) {
+  } else if (ctx.componentName === RNGestureHandlerButton.NAME) {
     RNGestureHandlerButton({
-      tag: ctx.descriptor.tag,
-      ctx: ctx.rnohContext,
+      tag: ctx.tag,
+      ctx: ctx.rnComponentContext,
       buildCustomComponent: CustomComponentBuilder
     })
   }
@@ -44,9 +42,7 @@ struct Index {
             new GestureHandlerPackage(ctx)
           ] },
           buildCustomComponent: CustomComponentBuilder,
-          jsBundleProvider: new AnyJSBundleProvider([
-            new MetroJSBundleProvider(),
-            new ResourceJSBundleProvider(this.rnAbility.context.resourceManager, 'bundle.harmony.js')]),
+          jsBundleProvider: new MetroJSBundleProvider(),
         })
       }
     }
