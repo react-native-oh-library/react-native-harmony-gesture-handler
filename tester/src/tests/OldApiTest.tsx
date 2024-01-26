@@ -1,13 +1,6 @@
 import {TestCase, TestSuite} from '@rnoh/testerino';
 import {forwardRef, useRef, useState} from 'react';
-import {
-  Animated,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-  ViewStyle,
-} from 'react-native';
+import {Animated, ScrollView, StyleSheet, Text, View} from 'react-native';
 import {
   PanGestureHandler,
   PanGestureHandlerEventPayload,
@@ -94,7 +87,7 @@ export function OldApiTest() {
                         color: 'white',
                         textAlign: 'center',
                       }}>
-                      PAN ME HORIZONTALLY
+                      PAN 128 PX HORIZONTALLY
                     </Text>
                   </View>
                 </View>
@@ -202,38 +195,71 @@ export function OldApiTest() {
           expect(State).to.be.not.undefined;
         }}
       />
-      <TestCase itShould="change text when panning on green rect (hit slop)">
-        <StateKeeper<string>
-          renderContent={(value, setValue) => {
-            return (
+      <TestCase
+        itShould="recognize panning when dragging over blue rectangle, but not the red one (hit slop)"
+        initialState={{
+          hasBeenActivated: false,
+          backgroundColor: PALETTE.DARK_BLUE,
+        }}
+        arrange={({setState, state}) => {
+          return (
+            <View style={styles.testCaseContainer}>
               <PanGestureHandler
-                hitSlop={{right: -64}}
+                hitSlop={{right: -128}}
                 onActivated={() =>
-                  setValue(prev =>
-                    prev === 'Panned' ? 'Panned again' : 'Panned',
-                  )
-                }>
-                <View
-                  style={{
-                    backgroundColor: 'red',
-                    width: 128,
-                  }}>
-                  <Text
+                  setState({
+                    hasBeenActivated: true,
+                    backgroundColor: PALETTE.LIGHT_GREEN,
+                  })
+                }
+                onEnded={() => {
+                  setState(prev => ({
+                    ...prev,
+                    backgroundColor: PALETTE.DARK_BLUE,
+                  }));
+                }}>
+                <View style={{flexDirection: 'row'}}>
+                  <View
                     style={{
-                      width: 64,
-                      height: 32,
-                      borderWidth: 1,
-                      fontSize: 12,
-                      backgroundColor: 'green',
+                      width: 128,
+                      height: 128,
+                      backgroundColor: state.backgroundColor,
+                      justifyContent: 'center',
                     }}>
-                    {value ?? 'Pan me'}
-                  </Text>
+                    <Text
+                      style={{
+                        fontSize: 12,
+                        color: 'white',
+                        textAlign: 'center',
+                      }}>
+                      PAN ME
+                    </Text>
+                  </View>
+                  <View
+                    style={{
+                      width: 128,
+                      height: 128,
+                      backgroundColor: PALETTE.DARK_RED,
+                      justifyContent: 'center',
+                    }}>
+                    <Text
+                      style={{
+                        fontSize: 12,
+                        color: 'white',
+                        textAlign: 'center',
+                      }}>
+                      PAN ME TOO
+                    </Text>
+                  </View>
                 </View>
               </PanGestureHandler>
-            );
-          }}
-        />
-      </TestCase>
+            </View>
+          );
+        }}
+        assert={({expect, state}) => {
+          expect(state.hasBeenActivated).to.be.true;
+        }}
+      />
       <TestCase itShould="change color when panning left rect but not right">
         <View
           style={{
