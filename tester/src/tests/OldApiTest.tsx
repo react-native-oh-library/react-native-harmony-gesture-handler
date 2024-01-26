@@ -1,8 +1,16 @@
 import {TestCase, TestSuite} from '@rnoh/testerino';
 import {forwardRef, useRef, useState} from 'react';
-import {Animated, StyleSheet, Text, View} from 'react-native';
+import {
+  Animated,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  ViewStyle,
+} from 'react-native';
 import {
   PanGestureHandler,
+  PanGestureHandlerEventPayload,
   State,
   TapGestureHandler,
 } from 'react-native-gesture-handler';
@@ -35,18 +43,6 @@ export function OldApiTest() {
                   backgroundColor={state.backgroundColor}
                   label="DOUBLE TAP ME"
                 />
-                {/* <View
-                  style={{
-                    width: 128,
-                    height: 128,
-                    backgroundColor: state.backgroundColor,
-                    justifyContent: 'center',
-                  }}>
-                  <Text
-                    style={{fontSize: 12, color: 'white', textAlign: 'center'}}>
-                    {'DOUBLE TAP ME'}
-                  </Text>
-                </View> */}
               </TapGestureHandler>
             </View>
           );
@@ -111,38 +107,51 @@ export function OldApiTest() {
         }}
       />
 
-      <TestCase itShould="display event received by onGestureEvent when dragging over blue rectangle">
-        <ObjectDisplayer
-          renderContent={setObject => {
-            return (
-              <PanGestureHandler
-                onGestureEvent={e => {
-                  setObject({
-                    absoluteX: e.nativeEvent.absoluteX,
-                    absoluteY: e.nativeEvent.absoluteY,
-                    handlerTag: e.nativeEvent.handlerTag,
-                    numberOfPointers: e.nativeEvent.numberOfPointers,
-                    state: e.nativeEvent.state,
-                    translationX: e.nativeEvent.translationX,
-                    translationY: e.nativeEvent.translationY,
-                    velocityX: e.nativeEvent.velocityX,
-                    velocityY: e.nativeEvent.velocityY,
-                    x: e.nativeEvent.x,
-                    y: e.nativeEvent.y,
-                  });
-                }}>
-                <View
-                  style={{
-                    width: 100,
-                    height: 32,
-                    backgroundColor: 'blue',
-                  }}
-                />
-              </PanGestureHandler>
-            );
-          }}
-        />
-      </TestCase>
+      <TestCase<PanGestureHandlerEventPayload | undefined>
+        itShould="display event received by onGestureEvent when dragging over blue rectangle"
+        initialState={undefined}
+        arrange={({state, setState}) => {
+          return (
+            <>
+              <StateKeeper
+                renderContent={(state2, setState2) => {
+                  return (
+                    <View style={styles.testCaseContainer}>
+                      <PanGestureHandler
+                        onGestureEvent={e => {
+                          if (!state) {
+                            setState(e.nativeEvent);
+                          }
+                          setState2(e.nativeEvent);
+                        }}>
+                        <Rect
+                          backgroundColor={PALETTE.DARK_BLUE}
+                          label="PAN ME"
+                        />
+                      </PanGestureHandler>
+                      <ConsoleOutput height={128} data={state2} />
+                    </View>
+                  );
+                }}
+              />
+            </>
+          );
+        }}
+        assert={({expect, state}) => {
+          expect(state).to.be.not.undefined;
+          if (state) {
+            expect(typeof state.absoluteX === 'number').to.be.true;
+            expect(typeof state.absoluteY === 'number').to.be.true;
+            expect(typeof state.translationX === 'number').to.be.true;
+            expect(typeof state.translationY === 'number').to.be.true;
+            expect(typeof state.velocityX === 'number').to.be.true;
+            expect(typeof state.velocityY === 'number').to.be.true;
+            expect(typeof state.x === 'number').to.be.true;
+            expect(typeof state.y === 'number').to.be.true;
+          }
+        }}
+      />
+
       <TestCase itShould="display event received by onHandlerStateChange when dragging over blue rectangle">
         <ObjectDisplayer
           renderContent={setObject => {
@@ -342,6 +351,24 @@ const NativeAnimatedEventExample = () => {
     </PanGestureHandler>
   );
 };
+
+function ConsoleOutput({height, data}: {height: number; data: any}) {
+  return (
+    <ScrollView
+      style={{
+        width: '100%',
+        height,
+        borderTopWidth: 2,
+        borderColor: 'gray',
+        backgroundColor: 'black',
+        padding: 8,
+      }}>
+      <Text style={{color: 'white', fontSize: 8}}>
+        {data === undefined ? 'undefined' : JSON.stringify(data, null, 2)}
+      </Text>
+    </ScrollView>
+  );
+}
 
 function ObjectDisplayer(props: {
   renderContent: (setObject: (obj: Object) => void) => any;
