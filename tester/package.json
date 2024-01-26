@@ -43,6 +43,6 @@
     "preset": "react-native"
   },
   "overrides": {
-    "@rnoh/react-native-harmony-cli": "^0.0.19"
+    "@rnoh/react-native-harmony-cli": "^0.0.20"
   }
 }
