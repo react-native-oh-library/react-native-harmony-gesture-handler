@@ -49,7 +49,7 @@ function TappingTest() {
                 }}>
                 <Rect
                   backgroundColor={state.backgroundColor}
-                  label="DOUBLE TAP ME"
+                  label="DOUBLE TAP THIS RECT"
                 />
               </TapGestureHandler>
             </View>
