@@ -7,13 +7,13 @@ import {NewApiTest, OldApiTest} from './src';
 function App({}): JSX.Element | null {
   return (
     <SafeAreaView style={{backgroundColor: '#222'}}>
-      <GestureHandlerRootView>
-        <ScrollView style={{width: '100%', height: '100%'}}>
-          <Tester>
+      <GestureHandlerRootView style={{flex: 1}}>
+        <Tester style={{flex: 1}}>
+          <ScrollView style={{width: '100%', flex: 1}}>
             <NewApiTest />
             <OldApiTest />
-          </Tester>
-        </ScrollView>
+          </ScrollView>
+        </Tester>
       </GestureHandlerRootView>
     </SafeAreaView>
   );
