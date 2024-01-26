@@ -12,7 +12,7 @@
     "postinstall": "react-native unpack-harmony"
   },
   "dependencies": {
-    "@rnoh/testerino": "^0.0.8",
+    "@rnoh/testerino": "^0.0.9",
     "react": "18.2.0",
     "react-native": "0.72.5",
     "react-native-gesture-handler": "^2.12.1",
