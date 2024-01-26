@@ -3,7 +3,6 @@
 import React, {useRef, useState} from 'react';
 import {
   Animated,
-  Button,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -23,98 +22,131 @@ import {
   TouchableWithoutFeedback,
 } from 'react-native-gesture-handler';
 
+const PALETTE = {
+  LIGHT_GREEN: '#56a23e',
+  DARK_BLUE: '#2c647f',
+};
+
 function App({}): JSX.Element | null {
-  const [isTesterVisible, setIsTesterVisible] = useState(true);
-
-  if (!isTesterVisible) return null;
-
   return (
-    <SafeAreaView>
-      <Button
-        title="Reload"
-        onPress={() => {
-          setIsTesterVisible(false);
-          setTimeout(() => {
-            setIsTesterVisible(true);
-          }, 1000);
-        }}
-      />
+    <SafeAreaView style={{backgroundColor: '#222'}}>
       <GestureHandlerRootView>
         <ScrollView style={[styles.container]}>
           <Tester>
             <TestSuite name="react-native-gesture-handler">
-              <TestCase itShould="toggle color on tap">
-                <Example
-                  createGesture={setBackgroundColor => {
-                    return Gesture.Tap().onStart(() => {
-                      setBackgroundColor(prev =>
-                        prev === 'red' ? 'green' : 'red',
-                      );
-                    });
-                  }}
-                />
-              </TestCase>
-              <TestCase itShould="change color to green when panning">
-                <Example
-                  createGesture={setBackgroundColor => {
-                    return Gesture.Pan()
-                      .onStart(() => {
-                        setBackgroundColor('green');
-                      })
-                      .onEnd(() => {
-                        setBackgroundColor('red');
-                      });
-                  }}
-                />
-              </TestCase>
-              <TestCase itShould="support TouchableOpacity">
-                <StateKeeper<string>
-                  renderContent={(value, setValue) => {
-                    return (
-                      <TouchableOpacity
-                        onPress={() => {
-                          setValue(prev =>
-                            prev === 'Pressed' ? 'Pressed x' : 'Pressed',
+              <TestCase
+                itShould="toggle color on tap"
+                initialState={false}
+                arrange={({setState}) => {
+                  return (
+                    <Example
+                      createGesture={setBackgroundColor => {
+                        return Gesture.Tap().onStart(() => {
+                          setState(true);
+                          setBackgroundColor(prev =>
+                            prev === PALETTE.DARK_BLUE
+                              ? PALETTE.LIGHT_GREEN
+                              : PALETTE.DARK_BLUE,
                           );
+                        });
+                      }}
+                    />
+                  );
+                }}
+                assert={({expect, state}) => {
+                  expect(state).to.be.true;
+                }}
+              />
+
+              <TestCase
+                itShould="change color to green when panning"
+                initialState={false}
+                arrange={({setState}) => {
+                  return (
+                    <Example
+                      createGesture={setBackgroundColor => {
+                        return Gesture.Pan()
+                          .onStart(() => {
+                            setBackgroundColor(PALETTE.LIGHT_GREEN);
+                            setState(true);
+                          })
+                          .onEnd(() => {
+                            setBackgroundColor(PALETTE.DARK_BLUE);
+                          });
+                      }}
+                    />
+                  );
+                }}
+                assert={({expect, state}) => {
+                  expect(state).to.be.true;
+                }}
+              />
+
+              <TestCase
+                itShould="support TouchableOpacity"
+                initialState={false}
+                arrange={({setState}) => {
+                  return (
+                    <View style={styles.testCaseContainer}>
+                      <TouchableOpacity
+                        style={{
+                          width: 128,
+                          height: 128,
+                          backgroundColor: PALETTE.DARK_BLUE,
+                          justifyContent: 'center',
+                        }}
+                        onPress={() => {
+                          setState(true);
                         }}>
                         <Text
                           style={{
-                            width: 256,
-                            height: 32,
-                            borderWidth: 1,
+                            textAlign: 'center',
                             fontSize: 12,
+                            color: 'white',
                           }}>
-                          {value ?? 'Press me'}
+                          PRESS ME
                         </Text>
                       </TouchableOpacity>
-                    );
-                  }}
-                />
-              </TestCase>
-              <TestCase itShould="support TouchableWithoutFeedback">
-                <StateKeeper<string>
-                  renderContent={(value, setValue) => {
-                    return (
+                    </View>
+                  );
+                }}
+                assert={({expect, state}) => {
+                  expect(state).to.be.true;
+                }}
+              />
+
+              <TestCase
+                itShould="support TouchableWithoutFeedback"
+                initialState={false}
+                arrange={({setState}) => {
+                  return (
+                    <View style={styles.testCaseContainer}>
                       <TouchableWithoutFeedback
+                        style={{
+                          width: 128,
+                          height: 128,
+                          backgroundColor: PALETTE.DARK_BLUE,
+                          justifyContent: 'center',
+                        }}
                         onPress={() => {
-                          setValue(prev =>
-                            prev === 'Pressed' ? 'Pressed x' : 'Pressed',
-                          );
+                          setState(true);
                         }}>
                         <Text
                           style={{
-                            width: 256,
-                            height: 32,
-                            borderWidth: 1,
                             fontSize: 12,
+                            color: 'white',
+                            textAlign: 'center',
                           }}>
-                          {value ?? 'Press me'}
+                          PRESS ME
                         </Text>
                       </TouchableWithoutFeedback>
-                    );
-                  }}
-                />
-              </TestCase>
+                    </View>
+                  );
+                }}
+                assert={({expect, state}) => {
+                  expect(state).to.be.true;
+                }}
+              />
             </TestSuite>
             <TestSuite name="old API">
               <TestCase itShould="toggle color on double tap">
@@ -320,16 +352,25 @@ function Example(props: {
   ) => GestureType;
   rightHitSlop?: number;
 }) {
-  const [backgroundColor, setBackgroundColor] = useState('red');
+  const [backgroundColor, setBackgroundColor] = useState(PALETTE.DARK_BLUE);
 
   const gesture = React.useMemo(() => {
     return props.createGesture(setBackgroundColor);
   }, []);
 
   return (
-    <GestureDetector gesture={gesture}>
-      <View style={{width: 100, height: 32, backgroundColor}} />
-    </GestureDetector>
+    <View style={styles.testCaseContainer}>
+      <GestureDetector gesture={gesture}>
+        <View
+          style={{
+            width: 128,
+            height: 128,
+            alignSelf: 'center',
+            backgroundColor,
+          }}
+        />
+      </GestureDetector>
+    </View>
   );
 }
 
@@ -415,6 +456,12 @@ const styles = StyleSheet.create({
   container: {
     width: '100%',
     height: '100%',
+  },
+  testCaseContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'black',
   },
 });
 

@@ -27,20 +27,15 @@ function CustomComponentBuilder(ctx: ComponentBuilderContext) {
 @Component
 struct Index {
   @StorageLink('RNAbility') rnAbility: RNAbility | undefined = undefined
-  @State isVisible: boolean = false
-
-  aboutToAppear() {
-    setTimeout(() => this.isVisible = true, 1500)
-  }
 
   build() {
     Column() {
-      if (this.rnAbility && this.isVisible) {
+      if (this.rnAbility) {
         RNApp({
           appKey: "app_name",
           rnInstanceConfig: { createRNPackages: (ctx) => [
             new GestureHandlerPackage(ctx)
-          ] },
+          ]},
           buildCustomComponent: CustomComponentBuilder,
           jsBundleProvider: new MetroJSBundleProvider(),
         })
