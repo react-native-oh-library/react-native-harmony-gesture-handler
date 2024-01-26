@@ -152,39 +152,50 @@ export function OldApiTest() {
         }}
       />
 
-      <TestCase itShould="display event received by onHandlerStateChange when dragging over blue rectangle">
-        <ObjectDisplayer
-          renderContent={setObject => {
-            return (
-              <PanGestureHandler
-                onHandlerStateChange={e => {
-                  setObject({
-                    oldState: e.nativeEvent.oldState,
-                    state: e.nativeEvent.state,
-                    absoluteX: e.nativeEvent.absoluteX,
-                    absoluteY: e.nativeEvent.absoluteY,
-                    handlerTag: e.nativeEvent.handlerTag,
-                    numberOfPointers: e.nativeEvent.numberOfPointers,
-                    translationX: e.nativeEvent.translationX,
-                    translationY: e.nativeEvent.translationY,
-                    velocityX: e.nativeEvent.velocityX,
-                    velocityY: e.nativeEvent.velocityY,
-                    x: e.nativeEvent.x,
-                    y: e.nativeEvent.y,
-                  });
-                }}>
-                <View
-                  style={{
-                    width: 100,
-                    height: 32,
-                    backgroundColor: 'blue',
-                  }}
-                />
-              </PanGestureHandler>
-            );
-          }}
-        />
-      </TestCase>
+      <TestCase<PanGestureHandlerEventPayload | undefined>
+        itShould="display event received by onHandlerStateChange when dragging over blue rectangle"
+        initialState={undefined}
+        arrange={({state, setState}) => {
+          return (
+            <>
+              <StateKeeper
+                renderContent={(state2, setState2) => {
+                  return (
+                    <View style={styles.testCaseContainer}>
+                      <PanGestureHandler
+                        onHandlerStateChange={e => {
+                          if (!state) {
+                            setState(e.nativeEvent);
+                          }
+                          setState2(e.nativeEvent);
+                        }}>
+                        <Rect
+                          backgroundColor={PALETTE.DARK_BLUE}
+                          label="PAN ME"
+                        />
+                      </PanGestureHandler>
+                      <ConsoleOutput height={128} data={state2} />
+                    </View>
+                  );
+                }}
+              />
+            </>
+          );
+        }}
+        assert={({expect, state}) => {
+          expect(state).to.be.not.undefined;
+          if (state) {
+            expect(typeof state.absoluteX === 'number').to.be.true;
+            expect(typeof state.absoluteY === 'number').to.be.true;
+            expect(typeof state.translationX === 'number').to.be.true;
+            expect(typeof state.translationY === 'number').to.be.true;
+            expect(typeof state.velocityX === 'number').to.be.true;
+            expect(typeof state.velocityY === 'number').to.be.true;
+            expect(typeof state.x === 'number').to.be.true;
+            expect(typeof state.y === 'number').to.be.true;
+          }
+        }}
+      />
       <TestCase
         itShould="export State object"
         fn={({expect}) => {
