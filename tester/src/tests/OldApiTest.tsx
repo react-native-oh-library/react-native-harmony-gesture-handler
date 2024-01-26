@@ -1,5 +1,5 @@
 import {TestCase, TestSuite} from '@rnoh/testerino';
-import {useRef, useState} from 'react';
+import {forwardRef, useRef, useState} from 'react';
 import {Animated, StyleSheet, Text, View} from 'react-native';
 import {
   PanGestureHandler,
@@ -31,7 +31,11 @@ export function OldApiTest() {
                         : PALETTE.DARK_BLUE,
                   });
                 }}>
-                <View
+                <Rect
+                  backgroundColor={state.backgroundColor}
+                  label="DOUBLE TAP ME"
+                />
+                {/* <View
                   style={{
                     width: 128,
                     height: 128,
@@ -40,9 +44,9 @@ export function OldApiTest() {
                   }}>
                   <Text
                     style={{fontSize: 12, color: 'white', textAlign: 'center'}}>
-                    DOUBLE TAP ME
+                    {'DOUBLE TAP ME'}
                   </Text>
-                </View>
+                </View> */}
               </TapGestureHandler>
             </View>
           );
@@ -52,9 +56,61 @@ export function OldApiTest() {
         }}
       />
 
-      <TestCase itShould="change color to green when panning after 50 px in X direction (panning + activeOffsetX)">
-        <PanningExample />
-      </TestCase>
+      <TestCase
+        itShould="change color to green when panning after 128px horizontally (panning + activeOffsetX)"
+        initialState={{hasPanned: false, backgroundColor: PALETTE.DARK_BLUE}}
+        arrange={({setState, state}) => {
+          return (
+            <View style={styles.testCaseContainer}>
+              <PanGestureHandler
+                activeOffsetX={[-128, 128]}
+                onActivated={() => {
+                  setState({
+                    hasPanned: true,
+                    backgroundColor: PALETTE.LIGHT_GREEN,
+                  });
+                }}
+                onEnded={() => {
+                  setState(prev => ({
+                    ...prev,
+                    backgroundColor: PALETTE.DARK_BLUE,
+                  }));
+                }}>
+                <View
+                  style={{
+                    width: '100%',
+                    height: 128,
+                    backgroundColor: state.backgroundColor,
+                  }}>
+                  <View
+                    style={{
+                      width: 128,
+                      height: 128,
+                      alignSelf: 'center',
+                      justifyContent: 'center',
+                      borderLeftWidth: 1,
+                      borderRightWidth: 1,
+                      borderColor: 'white',
+                    }}>
+                    <Text
+                      style={{
+                        fontSize: 12,
+                        color: 'white',
+                        textAlign: 'center',
+                      }}>
+                      PAN ME HORIZONTALLY
+                    </Text>
+                  </View>
+                </View>
+              </PanGestureHandler>
+            </View>
+          );
+        }}
+        assert={({expect, state}) => {
+          expect(state.hasPanned).to.be.true;
+        }}
+      />
+
       <TestCase itShould="display event received by onGestureEvent when dragging over blue rectangle">
         <ObjectDisplayer
           renderContent={setObject => {
@@ -242,34 +298,28 @@ export function OldApiTest() {
   );
 }
 
-function TapExample() {
-  const [backgroundColor, setBackgroundColor] = useState('red');
-
+const Rect = forwardRef<
+  View,
+  {
+    backgroundColor: string;
+    label: string;
+  }
+>(({backgroundColor, label}, ref) => {
   return (
-    <TapGestureHandler
-      numberOfTaps={2}
-      onActivated={() => {
-        setBackgroundColor(prev => (prev === 'red' ? 'green' : 'red'));
+    <View
+      ref={ref}
+      style={{
+        width: 128,
+        height: 128,
+        backgroundColor: backgroundColor,
+        justifyContent: 'center',
       }}>
-      <View style={{width: 100, height: 32, backgroundColor}} />
-    </TapGestureHandler>
+      <Text style={{fontSize: 12, color: 'white', textAlign: 'center'}}>
+        {label}
+      </Text>
+    </View>
   );
-}
-
-function PanningExample() {
-  const [backgroundColor, setBackgroundColor] = useState('red');
-
-  return (
-    <PanGestureHandler
-      activeOffsetX={[-50, 50]}
-      onActivated={() => {
-        setBackgroundColor('green');
-      }}
-      onEnded={() => setBackgroundColor('red')}>
-      <View style={{width: 100, height: 32, backgroundColor}} />
-    </PanGestureHandler>
-  );
-}
+});
 
 const NativeAnimatedEventExample = () => {
   const animatedValue = useRef(new Animated.Value(100)).current;
