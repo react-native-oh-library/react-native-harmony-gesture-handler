@@ -81,12 +81,7 @@ export function OldApiTest() {
                       borderRightWidth: 1,
                       borderColor: 'white',
                     }}>
-                    <Text
-                      style={{
-                        fontSize: 12,
-                        color: 'white',
-                        textAlign: 'center',
-                      }}>
+                    <Text style={styles.rectLabel}>
                       PAN 128 PX HORIZONTALLY
                     </Text>
                   </View>
@@ -219,38 +214,8 @@ export function OldApiTest() {
                   }));
                 }}>
                 <View style={{flexDirection: 'row'}}>
-                  <View
-                    style={{
-                      width: 128,
-                      height: 128,
-                      backgroundColor: state.backgroundColor,
-                      justifyContent: 'center',
-                    }}>
-                    <Text
-                      style={{
-                        fontSize: 12,
-                        color: 'white',
-                        textAlign: 'center',
-                      }}>
-                      PAN ME
-                    </Text>
-                  </View>
-                  <View
-                    style={{
-                      width: 128,
-                      height: 128,
-                      backgroundColor: PALETTE.DARK_RED,
-                      justifyContent: 'center',
-                    }}>
-                    <Text
-                      style={{
-                        fontSize: 12,
-                        color: 'white',
-                        textAlign: 'center',
-                      }}>
-                      PAN ME TOO
-                    </Text>
-                  </View>
+                  <Rect label="PAN ME" backgroundColor={PALETTE.DARK_BLUE} />
+                  <Rect label="PAN ME TOO" backgroundColor={PALETTE.DARK_RED} />
                 </View>
               </PanGestureHandler>
             </View>
@@ -339,12 +304,12 @@ export function OldApiTest() {
                       justifyContent: 'center',
                     }}>
                     <Text
-                      style={{
-                        color: 'white',
-                        textAlign: 'center',
-                        fontSize: 12,
-                        padding: 8,
-                      }}>
+                      style={[
+                        styles.rectLabel,
+                        {
+                          padding: 8,
+                        },
+                      ]}>
                       TOUCH, MOVE FINGER MORE THAN 100 PX, RELEASE FINGER
                     </Text>
                   </View>
@@ -354,12 +319,46 @@ export function OldApiTest() {
           }}
         />
       </TestCase>
-      <TestCase itShould="scale vertically when dragged horizontally (NativeAnimatedEvent)">
-        <NativeAnimatedEventExample />
+      <TestCase itShould="scale blue rect horizontally when dragging also horizontally (NativeAnimatedEvent)">
+        <View style={styles.testCaseContainer}>
+          <NativeAnimatedEventExample />
+        </View>
       </TestCase>
     </TestSuite>
   );
 }
+
+const NativeAnimatedEventExample = () => {
+  const animatedValue = useRef(new Animated.Value(100)).current;
+
+  return (
+    <PanGestureHandler
+      onGestureEvent={Animated.event(
+        [{nativeEvent: {absoluteX: animatedValue}}],
+        {useNativeDriver: true},
+      )}>
+      <Animated.View
+        style={{
+          backgroundColor: PALETTE.DARK_BLUE,
+          width: 128,
+          height: 128,
+          alignSelf: 'center',
+          justifyContent: 'center',
+          transform: [
+            {
+              scaleX: Animated.diffClamp(
+                Animated.divide(animatedValue, 100),
+                1,
+                2,
+              ),
+            },
+          ],
+        }}>
+        <Text style={styles.rectLabel}>PAN ME HORIZONTALLY</Text>
+      </Animated.View>
+    </PanGestureHandler>
+  );
+};
 
 const Rect = forwardRef<
   View,
@@ -377,34 +376,10 @@ const Rect = forwardRef<
         backgroundColor: backgroundColor,
         justifyContent: 'center',
       }}>
-      <Text style={{fontSize: 12, color: 'white', textAlign: 'center'}}>
-        {label}
-      </Text>
+      <Text style={styles.rectLabel}>{label}</Text>
     </View>
   );
 });
-
-const NativeAnimatedEventExample = () => {
-  const animatedValue = useRef(new Animated.Value(100)).current;
-
-  return (
-    <PanGestureHandler
-      onGestureEvent={Animated.event(
-        [{nativeEvent: {absoluteX: animatedValue}}],
-        {useNativeDriver: true},
-      )}>
-      <Animated.View
-        style={{
-          backgroundColor: 'red',
-          width: 100,
-          height: 100,
-          alignSelf: 'center',
-          transform: [{scaleY: Animated.divide(animatedValue, 100)}],
-        }}
-      />
-    </PanGestureHandler>
-  );
-};
 
 function ConsoleOutput({height, data}: {height: number; data: any}) {
   return (
@@ -421,22 +396,6 @@ function ConsoleOutput({height, data}: {height: number; data: any}) {
         {data === undefined ? 'undefined' : JSON.stringify(data, null, 2)}
       </Text>
     </ScrollView>
-  );
-}
-
-function ObjectDisplayer(props: {
-  renderContent: (setObject: (obj: Object) => void) => any;
-}) {
-  const [object, setObject] = useState<Object>();
-
-  return (
-    <View style={{width: 256, height: 200}}>
-      <Text
-        style={{width: 256, height: 128, fontSize: 8, backgroundColor: '#EEE'}}>
-        {object === undefined ? 'undefined' : JSON.stringify(object)}
-      </Text>
-      {props.renderContent(setObject)}
-    </View>
   );
 }
 
@@ -457,5 +416,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'black',
+  },
+  rectLabel: {
+    fontSize: 12,
+    color: 'white',
+    textAlign: 'center',
   },
 });
