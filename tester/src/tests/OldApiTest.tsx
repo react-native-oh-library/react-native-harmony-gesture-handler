@@ -260,53 +260,54 @@ export function OldApiTest() {
           expect(state.hasBeenActivated).to.be.true;
         }}
       />
-      <TestCase itShould="change color when panning left rect but not right">
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-          }}>
-          <StateKeeper<string>
-            renderContent={(value, setValue) => {
-              return (
-                <PanGestureHandler
-                  onActivated={() => setValue('green')}
-                  onEnded={() => {
-                    setValue('red');
-                  }}>
-                  <View
-                    style={{
-                      backgroundColor: value ?? 'red',
-                      width: 128,
-                      height: 64,
-                    }}
-                  />
-                </PanGestureHandler>
-              );
-            }}
-          />
-          <StateKeeper<string>
-            renderContent={(value, setValue) => {
-              return (
-                <PanGestureHandler
-                  enabled={false}
-                  onActivated={() => setValue('green')}
-                  onEnded={() => {
-                    setValue('red');
-                  }}>
-                  <View
-                    style={{
-                      backgroundColor: value ?? 'red',
-                      width: 128,
-                      height: 64,
-                    }}
-                  />
-                </PanGestureHandler>
-              );
-            }}
-          />
-        </View>
-      </TestCase>
+      <TestCase
+        itShould="change color when panning left rect but not right"
+        initialState={{hasPannedLeftRect: false, hasPannedRightRect: false}}
+        arrange={({setState, state}) => {
+          return (
+            <View
+              style={[
+                styles.testCaseContainer,
+                {
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                },
+              ]}>
+              <PanGestureHandler
+                onActivated={() =>
+                  setState(prev => ({...prev, hasPannedLeftRect: true}))
+                }>
+                <Rect
+                  label="PAN ME"
+                  backgroundColor={
+                    state.hasPannedLeftRect
+                      ? PALETTE.LIGHT_GREEN
+                      : PALETTE.DARK_BLUE
+                  }
+                />
+              </PanGestureHandler>
+              <PanGestureHandler
+                enabled={false}
+                onActivated={() =>
+                  setState(prev => ({...prev, hasPannedRightRect: true}))
+                }>
+                <Rect
+                  label="PAN ME TOO"
+                  backgroundColor={
+                    state.hasPannedRightRect
+                      ? PALETTE.LIGHT_GREEN
+                      : PALETTE.DARK_RED
+                  }
+                />
+              </PanGestureHandler>
+            </View>
+          );
+        }}
+        assert={({expect, state}) => {
+          expect(state.hasPannedLeftRect).to.be.true;
+          expect(state.hasPannedRightRect).to.be.false;
+        }}
+      />
       <TestCase itShould="change color on tap as long as finger didn't move more than 100px horizontally (maxDeltaX)">
         <StateKeeper<string>
           renderContent={(value, setValue) => {
