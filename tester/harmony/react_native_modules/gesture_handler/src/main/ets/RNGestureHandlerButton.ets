@@ -5,7 +5,7 @@ export type RNGestureHandlerButtonDescriptor = RNC.RNGestureHandlerButton.Descri
 
 @Component
 export struct RNGestureHandlerButton {
-  static readonly DESCRIPTOR_TYPE = RNC.RNGestureHandlerButton.NAME
+  static readonly NAME = RNC.RNGestureHandlerButton.NAME
   public ctx!: RNOHContext
   public tag: number = -1
   @BuilderParam public buildCustomComponent: (componentBuilderContext: ComponentBuilderContext) => void

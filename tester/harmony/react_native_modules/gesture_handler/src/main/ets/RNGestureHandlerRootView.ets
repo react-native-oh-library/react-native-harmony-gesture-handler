@@ -1,18 +1,14 @@
-import { Descriptor, RNOHContext, RNViewBase, ComponentBuilderContext, RNComponentFactory, Tag } from "rnoh"
+import { RNOHContext, RNViewBase, ComponentBuilderContext, RNComponentFactory, Tag } from "rnoh"
 import { RNC } from "rnoh/generated/ts"
 import { RNGHRootTouchHandler } from "./RNGHRootTouchHandler"
 import { RNGestureHandlerModule } from "./RNGestureHandlerModule"
 
 
-export type RNGestureHandlerRootViewDescriptor = Descriptor<"RNGestureHandlerRootView">
+export type RNGestureHandlerRootViewDescriptor = RNC.RNGestureHandlerRootView.Descriptor
 
 @Component
 export struct RNGestureHandlerRootView {
-  /**
-   * @deprecated: Use RNGestureHandlerRootView.NAME instead
-   */
-  static readonly DESCRIPTOR_TYPE = "RNGestureHandlerRootView"
-  static readonly NAME = "RNGestureHandlerRootView"
+  static readonly NAME = RNC.RNGestureHandlerRootView.NAME
   ctx!: RNOHContext
   tag: number = -1
   @BuilderParam buildCustomComponent: (componentBuilderContext: ComponentBuilderContext) => void
