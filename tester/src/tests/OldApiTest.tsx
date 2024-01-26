@@ -13,6 +13,21 @@ export function OldApiTest() {
   return (
     <TestSuite name="old API">
       <TestCase
+        itShould="export State object"
+        fn={({expect}) => {
+          expect(State).to.be.not.undefined;
+        }}
+      />
+      <TappingTest />
+      <PanningTest />
+    </TestSuite>
+  );
+}
+
+function TappingTest() {
+  return (
+    <TestSuite name="tapping">
+      <TestCase
         itShould="toggle color on double tap"
         initialState={{
           hasBeenDoubleTapped: false,
@@ -44,7 +59,60 @@ export function OldApiTest() {
           expect(state.hasBeenDoubleTapped).to.be.true;
         }}
       />
+      <TestCase itShould="change color on tap as long as finger didn't move more than 100px horizontally (maxDeltaX)">
+        <StateKeeper<string>
+          renderContent={(backgroundColor, setBackgroundColor) => {
+            return (
+              <TapGestureHandler
+                maxDeltaX={100}
+                onActivated={() =>
+                  setBackgroundColor(prev =>
+                    prev === PALETTE.DARK_BLUE
+                      ? PALETTE.LIGHT_GREEN
+                      : PALETTE.DARK_BLUE,
+                  )
+                }>
+                <View
+                  style={{
+                    backgroundColor: backgroundColor ?? PALETTE.DARK_BLUE,
+                    width: '100%',
+                    height: 128,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}>
+                  <View
+                    style={{
+                      width: 100,
+                      height: 128,
+                      borderLeftWidth: 1,
+                      borderRightWidth: 1,
+                      borderColor: 'white',
+                      justifyContent: 'center',
+                    }}>
+                    <Text
+                      style={[
+                        styles.rectLabel,
+                        {
+                          padding: 8,
+                        },
+                      ]}>
+                      TO FAIL: TOUCH, MOVE FINGER MORE THAN 100 PX, RELEASE
+                      FINGER
+                    </Text>
+                  </View>
+                </View>
+              </TapGestureHandler>
+            );
+          }}
+        />
+      </TestCase>
+    </TestSuite>
+  );
+}
 
+function PanningTest() {
+  return (
+    <TestSuite name="panning">
       <TestCase
         itShould="change color to green when panning after 128px horizontally (panning + activeOffsetX)"
         initialState={{hasPanned: false, backgroundColor: PALETTE.DARK_BLUE}}
@@ -82,7 +150,7 @@ export function OldApiTest() {
                       borderColor: 'white',
                     }}>
                     <Text style={styles.rectLabel}>
-                      PAN 128 PX HORIZONTALLY
+                      PAN 128 ME PX HORIZONTALLY
                     </Text>
                   </View>
                 </View>
@@ -185,12 +253,6 @@ export function OldApiTest() {
         }}
       />
       <TestCase
-        itShould="export State object"
-        fn={({expect}) => {
-          expect(State).to.be.not.undefined;
-        }}
-      />
-      <TestCase
         itShould="recognize panning when dragging over blue rectangle, but not the red one (hit slop)"
         initialState={{
           hasBeenActivated: false,
@@ -273,52 +335,6 @@ export function OldApiTest() {
           expect(state.hasPannedRightRect).to.be.false;
         }}
       />
-      <TestCase itShould="change color on tap as long as finger didn't move more than 100px horizontally (maxDeltaX)">
-        <StateKeeper<string>
-          renderContent={(backgroundColor, setBackgroundColor) => {
-            return (
-              <TapGestureHandler
-                maxDeltaX={100}
-                onActivated={() =>
-                  setBackgroundColor(prev =>
-                    prev === PALETTE.DARK_BLUE
-                      ? PALETTE.LIGHT_GREEN
-                      : PALETTE.DARK_BLUE,
-                  )
-                }>
-                <View
-                  style={{
-                    backgroundColor: backgroundColor ?? PALETTE.DARK_BLUE,
-                    width: '100%',
-                    height: 128,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}>
-                  <View
-                    style={{
-                      width: 100,
-                      height: 128,
-                      borderLeftWidth: 1,
-                      borderRightWidth: 1,
-                      borderColor: 'white',
-                      justifyContent: 'center',
-                    }}>
-                    <Text
-                      style={[
-                        styles.rectLabel,
-                        {
-                          padding: 8,
-                        },
-                      ]}>
-                      TOUCH, MOVE FINGER MORE THAN 100 PX, RELEASE FINGER
-                    </Text>
-                  </View>
-                </View>
-              </TapGestureHandler>
-            );
-          }}
-        />
-      </TestCase>
       <TestCase itShould="scale blue rect horizontally when dragging also horizontally (NativeAnimatedEvent)">
         <View style={styles.testCaseContainer}>
           <NativeAnimatedEventExample />
