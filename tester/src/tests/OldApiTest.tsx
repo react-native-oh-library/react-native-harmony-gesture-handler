@@ -310,28 +310,44 @@ export function OldApiTest() {
       />
       <TestCase itShould="change color on tap as long as finger didn't move more than 100px horizontally (maxDeltaX)">
         <StateKeeper<string>
-          renderContent={(value, setValue) => {
+          renderContent={(backgroundColor, setBackgroundColor) => {
             return (
               <TapGestureHandler
                 maxDeltaX={100}
                 onActivated={() =>
-                  setValue(prev => (prev === 'red' ? 'green' : 'red'))
+                  setBackgroundColor(prev =>
+                    prev === PALETTE.DARK_BLUE
+                      ? PALETTE.LIGHT_GREEN
+                      : PALETTE.DARK_BLUE,
+                  )
                 }>
                 <View
                   style={{
-                    backgroundColor: 'gray',
-                    width: 128,
-                    height: 64,
+                    backgroundColor: backgroundColor ?? PALETTE.DARK_BLUE,
+                    width: '100%',
+                    height: 128,
                     alignItems: 'center',
                     justifyContent: 'center',
                   }}>
                   <View
                     style={{
-                      backgroundColor: value ?? 'red',
                       width: 100,
-                      height: 64,
-                    }}
-                  />
+                      height: 128,
+                      borderLeftWidth: 1,
+                      borderRightWidth: 1,
+                      borderColor: 'white',
+                      justifyContent: 'center',
+                    }}>
+                    <Text
+                      style={{
+                        color: 'white',
+                        textAlign: 'center',
+                        fontSize: 12,
+                        padding: 8,
+                      }}>
+                      TOUCH, MOVE FINGER MORE THAN 100 PX, RELEASE FINGER
+                    </Text>
+                  </View>
                 </View>
               </TapGestureHandler>
             );
