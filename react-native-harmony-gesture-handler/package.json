@@ -30,7 +30,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "react-native-gesture-handler": "^2.12.1"
+    "react-native-gesture-handler": "2.12.1"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",

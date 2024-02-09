@@ -324,7 +324,7 @@ export abstract class GestureHandler<TGestureConfig extends GestureConfig = Gest
     return this.view
   }
 
-  protected begin(): void {
+  public begin(): void {
     this.logger.info("begin")
     if (!this.isWithinHitSlop()) return;
     if (this.currentState === State.UNDETERMINED) {
@@ -401,7 +401,7 @@ export abstract class GestureHandler<TGestureConfig extends GestureConfig = Gest
     return false;
   }
 
-  protected activate(): void {
+  public activate(): void {
     this.logger.info("activate")
     if (this.currentState === State.UNDETERMINED || this.currentState === State.BEGAN) {
       this.moveToState(State.ACTIVE)

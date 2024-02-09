@@ -4,8 +4,10 @@ import { GestureHandlerRegistry } from './GestureHandlerRegistry';
 import { GestureHandlerFactory } from "./GestureHandlerFactory"
 import { ViewRegistry } from './ViewRegistry';
 import { RNGHLogger, StandardRNGHLogger, FakeRNGHLogger } from './RNGHLogger';
-import { EventDispatcher, JSEventDispatcher, AnimatedEventDispatcher } from './EventDispatcher'
+import { EventDispatcher, JSEventDispatcher, AnimatedEventDispatcher,
+  ReanimatedEventDispatcher } from './EventDispatcher'
 import { RNOHScrollLocker } from "./RNOHScrollLocker"
+import { State } from './State';
 
 export enum ActionType {
   REANIMATED_WORKLET = 1,
@@ -73,15 +75,13 @@ export class RNGestureHandlerModule extends TurboModule implements TM.RNGestureH
   private createEventDispatcher(actionType: ActionType, viewTag: number): EventDispatcher | null {
     switch (actionType) {
       case ActionType.REANIMATED_WORKLET:
-        this.ctx.logger.error("RNGH: Reanimated Worklets are not supported")
-        break;
+        return new ReanimatedEventDispatcher(this.ctx.rnInstance, this.logger.cloneWithPrefix('ReanimatedEventDispatcher'), viewTag)
       case ActionType.NATIVE_ANIMATED_EVENT:
         return new AnimatedEventDispatcher(this.ctx.rnInstance, this.logger.cloneWithPrefix('AnimatedEventDispatcher'), viewTag)
       case ActionType.JS_FUNCTION_OLD_API:
       case ActionType.JS_FUNCTION_NEW_API:
         return new JSEventDispatcher(this.ctx.rnInstance, this.logger.cloneWithPrefix('JSEventDispatcher'));
     }
-    return null
   }
 
   public updateGestureHandler(
@@ -128,4 +128,24 @@ export class RNGestureHandlerModule extends TurboModule implements TM.RNGestureH
     }
     return this.viewRegistry
   }
-}
+
+  public setGestureHandlerState(handlerTag: number, newState: State) {
+    const handler = this.getGestureHandlerRegistry().getGestureHandlerByHandlerTag(handlerTag);
+    switch (newState) {
+      case State.ACTIVE:
+        handler.activate();
+        break;
+      case State.BEGAN:
+        handler.begin();
+        break;
+      case State.END:
+        handler.end();
+        break;
+      case State.FAILED:
+        handler.fail();
+        break;
+      case State.CANCELLED:
+        handler.cancel();
+        break;
+    }
+  }}
