@@ -8,6 +8,7 @@ import {
   TapGestureHandler,
 } from 'react-native-gesture-handler';
 import {PALETTE} from '../constants';
+import {IssueWithAnimatedEvent} from './IssueWithAnimatedEvent';
 
 export function OldApiTest() {
   return (
@@ -20,6 +21,9 @@ export function OldApiTest() {
       />
       <TappingTest />
       <PanningTest />
+      <TestCase itShould="keep updating displayed gesture event object when dragging circle (Animated.event + onGestureEvent)">
+        <IssueWithAnimatedEvent />
+      </TestCase>
     </TestSuite>
   );
 }
