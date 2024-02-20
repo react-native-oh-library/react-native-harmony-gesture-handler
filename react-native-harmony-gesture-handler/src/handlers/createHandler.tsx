@@ -57,7 +57,7 @@ const customGHEventsConfig = {
   // Without this piece of code below, you'll get the following JS error:
   // Unsupported top level event type "topOnGestureHandlerEvent" dispatched
   ...(isFabric() &&
-    Platform.OS === 'android' &&
+    Platform.OS as string === 'harmony' && // RNGH: patch
     customGHEventsConfigFabricAndroid),
 };
 

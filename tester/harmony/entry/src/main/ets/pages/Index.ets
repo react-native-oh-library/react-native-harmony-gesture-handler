@@ -1,5 +1,6 @@
 import {
   RNApp,
+  RNOHErrorDialog,
   ComponentBuilderContext,
   RNAbility,
   MetroJSBundleProvider
@@ -23,6 +24,8 @@ function CustomComponentBuilder(ctx: ComponentBuilderContext) {
   }
 }
 
+const wrappedCustomRNComponentBuilder = wrapBuilder(CustomComponentBuilder)
+
 @Entry
 @Component
 struct Index {
@@ -31,6 +34,7 @@ struct Index {
   build() {
     Column() {
       if (this.rnAbility) {
+        RNOHErrorDialog()
         RNApp({
           appKey: "app_name",
           rnInstanceConfig: { createRNPackages: (ctx) => [
@@ -38,6 +42,7 @@ struct Index {
           ]},
           buildCustomComponent: CustomComponentBuilder,
           jsBundleProvider: new MetroJSBundleProvider(),
+          wrappedCustomRNComponentBuilder: wrappedCustomRNComponentBuilder,
         })
       }
     }
