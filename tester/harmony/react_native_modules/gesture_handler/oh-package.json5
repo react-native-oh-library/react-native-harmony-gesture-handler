@@ -5,7 +5,7 @@
   name: 'rnoh-gesture-handler',
   description: '',
   main: '',
-  version: '2.12.6',
+  version: '2.12.7',
   dependencies: {
     rnoh: 'file:../rnoh',
   },
