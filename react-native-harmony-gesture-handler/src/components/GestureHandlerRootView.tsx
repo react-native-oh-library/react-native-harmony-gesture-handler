@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { PropsWithChildren } from 'react';
 import { ViewProps } from 'react-native';
-import { maybeInitializeFabric } from "react-native-gesture-handler/src/init";
+import { maybeInitializeFabric } from '../init';
 import GestureHandlerRootViewContext from 'react-native-gesture-handler/src/GestureHandlerRootViewContext';
 import RNGestureHandlerRootViewNativeComponent from '../specs/RNGestureHandlerRootViewNativeComponent';
 export interface GestureHandlerRootViewProps
