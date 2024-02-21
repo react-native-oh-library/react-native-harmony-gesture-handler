@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 // @ts-ignore - it isn't typed by TS & don't have definitelyTyped types
 import deepEqual from 'lodash/isEqual';
-import RNGestureHandlerModule from '../RNGestureHandlerModule'; // RNGH: patch
+import {RNGestureHandlerModule} from '../RNGestureHandlerModule'; // RNGH: patch
 import type RNGestureHandlerModuleWeb from 'react-native-gesture-handler/src/RNGestureHandlerModule.web';
 import { State } from 'react-native-gesture-handler/src/State';
 import {
@@ -24,8 +24,9 @@ import {
   GestureEvent,
   HandlerStateChangeEvent,
   findNodeHandle,
-  scheduleFlushOperations,
-} from "react-native-gesture-handler/src/handlers/gestureHandlerCommon";
+  // scheduleFlushOperations, // RNGH: patch
+} from 'react-native-gesture-handler/src/handlers/gestureHandlerCommon';
+import { scheduleFlushOperations } from "../handlers/gestureHandlerCommon" // RNGH: patch
 import { ValueOf } from 'react-native-gesture-handler/src/typeUtils';
 import { isFabric, isJestEnv, tagMessage } from 'react-native-gesture-handler/src/utils';
 import { ActionType } from 'react-native-gesture-handler/src/ActionType';
