@@ -106,14 +106,14 @@ export {
   TouchableOpacity,
   TouchableWithoutFeedback,
 } from './components/touchables';
-// export {
-//   ScrollView,
-//   Switch,
-//   TextInput,
-//   DrawerLayoutAndroid,
-//   FlatList,
-//   RefreshControl,
-// } from './components/GestureComponents';
+export {
+  ScrollView,
+  Switch,
+  TextInput,
+  DrawerLayoutAndroid,
+  FlatList,
+  RefreshControl,
+} from './components/GestureComponents';
 // export type {
 //   //events
 //   GestureHandlerGestureEvent,

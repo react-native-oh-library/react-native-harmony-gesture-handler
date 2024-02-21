@@ -8,6 +8,7 @@ import {
   GestureType,
   TouchableOpacity,
   TouchableWithoutFeedback,
+  ScrollView,
 } from 'react-native-gesture-handler';
 import {PALETTE} from '../constants';
 
@@ -129,6 +130,25 @@ export function NewApiTest() {
           expect(state).to.be.true;
         }}
       />
+
+      <TestCase
+        itShould="display red and green rectangles inside ScrollView (RNGH provides its own ScrollView)"
+        modal>
+        <ScrollView style={{width: '100%', height: 200}}>
+          <View
+            style={{
+              height: 150,
+              backgroundColor: PALETTE.LIGHT_RED,
+            }}
+          />
+          <View
+            style={{
+              height: 150,
+              backgroundColor: PALETTE.LIGHT_GREEN,
+            }}
+          />
+        </ScrollView>
+      </TestCase>
     </TestSuite>
   );
 }
