@@ -34,7 +34,7 @@ struct Index {
   build() {
     Column() {
       if (this.rnAbility) {
-        RNOHErrorDialog()
+        RNOHErrorDialog({ctx: this.rnAbility.rnohCoreContext});
         RNApp({
           appKey: "app_name",
           rnInstanceConfig: { createRNPackages: (ctx) => [
