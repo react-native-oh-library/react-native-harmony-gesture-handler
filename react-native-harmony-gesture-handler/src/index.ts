@@ -4,7 +4,7 @@ declare const global: {
 
 global.isFormsStackingContext = () => true; // TODO: add using JSI
 
-import { initialize } from './init';
+import { initialize } from 'react-native-gesture-handler/src/init';
 
 // export { Directions } from './Directions';
 export { State } from 'react-native-gesture-handler/src/State';
@@ -56,10 +56,10 @@ export type { GestureType } from 'react-native-gesture-handler/src/handlers/gest
 //   FlingGestureHandlerEventPayload,
 //   FlingGestureHandlerProps,
 // } from './handlers/FlingGestureHandler';
-export { TapGestureHandler } from './handlers/TapGestureHandler';
+export { TapGestureHandler } from 'react-native-gesture-handler/src/handlers/TapGestureHandler';
 // export { ForceTouchGestureHandler } from './handlers/ForceTouchGestureHandler';
 // export { LongPressGestureHandler } from './handlers/LongPressGestureHandler';
-export { PanGestureHandler } from './handlers/PanGestureHandler';
+export { PanGestureHandler } from 'react-native-gesture-handler/src/handlers/PanGestureHandler';
 // export { PinchGestureHandler } from './handlers/PinchGestureHandler';
 // export { RotationGestureHandler } from './handlers/RotationGestureHandler';
 // export { FlingGestureHandler } from './handlers/FlingGestureHandler';
@@ -68,7 +68,7 @@ export { PanGestureHandler } from './handlers/PanGestureHandler';
 //   NativeViewGestureHandlerPayload,
 //   NativeViewGestureHandlerProps,
 // } from './handlers/NativeViewGestureHandler';
-export { GestureDetector } from './handlers/gestures/GestureDetector';
+export { GestureDetector } from 'react-native-gesture-handler/src/handlers/gestures/GestureDetector';
 export { GestureObjects as Gesture } from 'react-native-gesture-handler/src/handlers/gestures/gestureObjects';
 // export type { TapGestureType as TapGesture } from './handlers/gestures/tapGesture';
 // export type { PanGestureType as PanGesture } from './handlers/gestures/panGesture';
@@ -105,7 +105,7 @@ export {
   // TouchableNativeFeedback,
   TouchableOpacity,
   TouchableWithoutFeedback,
-} from './components/touchables';
+} from 'react-native-gesture-handler/src/components/touchables';
 export {
   ScrollView,
   Switch,
@@ -113,7 +113,7 @@ export {
   DrawerLayoutAndroid,
   FlatList,
   RefreshControl,
-} from './components/GestureComponents';
+} from 'react-native-gesture-handler/src/components/GestureComponents';
 // export type {
 //   //events
 //   GestureHandlerGestureEvent,
