@@ -1,0 +1,71 @@
+{
+  "name": "@react-native-oh-tpl/react-native-gesture-handler",
+  "harmony": {
+    "alias": "react-native-gesture-handler",
+    "codegenConfig": {
+      "specPaths": [
+        "./src/specs"
+      ]
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/react-native-oh-library/react-native-harmony-gesture-handler.git"
+  },
+  "version": "2.12.6-3",
+  "description": "",
+  "react-native": "src/index.ts",
+  "main": "lib/commonjs/index.js",
+  "module": "lib/module/index.js",
+  "types": "lib/typescript/index.d.ts",
+  "scripts": {
+    "prepack": "bob build",
+    "test": "jest",
+    "pack:harmony": "react-native pack-harmony --oh-module-path ../tester/harmony/react_native_modules/gesture_handler --harmony-dir-path ./harmony --package-json-path ./package.json",
+    "pack:prod": "npm run pack:harmony && npm pack"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*",
+    "react-native-harmony": "*"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "react-native-gesture-handler": "2.12.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.12.9",
+    "@babel/plugin-proposal-class-properties": "^7.12.1",
+    "@babel/preset-env": "^7.12.11",
+    "@babel/preset-typescript": "^7.12.7",
+    "@babel/runtime": "^7.12.5",
+    "metro-react-native-babel-preset": "^0.64.0",
+    "@types/react": "^18.2.18",
+    "react": "^18.2.0",
+    "react-native": "^0.72.0",
+    "react-native-builder-bob": "^0.21.3",
+    "react-native-harmony": "npm:@rnoh/react-native-harmony@0.72.14",
+    "typescript": "4.5.5"
+  },
+  "files": [
+    "harmony",
+    "src",
+    "lib"
+  ],
+  "react-native-builder-bob": {
+    "source": "src",
+    "output": "lib",
+    "targets": [
+      "commonjs",
+      "module",
+      [
+        "typescript",
+        {
+          "project": "tsconfig.build.json"
+        }
+      ]
+    ]
+  }
+}

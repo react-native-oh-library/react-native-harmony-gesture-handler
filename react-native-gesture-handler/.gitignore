@@ -1,0 +1,4 @@
+lib/*
+*.tar.gz
+*.tgz
+package-lock.json
