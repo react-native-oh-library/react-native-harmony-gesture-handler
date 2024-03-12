@@ -1,10 +1,4 @@
-import {
-  RNApp,
-  RNOHErrorDialog,
-  ComponentBuilderContext,
-  RNAbility,
-  MetroJSBundleProvider
-} from 'rnoh'
+import { RNApp, RNOHErrorDialog, ComponentBuilderContext, RNAbility, MetroJSBundleProvider } from 'rnoh'
 import { RNGestureHandlerRootView, RNGestureHandlerButton, GestureHandlerPackage } from "rnoh-gesture-handler"
 
 @Builder
@@ -34,7 +28,7 @@ struct Index {
   build() {
     Column() {
       if (this.rnAbility) {
-        RNOHErrorDialog({ctx: this.rnAbility.rnohCoreContext});
+        RNOHErrorDialog({ ctx: this.rnAbility.rnohCoreContext });
         RNApp({
           appKey: "app_name",
           rnInstanceConfig: {
