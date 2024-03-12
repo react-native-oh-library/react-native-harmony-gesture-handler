@@ -7,6 +7,6 @@
   main: '',
   version: '2.12.7',
   dependencies: {
-    rnoh: 'file:../rnoh',
+    rnoh: 'file:../../react_native_modules/rnoh',
   },
 }

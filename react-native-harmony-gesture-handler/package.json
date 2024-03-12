@@ -25,7 +25,7 @@
   "peerDependencies": {
     "react": "*",
     "react-native": "*",
-    "react-native-harmony": "npm:@rnoh/react-native-harmony@^0.72.16"
+    "react-native-harmony": "npm:@rnoh/react-native-harmony@^0.72.17"
   },
   "keywords": [],
   "author": "",
