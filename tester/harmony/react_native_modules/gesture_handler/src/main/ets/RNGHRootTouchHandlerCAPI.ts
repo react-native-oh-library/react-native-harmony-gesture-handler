@@ -49,13 +49,13 @@ class TouchEvent {
 
   private touchTypeFromAction(action: number): TouchType {
     switch (action) {
-      case 1:
+      case 0:
         return TouchType.Down
+      case 1:
+        return TouchType.Up
       case 2:
         return TouchType.Move
       case 3:
-        return TouchType.Up
-      default:
         return TouchType.Cancel
     }
   }
@@ -65,8 +65,8 @@ class TouchEvent {
       id: touchPoint.id,
       windowX: touchPoint.windowX,
       windowY: touchPoint.windowY,
-      x: touchPoint.windowX,
-      y: touchPoint.windowY,
+      x: touchPoint.rawX,
+      y: touchPoint.rawY,
       type: touchType
     }
   }
@@ -80,7 +80,6 @@ export class RNGHRootTouchHandlerCAPI {
   }
 
   handleTouch(rawTouchEvent: RawTouchEvent) {
-    this.logger.cloneWithPrefix("handleTouch").debug(JSON.stringify(rawTouchEvent))
     this.touchHandlerArkTS.handleTouch(new TouchEvent(rawTouchEvent).asTouchEventArkTS())
   }
 }
