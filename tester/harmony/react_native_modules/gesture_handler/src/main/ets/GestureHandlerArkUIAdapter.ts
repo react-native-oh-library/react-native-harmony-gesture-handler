@@ -1,8 +1,9 @@
-import { Point } from "rnoh"
+import { Point } from "rnoh/ts"
 import { GestureHandler } from "./GestureHandler"
 import { AdaptedEvent, EventType, PointerType, TouchEventType, Touch } from "./Event"
 import { View } from "./View"
 import { RNGHLogger } from "./RNGHLogger"
+import { TouchEvent, TouchType, TouchObject } from "./types"
 
 export class GestureHandlerArkUIAdapter {
   private activePointerIds = new Set<number>()

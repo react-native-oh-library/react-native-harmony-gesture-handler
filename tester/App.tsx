@@ -1,4 +1,6 @@
+/* eslint-disable react-native/no-inline-styles */
 import React from 'react';
+
 import {SafeAreaView, ScrollView, StatusBar, View} from 'react-native';
 import {Tester} from '@rnoh/testerino';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
