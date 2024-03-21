@@ -37,9 +37,12 @@ struct Index {
         RNOHErrorDialog({ctx: this.rnAbility.rnohCoreContext});
         RNApp({
           appKey: "app_name",
-          rnInstanceConfig: { createRNPackages: (ctx) => [
-            new GestureHandlerPackage(ctx)
-          ]},
+          rnInstanceConfig: {
+            enableCAPIArchitecture: true,
+            createRNPackages: (ctx) => [
+              new GestureHandlerPackage(ctx)
+            ]
+          },
           buildCustomComponent: CustomComponentBuilder,
           jsBundleProvider: new MetroJSBundleProvider(),
           wrappedCustomRNComponentBuilder: wrappedCustomRNComponentBuilder,
