@@ -32,7 +32,7 @@ struct Index {
         RNApp({
           appKey: "app_name",
           rnInstanceConfig: {
-            enableCAPIArchitecture: false,
+            enableCAPIArchitecture: true,
             createRNPackages: (ctx) => [
               new GestureHandlerPackage(ctx)
             ]
