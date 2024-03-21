@@ -10,7 +10,11 @@ import {
   AnimatedEventDispatcher,
   ReanimatedEventDispatcher
 } from './EventDispatcher'
+<<<<<<< HEAD
 import { RNOHScrollLockerArkTS, RNOHScrollLockerCAPI } from "./RNOHScrollLocker"
+=======
+import { RNOHScrollLocker } from "./RNOHScrollLocker"
+>>>>>>> 5e7d7ff (feat: support C-API arch)
 import { State } from './State';
 import { RNGHRootTouchHandlerCAPI, RawTouchEvent } from "./RNGHRootTouchHandlerCAPI"
 import { RNGHRootTouchHandlerArkTS } from './RNGHRootTouchHandlerArkTS';
