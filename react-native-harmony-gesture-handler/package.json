@@ -9,7 +9,11 @@
     },
     "redirectInternalImports": true
   },
+<<<<<<< HEAD
   "version": "2.12.9",
+=======
+  "version": "2.12.8",
+>>>>>>> 141d036 (release 2.12.8)
   "description": "",
   "react-native": "src/index.ts",
   "main": "lib/commonjs/index.js",
