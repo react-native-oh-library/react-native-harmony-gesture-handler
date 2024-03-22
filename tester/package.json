@@ -17,10 +17,14 @@
     "react-native": "0.72.5",
     "react-native-gesture-handler": "2.12.1",
 <<<<<<< HEAD
+<<<<<<< HEAD
     "react-native-harmony": "npm:@rnoh/react-native-harmony@^0.72.20",
     "react-native-harmony-gesture-handler": "file:../react-native-harmony-gesture-handler/rnoh-react-native-harmony-gesture-handler-2.12.9.tgz"
 =======
     "react-native-harmony": "npm:@rnoh/react-native-harmony@^0.72.18",
+=======
+    "react-native-harmony": "npm:@rnoh/react-native-harmony@^0.72.19",
+>>>>>>> 43d4b3b (chore: bump react-native-harmony)
     "react-native-harmony-gesture-handler": "file:../react-native-harmony-gesture-handler/rnoh-react-native-harmony-gesture-handler-2.12.7.tgz"
 >>>>>>> 5e7d7ff (feat: support C-API arch)
   },
