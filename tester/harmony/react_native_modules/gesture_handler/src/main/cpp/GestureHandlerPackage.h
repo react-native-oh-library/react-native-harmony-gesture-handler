@@ -7,5 +7,7 @@ namespace rnoh {
         GestureHandlerPackage(Package::Context ctx) : Package(ctx) {}
 
         EventEmitRequestHandlers createEventEmitRequestHandlers();
+
+        ComponentInstanceFactoryDelegate::Shared createComponentInstanceFactoryDelegate();
     };
 } // namespace rnoh
