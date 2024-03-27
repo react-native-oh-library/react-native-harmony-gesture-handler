@@ -1,11 +1,12 @@
-import { Tag } from "rnoh"
+import { Tag } from "rnoh/ts"
 import { GestureHandlerRegistry } from "./GestureHandlerRegistry"
 import { GestureHandlerArkUIAdapter } from "./GestureHandlerArkUIAdapter"
 import { ViewRegistry } from "./ViewRegistry"
 import { RNGHLogger } from './RNGHLogger'
+import { TouchEvent, TouchType } from "./types"
 
 
-export class RNGHRootTouchHandler {
+export class RNGHRootTouchHandlerArkTS {
   private adapterByViewTag: Map<number, GestureHandlerArkUIAdapter> = new Map() // TODO: remove an adapter when a view or gesture handler is removed
   private activeViewTags: number[] = []
   private viewRegistry: ViewRegistry
@@ -20,7 +21,8 @@ export class RNGHRootTouchHandler {
     this.logger = logger
   }
 
-  public handleTouch(e: TouchEvent) {
+  public handleTouch(touchEvent: any) {
+    const e = touchEvent as TouchEvent
     if (e.type === TouchType.Down) {
       this.activeViewTags = []
     }
