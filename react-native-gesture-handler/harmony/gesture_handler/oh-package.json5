@@ -2,7 +2,7 @@
   license: '',
   devDependencies: {},
   author: '',
-  name: 'rnoh-gesture-handler',
+  name: '@react-native-oh-tpl/react-native-gesture-handler',
   description: '',
   main: 'index.ets',
   version: '2.12.8',
