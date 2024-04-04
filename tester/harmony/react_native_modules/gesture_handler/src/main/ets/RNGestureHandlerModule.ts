@@ -10,7 +10,7 @@ import {
   AnimatedEventDispatcher,
   ReanimatedEventDispatcher
 } from './EventDispatcher'
-import { RNOHScrollLocker } from "./RNOHScrollLocker"
+import { RNOHScrollLockerArkTS, RNOHScrollLockerCAPI } from "./RNOHScrollLocker"
 import { State } from './State';
 import { RNGHRootTouchHandlerCAPI, RawTouchEvent } from "./RNGHRootTouchHandlerCAPI"
 import { RNGHRootTouchHandlerArkTS } from './RNGHRootTouchHandlerArkTS';
@@ -62,7 +62,8 @@ export class RNGestureHandlerModule extends TurboModule implements TM.RNGestureH
 
   public install() {
     this.viewRegistry = new ViewRegistry(this.ctx.descriptorRegistry, this.ctx.componentManagerRegistry)
-    this.gestureHandlerFactory = new GestureHandlerFactory(this.logger, new RNOHScrollLocker(this.ctx.rnInstance))
+    const scrollLocker = this.ctx.rnInstance.getArchitecture() === "ARK_TS" ? new RNOHScrollLockerArkTS(this.ctx.rnInstance) : new RNOHScrollLockerCAPI(this.ctx.rnInstance);
+    this.gestureHandlerFactory = new GestureHandlerFactory(this.logger, scrollLocker)
     return true
   }
 
