@@ -9,5 +9,7 @@ namespace rnoh {
         EventEmitRequestHandlers createEventEmitRequestHandlers();
 
         ComponentInstanceFactoryDelegate::Shared createComponentInstanceFactoryDelegate();
+
+        std::vector<ArkTSMessageHandler::Shared> createArkTSMessageHandlers() override;
     };
 } // namespace rnoh
