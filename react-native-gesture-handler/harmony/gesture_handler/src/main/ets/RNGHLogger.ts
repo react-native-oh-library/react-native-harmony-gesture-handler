@@ -1,4 +1,4 @@
-import { RNOHContext } from "rnoh/ts"
+import { RNOHContext } from "@rnoh/react-native-openharmony/ts"
 
 export interface RNGHLogger {
   info(msg: string): void

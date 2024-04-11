@@ -1,4 +1,4 @@
-import { DescriptorRegistry, ComponentManagerRegistry, Tag } from "rnoh/ts"
+import { DescriptorRegistry, ComponentManagerRegistry, Tag } from "@rnoh/react-native-openharmony/ts"
 import { View } from "./View"
 
 export class ViewRegistry {

@@ -10,7 +10,7 @@ import {
   Tag,
   RNComponentCommandReceiver,
   ViewPropsSelector,
-} from 'RNOH/ts';
+} from '@rnoh/react-native-openharmony/ts';
 
 
 export namespace RNGestureHandlerButton {

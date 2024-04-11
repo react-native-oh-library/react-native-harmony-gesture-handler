@@ -1,4 +1,4 @@
-import { Tag } from "rnoh/ts"
+import { Tag } from "@rnoh/react-native-openharmony/ts"
 import { GestureHandlerRegistry } from "./GestureHandlerRegistry"
 import { GestureHandlerArkUIAdapter } from "./GestureHandlerArkUIAdapter"
 import { ViewRegistry } from "./ViewRegistry"
