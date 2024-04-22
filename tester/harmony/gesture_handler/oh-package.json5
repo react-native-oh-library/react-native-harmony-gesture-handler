@@ -2,7 +2,7 @@
   license: '',
   devDependencies: {},
   author: '',
-  name: 'rnoh-gesture-handler',
+  name: '@rnoh/react-native-openharmony-gesture-handler',
   description: '',
   main: '',
   version: '2.15.0',
