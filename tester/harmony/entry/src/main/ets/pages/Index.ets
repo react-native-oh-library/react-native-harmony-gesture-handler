@@ -1,4 +1,4 @@
-import { RNApp, RNOHErrorDialog, ComponentBuilderContext, RNAbility, MetroJSBundleProvider } from 'rnoh'
+import { RNApp, RNOHErrorDialog, ComponentBuilderContext, RNOHCoreContext, MetroJSBundleProvider } from "@rnoh/react-native-openharmony"
 import { RNGestureHandlerRootView, RNGestureHandlerButton, GestureHandlerPackage } from "rnoh-gesture-handler"
 
 @Builder
@@ -23,12 +23,12 @@ const wrappedCustomRNComponentBuilder = wrapBuilder(CustomComponentBuilder)
 @Entry
 @Component
 struct Index {
-  @StorageLink('RNAbility') rnAbility: RNAbility | undefined = undefined
+  @StorageLink('RNOHCoreContext') rnohCoreContext: RNOHCoreContext | undefined = undefined
 
   build() {
     Column() {
-      if (this.rnAbility) {
-        RNOHErrorDialog({ ctx: this.rnAbility.rnohCoreContext });
+      if (this.rnohCoreContext) {
+        RNOHErrorDialog({ ctx: this.rnohCoreContext });
         RNApp({
           appKey: "app_name",
           rnInstanceConfig: {
