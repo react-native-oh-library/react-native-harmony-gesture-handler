@@ -4,6 +4,7 @@
   author: '',
   name: '@rnoh/react-native-openharmony-gesture-handler',
   description: '',
+<<<<<<< HEAD
   main: '',
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -17,6 +18,9 @@
   },
 =======
 =======
+=======
+  type: 'module',
+>>>>>>> d6f40e7 (chore: switch gesture handler module type to har)
   version: '2.15.0',
 >>>>>>> 166bc10 (chore: update rngh peer dependency)
   dependencies: {},
