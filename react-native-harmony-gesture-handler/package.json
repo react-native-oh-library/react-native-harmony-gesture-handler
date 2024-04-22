@@ -20,7 +20,9 @@
     "test": "jest",
     "pack:harmony": "react-native pack-harmony --oh-module-path ../tester/harmony/react_native_modules/gesture_handler --harmony-dir-path ./harmony --package-json-path ./package.json",
     "pack:prod": "npm run pack:harmony && npm pack",
-    "prepublishOnly": "npm run prepack && npm run pack:harmony"
+    "prepublishOnly": "npm run prepack && npm run pack:harmony",
+    "update_version": "node ./scripts/update-version.js",
+    "deploy": "node ./scripts/deploy.js"
   },
   "peerDependencies": {
     "react": "*",
