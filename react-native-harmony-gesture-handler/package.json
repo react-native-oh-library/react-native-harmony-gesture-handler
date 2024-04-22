@@ -31,6 +31,7 @@
     "react-native": "*",
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     "react-native-harmony": "npm:@rnoh/react-native-harmony@^0.72.20"
 =======
     "react-native-harmony": "npm:@rnoh/react-native-harmony@^0.72.18"
@@ -38,6 +39,9 @@
 =======
     "react-native-harmony": "npm:@rnoh/react-native-harmony@^0.72.19"
 >>>>>>> 43d4b3b (chore: bump react-native-harmony)
+=======
+    "react-native-harmony": "npm:@rnoh/react-native-harmony@^0.72.23"
+>>>>>>> 8a490d3 (chore: update react-native-harmony to 0.72.21)
   },
   "keywords": [],
   "author": "",
@@ -48,6 +52,7 @@
   "devDependencies": {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     "@rnoh/react-native-harmony": "^0.72.19",
 =======
     "@rnoh/react-native-harmony": "^0.72.18",
@@ -55,6 +60,9 @@
 =======
     "@rnoh/react-native-harmony": "^0.72.19",
 >>>>>>> 43d4b3b (chore: bump react-native-harmony)
+=======
+    "@rnoh/react-native-harmony": "^0.72.23",
+>>>>>>> 8a490d3 (chore: update react-native-harmony to 0.72.21)
     "@babel/core": "^7.12.9",
     "@babel/plugin-proposal-class-properties": "^7.12.1",
     "@babel/preset-env": "^7.12.11",

@@ -3,26 +3,10 @@ import { TouchEvent as TouchEventArkTS, TouchType, TouchObject } from "./types"
 import { RNGHLogger } from "./RNGHLogger"
 
 type RawTouchPoint = {
-  contactAreaHeight: number
-  contactAreaWidth: number
-  id: number
-  nodeX: number
-  nodeY: number
-  pressedTime: number
-  pressure: number
-  rawX: number
-  rawY: number
-  screenX: number
-  screenY: number
-  tiltX: number
-  tiltY: number
-  toolHeight: number
-  toolType: number
-  toolWidth: number
-  toolX: number
-  toolY: number
+  pointerId: number
   windowX: number
   windowY: number
+
 }
 
 export type RawTouchEvent = {
@@ -80,7 +64,7 @@ class TouchEvent {
 
   private touchObjectFromTouchPoint(touchPoint: RawTouchPoint, touchType: TouchType): TouchObject {
     return {
-      id: touchPoint.id,
+      id: touchPoint.pointerId,
       windowX: touchPoint.windowX,
       windowY: touchPoint.windowY,
 <<<<<<< HEAD
