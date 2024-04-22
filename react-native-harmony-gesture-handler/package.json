@@ -9,7 +9,7 @@
     },
     "redirectInternalImports": true
   },
-  "version": "2.12.9",
+  "version": "2.15.0",
   "description": "",
   "react-native": "src/index.ts",
   "main": "lib/commonjs/index.js",
@@ -25,15 +25,14 @@
   "peerDependencies": {
     "react": "*",
     "react-native": "*",
-    "react-native-harmony": "npm:@rnoh/react-native-harmony@^0.72.23"
+    "react-native-harmony": "npm:@rnoh/react-native-harmony@^0.72.23",
+    "react-native-gesture-handler": "2.15.0"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "react-native-gesture-handler": "2.12.1"
-  },
   "devDependencies": {
+    "react-native-gesture-handler": "2.15.0",
     "@rnoh/react-native-harmony": "^0.72.23",
     "@babel/core": "^7.12.9",
     "@babel/plugin-proposal-class-properties": "^7.12.1",
