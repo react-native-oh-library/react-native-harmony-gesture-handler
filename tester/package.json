@@ -7,10 +7,14 @@
     "codegen": "react-native codegen-harmony --rnoh-module-path ./harmony/oh_modules/@rnoh/react-native-openharmony",
     "pack:pkg": "cd ../react-native-harmony-gesture-handler && npm run pack:prod && cd ../tester",
 <<<<<<< HEAD
+<<<<<<< HEAD
     "install:pkg": "npm uninstall react-native-harmony-gesture-handler && npm run pack:pkg && npm i react-native-harmony-gesture-handler@file:../react-native-harmony-gesture-handler/rnoh-react-native-harmony-gesture-handler-2.12.9.tgz",
 =======
     "install:pkg": "npm uninstall react-native-harmony-gesture-handler && npm run pack:pkg && npm i react-native-harmony-gesture-handler@file:../react-native-harmony-gesture-handler/rnoh-react-native-harmony-gesture-handler-2.12.8.tgz",
 >>>>>>> 141d036 (release 2.12.8)
+=======
+    "install:pkg": "npm uninstall react-native-harmony-gesture-handler && npm run pack:pkg && npm i react-native-harmony-gesture-handler@file:../react-native-harmony-gesture-handler/rnoh-react-native-harmony-gesture-handler-2.15.0.tgz",
+>>>>>>> 166bc10 (chore: update rngh peer dependency)
     "dev:fast": "react-native bundle-harmony",
     "android": "react-native run-android"
   },
@@ -18,6 +22,7 @@
     "@rnoh/testerino": "^0.0.9",
     "react": "18.2.0",
     "react-native": "0.72.5",
+<<<<<<< HEAD
     "react-native-gesture-handler": "2.12.1",
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -38,6 +43,11 @@
 =======
     "react-native-harmony-gesture-handler": "file:../react-native-harmony-gesture-handler/rnoh-react-native-harmony-gesture-handler-2.12.8.tgz"
 >>>>>>> 141d036 (release 2.12.8)
+=======
+    "react-native-gesture-handler": "2.15.0",
+    "react-native-harmony": "npm:@rnoh/react-native-harmony@^0.72.23",
+    "react-native-harmony-gesture-handler": "file:../react-native-harmony-gesture-handler/rnoh-react-native-harmony-gesture-handler-2.15.0.tgz"
+>>>>>>> 166bc10 (chore: update rngh peer dependency)
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

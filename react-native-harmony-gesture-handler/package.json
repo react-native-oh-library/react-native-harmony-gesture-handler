@@ -10,10 +10,14 @@
     "redirectInternalImports": true
   },
 <<<<<<< HEAD
+<<<<<<< HEAD
   "version": "2.12.9",
 =======
   "version": "2.12.8",
 >>>>>>> 141d036 (release 2.12.8)
+=======
+  "version": "2.15.0",
+>>>>>>> 166bc10 (chore: update rngh peer dependency)
   "description": "",
   "react-native": "src/index.ts",
   "main": "lib/commonjs/index.js",
@@ -32,6 +36,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     "react-native-harmony": "npm:@rnoh/react-native-harmony@^0.72.20"
 =======
     "react-native-harmony": "npm:@rnoh/react-native-harmony@^0.72.18"
@@ -42,14 +47,16 @@
 =======
     "react-native-harmony": "npm:@rnoh/react-native-harmony@^0.72.23"
 >>>>>>> 8a490d3 (chore: update react-native-harmony to 0.72.21)
+=======
+    "react-native-harmony": "npm:@rnoh/react-native-harmony@^0.72.23",
+    "react-native-gesture-handler": "2.15.0"
+>>>>>>> 166bc10 (chore: update rngh peer dependency)
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "react-native-gesture-handler": "2.12.1"
-  },
   "devDependencies": {
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -61,6 +68,9 @@
     "@rnoh/react-native-harmony": "^0.72.19",
 >>>>>>> 43d4b3b (chore: bump react-native-harmony)
 =======
+=======
+    "react-native-gesture-handler": "2.15.0",
+>>>>>>> 166bc10 (chore: update rngh peer dependency)
     "@rnoh/react-native-harmony": "^0.72.23",
 >>>>>>> 8a490d3 (chore: update react-native-harmony to 0.72.21)
     "@babel/core": "^7.12.9",
