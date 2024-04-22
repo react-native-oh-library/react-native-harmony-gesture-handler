@@ -18,6 +18,11 @@ namespace rnoh {
             NativeNodeApi::getInstance()->registerNodeEvent(m_stackNode.getArkUINodeHandle(), NODE_TOUCH_EVENT, NODE_TOUCH_EVENT, 0);
             m_deps->arkTSChannel->postMessage("RNGH::ROOT_CREATED", m_tag);
         };
+  
+        ~RNGestureHandlerRootViewComponentInstance() override {
+          NativeNodeApi::getInstance()->unregisterNodeEvent(m_stackNode.getArkUINodeHandle(),
+                                                                              NODE_TOUCH_EVENT);
+        }
 
         StackNode &getLocalRootArkUINode() override { return m_stackNode; };
 
