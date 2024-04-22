@@ -15,47 +15,30 @@ namespace rnoh {
     public:
         RNGestureHandlerRootViewComponentInstance(Context context) : CppComponentInstance(std::move(context)) {
             ArkUINodeRegistry::getInstance().registerTouchHandler(&m_stackNode, this);
-            NativeNodeApi::getInstance()->registerNodeEvent(m_stackNode.getArkUINodeHandle(), NODE_TOUCH_EVENT, 0);
+            NativeNodeApi::getInstance()->registerNodeEvent(m_stackNode.getArkUINodeHandle(), NODE_TOUCH_EVENT, NODE_TOUCH_EVENT, 0);
             m_deps->arkTSChannel->postMessage("RNGH::ROOT_CREATED", m_tag);
         };
 
         StackNode &getLocalRootArkUINode() override { return m_stackNode; };
 
-        void onTouchEvent(ArkUI_NodeTouchEvent e) override {
+        void onTouchEvent(ArkUI_UIInputEvent* e) override {
             folly::dynamic payload = folly::dynamic::object;
-            payload["action"] = static_cast<int>(e.action);
-            payload["actionTouch"] = this->convertNodeTouchPointToDynamic(e.actionTouch);
+            payload["action"] = OH_ArkUI_UIInputEvent_GetAction(e);
+            payload["actionTouch"] = this->convertNodeTouchPointToDynamic(e);
             folly::dynamic touchPoints = folly::dynamic::array();
-            touchPoints.push_back(this->convertNodeTouchPointToDynamic(e.actionTouch));
+            touchPoints.push_back(this->convertNodeTouchPointToDynamic(e));
             payload["touchPoints"] = touchPoints;
-            payload["sourceType"] = static_cast<int>(e.sourceType);
-            payload["timestamp"] = e.timeStamp;
+            payload["sourceType"] = OH_ArkUI_UIInputEvent_GetSourceType(e);
+            payload["timestamp"] = OH_ArkUI_UIInputEvent_GetEventTime(e);
             payload["rootTag"] = m_tag;
             m_deps->arkTSChannel->postMessage("RNGH::TOUCH_EVENT", payload);
         }
     private: 
-        folly::dynamic convertNodeTouchPointToDynamic(ArkUI_NodeTouchPoint actionTouch) {
+        folly::dynamic convertNodeTouchPointToDynamic(ArkUI_UIInputEvent* e) {
             folly::dynamic result = folly::dynamic::object;
-            result["contactAreaHeight"] = actionTouch.contactAreaHeight;
-            result["contactAreaWidth"] = actionTouch.contactAreaWidth;
-            result["id"] = actionTouch.id;
-            result["nodeX"] = actionTouch.nodeX;
-            result["nodeY"] = actionTouch.nodeY;
-            result["pressedTime"] = actionTouch.pressedTime;
-            result["pressure"] = actionTouch.pressure;
-            result["rawX"] = actionTouch.rawX;
-            result["rawY"] = actionTouch.rawY;
-            result["screenX"] = actionTouch.screenX;
-            result["screenY"] = actionTouch.screenY;
-            result["tiltX"] = actionTouch.tiltX;
-            result["tiltY"] = actionTouch.tiltY;
-            result["toolHeight"] = actionTouch.toolHeight;
-            result["toolWidth"] = actionTouch.toolWidth;
-            result["toolX"] = actionTouch.toolX;
-            result["toolY"] = actionTouch.toolY;
-            result["toolType"] = static_cast<int>(actionTouch.toolType);
-            result["windowX"] = actionTouch.windowX;
-            result["windowY"] = actionTouch.windowY;
+            result["pointerId"] = OH_ArkUI_PointerEvent_GetPointerId(e, 0);
+            result["windowX"] = OH_ArkUI_PointerEvent_GetWindowX(e);
+            result["windowY"] = OH_ArkUI_PointerEvent_GetWindowY(e);
             return result;
         }
 

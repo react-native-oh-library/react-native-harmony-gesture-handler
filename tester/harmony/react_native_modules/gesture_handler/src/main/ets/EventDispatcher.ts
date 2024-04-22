@@ -1,53 +1,82 @@
-import { RNInstance } from "rnoh/ts"
-import { GestureStateChangeEvent, GestureUpdateEvent, GestureTouchEvent } from "./OutgoingEvent"
-import { RNGHLogger } from './RNGHLogger'
+import {RNInstance} from '@rnoh/react-native-openharmony/ts';
+import {
+  GestureStateChangeEvent,
+  GestureUpdateEvent,
+  GestureTouchEvent,
+} from './OutgoingEvent';
+import {RNGHLogger} from './RNGHLogger';
 
 export interface EventDispatcher {
-  onGestureHandlerStateChange(event: GestureStateChangeEvent): void
-  onGestureHandlerEvent(event: GestureStateChangeEvent | GestureUpdateEvent | GestureTouchEvent): void
+  onGestureHandlerStateChange(event: GestureStateChangeEvent): void;
+  onGestureHandlerEvent(
+    event: GestureStateChangeEvent | GestureUpdateEvent | GestureTouchEvent,
+  ): void;
 }
 
 export class JSEventDispatcher implements EventDispatcher {
-  constructor(private rnInstance: RNInstance, private logger: RNGHLogger) {
-  }
+  constructor(private rnInstance: RNInstance, private logger: RNGHLogger) {}
 
   public onGestureHandlerStateChange(event: GestureStateChangeEvent) {
-    this.logger.info(`onGestureHandlerStateChange`)
-    this.rnInstance.emitDeviceEvent("onGestureHandlerStateChange", event)
+    this.logger.info(`onGestureHandlerStateChange`);
+    this.rnInstance.emitDeviceEvent('onGestureHandlerStateChange', event);
   }
 
-  public onGestureHandlerEvent(event: GestureStateChangeEvent | GestureUpdateEvent | GestureTouchEvent) {
-    this.logger.info(`onGestureHandlerEvent`)
-    this.rnInstance.emitDeviceEvent("onGestureHandlerEvent", event)
+  public onGestureHandlerEvent(
+    event: GestureStateChangeEvent | GestureUpdateEvent | GestureTouchEvent,
+  ) {
+    this.logger.info(`onGestureHandlerEvent`);
+    this.rnInstance.emitDeviceEvent('onGestureHandlerEvent', event);
   }
 }
 
 export class AnimatedEventDispatcher implements EventDispatcher {
-  constructor(private rnInstance: RNInstance, private logger: RNGHLogger, private viewTag: number) {
-  }
+  constructor(
+    private rnInstance: RNInstance,
+    private logger: RNGHLogger,
+    private viewTag: number,
+  ) {}
 
   public onGestureHandlerStateChange(event: GestureStateChangeEvent) {
-    this.logger.info(`onGestureHandlerStateChange`)
-    this.rnInstance.emitDeviceEvent("onGestureHandlerStateChange", event)
+    this.logger.info(`onGestureHandlerStateChange`);
+    this.rnInstance.emitDeviceEvent('onGestureHandlerStateChange', event);
   }
 
-  public onGestureHandlerEvent(event: GestureStateChangeEvent | GestureUpdateEvent | GestureTouchEvent) {
-    this.logger.info(`onGestureHandlerEvent`)
-    this.rnInstance.emitComponentEvent(this.viewTag, "onGestureHandlerEvent", event)
+  public onGestureHandlerEvent(
+    event: GestureStateChangeEvent | GestureUpdateEvent | GestureTouchEvent,
+  ) {
+    this.logger.info(`onGestureHandlerEvent`);
+    this.rnInstance.emitComponentEvent(
+      this.viewTag,
+      'onGestureHandlerEvent',
+      event,
+    );
   }
 }
 
 export class ReanimatedEventDispatcher implements EventDispatcher {
-  constructor(private rnInstance: RNInstance, private logger: RNGHLogger, private viewTag: number) {
-  }
+  constructor(
+    private rnInstance: RNInstance,
+    private logger: RNGHLogger,
+    private viewTag: number,
+  ) {}
 
   public onGestureHandlerStateChange(event: GestureStateChangeEvent) {
-    this.logger.info(`onGestureHandlerStateChange`)
-    this.rnInstance.emitComponentEvent(this.viewTag, "onGestureHandlerStateChange", event)
+    this.logger.info(`onGestureHandlerStateChange`);
+    this.rnInstance.emitComponentEvent(
+      this.viewTag,
+      'onGestureHandlerStateChange',
+      event,
+    );
   }
 
-  public onGestureHandlerEvent(event: GestureStateChangeEvent | GestureUpdateEvent | GestureTouchEvent) {
-    this.logger.info(`onGestureHandlerEvent`)
-    this.rnInstance.emitComponentEvent(this.viewTag, "onGestureHandlerEvent", event)
+  public onGestureHandlerEvent(
+    event: GestureStateChangeEvent | GestureUpdateEvent | GestureTouchEvent,
+  ) {
+    this.logger.info(`onGestureHandlerEvent`);
+    this.rnInstance.emitComponentEvent(
+      this.viewTag,
+      'onGestureHandlerEvent',
+      event,
+    );
   }
 }

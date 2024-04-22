@@ -6,7 +6,5 @@
   description: '',
   main: '',
   version: '2.12.9',
-  dependencies: {
-    rnoh: 'file:../rnoh',
-  },
+  dependencies: {},
 }

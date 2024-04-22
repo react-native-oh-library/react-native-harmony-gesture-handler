@@ -2,11 +2,11 @@ Language: Cpp
 # BasedOnStyle: LLVM
 ColumnLimit: 120
 SortIncludes: false
-TabWidth: 4
-IndentWidth: 4
+TabWidth: 2
+IndentWidth: 2
 UseTab: Never
-AccessModifierOffset: -4
-ContinuationIndentWidth: 4
+AccessModifierOffset: -2
+ContinuationIndentWidth: 2
 IndentCaseBlocks: false
 IndentCaseLabels: false
 IndentGotoLabels: true
