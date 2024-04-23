@@ -1,12 +1,5 @@
 import {DescriptorRegistry, Descriptor, Tag} from '@rnoh/react-native-openharmony/ts';
-import { View as IView, Vector2D } from "../core"
-
-export type BoundingBox = {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-};
+import { View as IView, Vector2D, BoundingBox } from "../core"
 
 export class View implements IView {
   constructor(

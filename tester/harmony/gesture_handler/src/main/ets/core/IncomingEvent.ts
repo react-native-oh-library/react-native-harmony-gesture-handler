@@ -44,7 +44,7 @@ export enum TouchEventType {
   CANCELLED = 4,
 }
 
-export interface AdaptedEvent {
+export interface IncomingEvent {
   x: number;
   y: number;
   offsetX: number;
@@ -59,10 +59,3 @@ export interface AdaptedEvent {
   touchEventType?: TouchEventType;
 }
 
-export interface TrackerElement {
-  lastX: number;
-  lastY: number;
-  timeStamp: number;
-  velocityX: number;
-  velocityY: number;
-}

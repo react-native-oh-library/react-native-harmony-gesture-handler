@@ -3,7 +3,7 @@ import {
   GestureConfig,
   GestureHandlerDependencies,
   DEFAULT_TOUCH_SLOP,
-  AdaptedEvent,
+  IncomingEvent,
   State,
   Vector2D
 } from "../core"
@@ -180,7 +180,7 @@ export class PanGestureHandler extends GestureHandler<PanGestureHandlerConfig> {
     clearTimeout(this.activationTimeout);
   }
 
-  private tryBegin(e: AdaptedEvent): void {
+  private tryBegin(e: IncomingEvent): void {
     if (
       this.currentState === State.UNDETERMINED &&
         this.tracker.getTrackedPointersCount() >= this.minPointers
@@ -239,7 +239,7 @@ export class PanGestureHandler extends GestureHandler<PanGestureHandlerConfig> {
     return false
   }
 
-  public onAdditionalPointerAdd(event: AdaptedEvent): void {
+  public onAdditionalPointerAdd(event: IncomingEvent): void {
     this.tracker.addToTracker(event);
     super.onAdditionalPointerAdd(event);
     this.tryBegin(event);
@@ -257,7 +257,7 @@ export class PanGestureHandler extends GestureHandler<PanGestureHandlerConfig> {
     }
   }
 
-  public onPointerUp(event: AdaptedEvent): void {
+  public onPointerUp(event: IncomingEvent): void {
     super.onPointerUp(event);
     if (this.currentState === State.ACTIVE) {
       this.lastPos = this.tracker.getLastAvgPos();
@@ -271,7 +271,7 @@ export class PanGestureHandler extends GestureHandler<PanGestureHandlerConfig> {
     }
   }
 
-  public onAdditionalPointerRemove(event: AdaptedEvent): void {
+  public onAdditionalPointerRemove(event: IncomingEvent): void {
     super.onAdditionalPointerRemove(event);
     this.tracker.removeFromTracker(event.pointerId);
     this.offset.add(this.lastPos).subtract(this.startPos)
@@ -287,7 +287,7 @@ export class PanGestureHandler extends GestureHandler<PanGestureHandlerConfig> {
     }
   }
 
-  public onPointerMove(event: AdaptedEvent): void {
+  public onPointerMove(event: IncomingEvent): void {
     this.tracker.track(event);
     this.lastPos = this.tracker.getLastAvgPos()
     this.velocity = this.tracker.getVelocity(event.pointerId)
@@ -295,7 +295,7 @@ export class PanGestureHandler extends GestureHandler<PanGestureHandlerConfig> {
     super.onPointerMove(event);
   }
 
-  public onPointerOutOfBounds(event: AdaptedEvent): void {
+  public onPointerOutOfBounds(event: IncomingEvent): void {
     if (this.shouldCancelWhenOutside) {
       return;
     }

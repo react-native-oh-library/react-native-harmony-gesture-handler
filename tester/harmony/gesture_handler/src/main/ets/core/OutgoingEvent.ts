@@ -1,5 +1,5 @@
 import { State } from "./State"
-import { TouchEventType } from "./Event"
+import { TouchEventType } from "./IncomingEvent"
 
 export interface GestureEventPayload {
   handlerTag: number;

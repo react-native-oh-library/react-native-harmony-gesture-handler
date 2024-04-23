@@ -1,20 +1,28 @@
-import { AdaptedEvent } from './Event';
+import { IncomingEvent } from './IncomingEvent';
 import { CircularBuffer } from './CircularBuffer';
 import { LeastSquareSolver } from './LeastSquareSolver';
 
-export default class VelocityTracker {
+export interface TrackerElement {
+  lastX: number;
+  lastY: number;
+  timeStamp: number;
+  velocityX: number;
+  velocityY: number;
+}
+
+export class VelocityTracker {
   private assumePointerMoveStoppedMilliseconds = 40;
   private historySize = 20;
   private horizonMilliseconds = 300;
   private minSampleSize = 3;
 
-  private samples: CircularBuffer<AdaptedEvent>;
+  private samples: CircularBuffer<IncomingEvent>;
 
   constructor() {
-    this.samples = new CircularBuffer<AdaptedEvent>(this.historySize);
+    this.samples = new CircularBuffer<IncomingEvent>(this.historySize);
   }
 
-  public add(event: AdaptedEvent): void {
+  public add(event: IncomingEvent): void {
     this.samples.push(event);
   }
 

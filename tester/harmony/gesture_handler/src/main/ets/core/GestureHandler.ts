@@ -1,11 +1,11 @@
 import type { GestureHandlerOrchestrator } from "./GestureHandlerOrchestrator"
 import type { PointerTracker } from "./PointerTracker"
 import type { View } from "./View"
-import type { EventDispatcher } from "./EventDispatcher"
 import type { InteractionManager } from "./InteractionManager"
 import type { RNGHLogger } from './RNGHLogger'
+import { OutgoingEventDispatcher } from "./OutgoingEventDispatcher"
 import { State, getStateName } from "./State"
-import { HitSlop, Directions, AdaptedEvent, PointerType, TouchEventType, EventType } from "./Event"
+import { HitSlop, Directions, IncomingEvent, PointerType, TouchEventType, EventType } from "./IncomingEvent"
 import { GestureStateChangeEvent, GestureTouchEvent, TouchData } from "./OutgoingEvent"
 
 
@@ -86,7 +86,7 @@ export abstract class GestureHandler<TGestureConfig extends GestureConfig = Gest
   protected handlerTag: number
   protected orchestrator: GestureHandlerOrchestrator
   protected tracker: PointerTracker
-  protected eventDispatcher: EventDispatcher
+  protected eventDispatcher: OutgoingEventDispatcher
   protected interactionManager: InteractionManager
   protected logger: RNGHLogger
   protected scrollLocker: ScrollLocker
@@ -101,13 +101,13 @@ export abstract class GestureHandler<TGestureConfig extends GestureConfig = Gest
     this.scrollLocker = deps.scrollLocker
   }
 
-  public setEventDispatcher(eventDispatcher: EventDispatcher) {
+  public setEventDispatcher(eventDispatcher: OutgoingEventDispatcher) {
     // TurboModule provides info about kind of event dispatcher when attaching GH to a view, not when GH is created.
     // This method must be called before any other
     this.eventDispatcher = eventDispatcher
   }
 
-  public onPointerDown(e: AdaptedEvent) {
+  public onPointerDown(e: IncomingEvent) {
     this.logger.info("onPointerDown")
     this.orchestrator.registerHandlerIfNotPresent(this);
     this.pointerType = e.pointerType;
@@ -119,7 +119,7 @@ export abstract class GestureHandler<TGestureConfig extends GestureConfig = Gest
     }
   }
 
-  protected sendTouchEvent(e: AdaptedEvent) {
+  protected sendTouchEvent(e: IncomingEvent) {
     if (!this.config.enabled) {
       return;
     }
@@ -133,7 +133,7 @@ export abstract class GestureHandler<TGestureConfig extends GestureConfig = Gest
     }
   }
 
-  protected transformToTouchEvent(event: AdaptedEvent): GestureTouchEvent | undefined {
+  protected transformToTouchEvent(event: IncomingEvent): GestureTouchEvent | undefined {
     const rect = this.view.getBoundingRect();
 
     const all: TouchData[] = [];
@@ -226,22 +226,22 @@ export abstract class GestureHandler<TGestureConfig extends GestureConfig = Gest
     };
   }
 
-  public onPointerUp(e: AdaptedEvent): void {
+  public onPointerUp(e: IncomingEvent): void {
     this.logger.info("onPointerUp")
     if (this.config.needsPointerData) this.sendTouchEvent(e)
   }
 
-  public onAdditionalPointerAdd(e: AdaptedEvent): void {
+  public onAdditionalPointerAdd(e: IncomingEvent): void {
     this.logger.info("onAdditionalPointerAdd")
     if (this.config.needsPointerData) this.sendTouchEvent(e)
   }
 
-  public onAdditionalPointerRemove(e: AdaptedEvent): void {
+  public onAdditionalPointerRemove(e: IncomingEvent): void {
     this.logger.info("onAdditionalPointerRemove")
     if (this.config.needsPointerData) this.sendTouchEvent(e)
   }
 
-  public onPointerMove(e: AdaptedEvent): void {
+  public onPointerMove(e: IncomingEvent): void {
     this.logger.info("onPointerMove")
     this.tryToSendMoveEvent(false);
     if (this.config.needsPointerData) {
@@ -265,14 +265,14 @@ export abstract class GestureHandler<TGestureConfig extends GestureConfig = Gest
     }
   }
 
-  public onPointerEnter(e: AdaptedEvent): void {
+  public onPointerEnter(e: IncomingEvent): void {
     this.logger.info("onPointerEnter")
     if (this.config.needsPointerData) {
       this.sendTouchEvent(e)
     }
   }
 
-  public onPointerOut(e: AdaptedEvent): void {
+  public onPointerOut(e: IncomingEvent): void {
     this.logger.info("onPointerOut")
     if (this.shouldCancelWhenOutside) {
       switch (this.currentState) {
@@ -290,7 +290,7 @@ export abstract class GestureHandler<TGestureConfig extends GestureConfig = Gest
     }
   }
 
-  public onPointerCancel(e: AdaptedEvent): void {
+  public onPointerCancel(e: IncomingEvent): void {
     this.logger.info("onPointerCancel")
     if (this.config.needsPointerData) {
       this.sendTouchEvent(e);
@@ -299,7 +299,7 @@ export abstract class GestureHandler<TGestureConfig extends GestureConfig = Gest
     this.reset();
   }
 
-  public onPointerOutOfBounds(e: AdaptedEvent): void {
+  public onPointerOutOfBounds(e: IncomingEvent): void {
     this.logger.info("onPointerOutOfBounds")
     this.tryToSendMoveEvent(true);
     if (this.config.needsPointerData) {

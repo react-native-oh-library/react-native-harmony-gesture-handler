@@ -1,4 +1,4 @@
-import { GestureHandler, GestureHandlerDependencies, DEFAULT_TOUCH_SLOP, Vector2D, State, AdaptedEvent } from "../core"
+import { GestureHandler, GestureHandlerDependencies, DEFAULT_TOUCH_SLOP, Vector2D, State, IncomingEvent } from "../core"
 
 
 export class NativeViewGestureHandler extends GestureHandler {
@@ -18,7 +18,7 @@ export class NativeViewGestureHandler extends GestureHandler {
     return {}
   }
 
-  public onPointerDown(e: AdaptedEvent) {
+  public onPointerDown(e: IncomingEvent) {
     this.tracker.addToTracker(e);
     super.onPointerDown(e);
     this.onNewPointer();
@@ -32,13 +32,13 @@ export class NativeViewGestureHandler extends GestureHandler {
     this.activate();
   }
 
-  public onAdditionalPointerAdd(e: AdaptedEvent) {
+  public onAdditionalPointerAdd(e: IncomingEvent) {
     this.tracker.addToTracker(e);
     super.onPointerDown(e);
     this.onNewPointer();
   }
 
-  public onPointerMove(e: AdaptedEvent): void {
+  public onPointerMove(e: IncomingEvent): void {
     this.tracker.track(e);
     const {x: dx, y: dy} = this.startPos.clone().subtract(this.tracker.getLastAvgPos()).value
     const distSq = dx * dx + dy * dy;
@@ -59,12 +59,12 @@ export class NativeViewGestureHandler extends GestureHandler {
     }
   }
 
-  public onPointerUp(event: AdaptedEvent): void {
+  public onPointerUp(event: IncomingEvent): void {
     super.onPointerUp(event);
     this.onAnyPointerUp(event);
   }
 
-  private onAnyPointerUp(e: AdaptedEvent) {
+  private onAnyPointerUp(e: IncomingEvent) {
     this.tracker.removeFromTracker(e.pointerId);
     if (this.tracker.getTrackedPointersCount() === 0) {
       if (this.currentState === State.ACTIVE) {
@@ -75,7 +75,7 @@ export class NativeViewGestureHandler extends GestureHandler {
     }
   }
 
-  public onAdditionalPointerRemove(e: AdaptedEvent) {
+  public onAdditionalPointerRemove(e: IncomingEvent) {
     super.onAdditionalPointerRemove(e)
     this.onAnyPointerUp(e)
   }

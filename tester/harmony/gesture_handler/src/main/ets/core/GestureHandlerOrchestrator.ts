@@ -1,6 +1,6 @@
 import { GestureHandler } from "./GestureHandler"
 import { State } from "./State"
-import { PointerType } from "./Event"
+import { PointerType } from "./IncomingEvent"
 import { RNGHLogger } from "./RNGHLogger"
 
 export class GestureHandlerOrchestrator {

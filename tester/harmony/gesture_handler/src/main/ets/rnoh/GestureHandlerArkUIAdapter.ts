@@ -1,7 +1,7 @@
 import {Point} from '@rnoh/react-native-openharmony/ts';
 import {
   GestureHandler,
-  AdaptedEvent,
+  IncomingEvent,
   EventType,
   PointerType,
   TouchEventType,
@@ -85,7 +85,7 @@ export class GestureHandlerArkUIAdapter {
   private adaptTouchEvent(
     e: TouchEvent,
     changedTouch: TouchObject,
-  ): AdaptedEvent {
+  ): IncomingEvent {
     const xAbsolute = changedTouch.windowX;
     const yAbsolute = changedTouch.windowY;
 

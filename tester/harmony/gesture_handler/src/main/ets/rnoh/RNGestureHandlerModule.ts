@@ -1,10 +1,10 @@
 import { TurboModule, TurboModuleContext, Tag } from "@rnoh/react-native-openharmony/ts";
 import { TM } from "@rnoh/react-native-openharmony/generated/ts"
-import { GestureHandlerRegistry, State, EventDispatcher, RNGHLogger } from '../core';
+import { GestureHandlerRegistry, State, OutgoingEventDispatcher, RNGHLogger } from '../core';
 import { GestureHandlerFactory } from "../gesture-handlers"
 import { ViewRegistry } from './ViewRegistry';
 import { StandardRNGHLogger, FakeRNGHLogger } from './Logger';
-import { JSEventDispatcher, AnimatedEventDispatcher, ReanimatedEventDispatcher } from './EventDispatchers'
+import { JSEventDispatcher, AnimatedEventDispatcher, ReanimatedEventDispatcher } from './OutgoingEventDispatchers'
 import { RNOHScrollLockerArkTS, RNOHScrollLockerCAPI } from "./RNOHScrollLocker"
 import { RNGHRootTouchHandlerCAPI, RawTouchEvent } from "./RNGHRootTouchHandlerCAPI"
 import { RNGHRootTouchHandlerArkTS } from './RNGHRootTouchHandlerArkTS';
@@ -96,7 +96,7 @@ export class RNGestureHandlerModule extends TurboModule implements TM.RNGestureH
       .setEventDispatcher(eventDispatcher)
   }
 
-  private createEventDispatcher(actionType: ActionType, viewTag: number): EventDispatcher | null {
+  private createEventDispatcher(actionType: ActionType, viewTag: number): OutgoingEventDispatcher | null {
     switch (actionType) {
       case ActionType.REANIMATED_WORKLET:
         return new ReanimatedEventDispatcher(this.ctx.rnInstance, this.logger.cloneWithPrefix('ReanimatedEventDispatcher'), viewTag)
