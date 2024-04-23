@@ -27,13 +27,13 @@
     "react": "*",
     "react-native": "*",
     "react-native-harmony": "npm:@rnoh/react-native-harmony@^0.72.23",
-    "react-native-gesture-handler": "2.15.0"
+    "react-native-gesture-handler": "2.14.1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "react-native-gesture-handler": "2.15.0",
+    "react-native-gesture-handler": "2.14.1",
     "@rnoh/react-native-harmony": "^0.72.23",
     "@babel/core": "^7.12.9",
     "@babel/plugin-proposal-class-properties": "^7.12.1",
