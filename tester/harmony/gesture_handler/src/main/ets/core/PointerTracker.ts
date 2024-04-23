@@ -1,5 +1,5 @@
-import VelocityTracker from './VelocityTracker';
-import { TrackerElement, AdaptedEvent } from "./Event"
+import { VelocityTracker, TrackerElement } from './VelocityTracker';
+import { IncomingEvent } from "./IncomingEvent"
 import { Vector2D } from './Vector2D';
 
 const MAX_POINTERS = 20;
@@ -25,7 +25,7 @@ export class PointerTracker {
     }
   }
 
-  public addToTracker(event: AdaptedEvent): void {
+  public addToTracker(event: IncomingEvent): void {
     if (this.trackedPointers.has(event.pointerId)) {
       return;
     }
@@ -54,7 +54,7 @@ export class PointerTracker {
     this.removeMappedTouchId(pointerId);
   }
 
-  public track(event: AdaptedEvent): void {
+  public track(event: IncomingEvent): void {
     const element: TrackerElement = this.trackedPointers.get(
       event.pointerId
     ) as TrackerElement;

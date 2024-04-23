@@ -1,6 +1,6 @@
 import { TurboModule, TurboModuleContext, Tag } from "@rnoh/react-native-openharmony/ts";
 import { TM } from "@rnoh/react-native-openharmony/generated/ts"
-import { GestureHandlerRegistry, State, EventDispatcher, RNGHLogger } from '../core';
+import { GestureHandlerRegistry, State, OutgoingEventDispatcher, RNGHLogger } from '../core';
 import { GestureHandlerFactory } from "../gesture-handlers"
 import { ViewRegistry } from './ViewRegistry';
 <<<<<<< HEAD:tester/harmony/gesture_handler/src/main/ets/RNGestureHandlerModule.ts
@@ -19,7 +19,7 @@ import { RNOHScrollLocker } from "./RNOHScrollLocker"
 import { State } from './State';
 =======
 import { StandardRNGHLogger, FakeRNGHLogger } from './Logger';
-import { JSEventDispatcher, AnimatedEventDispatcher, ReanimatedEventDispatcher } from './EventDispatchers'
+import { JSEventDispatcher, AnimatedEventDispatcher, ReanimatedEventDispatcher } from './OutgoingEventDispatchers'
 import { RNOHScrollLockerArkTS, RNOHScrollLockerCAPI } from "./RNOHScrollLocker"
 >>>>>>> 3fc766d (refactor: create (sub)modules):tester/harmony/gesture_handler/src/main/ets/rnoh/RNGestureHandlerModule.ts
 import { RNGHRootTouchHandlerCAPI, RawTouchEvent } from "./RNGHRootTouchHandlerCAPI"
@@ -112,7 +112,7 @@ export class RNGestureHandlerModule extends TurboModule implements TM.RNGestureH
       .setEventDispatcher(eventDispatcher)
   }
 
-  private createEventDispatcher(actionType: ActionType, viewTag: number): EventDispatcher | null {
+  private createEventDispatcher(actionType: ActionType, viewTag: number): OutgoingEventDispatcher | null {
     switch (actionType) {
       case ActionType.REANIMATED_WORKLET:
         return new ReanimatedEventDispatcher(this.ctx.rnInstance, this.logger.cloneWithPrefix('ReanimatedEventDispatcher'), viewTag)

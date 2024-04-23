@@ -4,7 +4,7 @@ import {
   GestureTouchEvent,
 } from './OutgoingEvent';
 
-export interface EventDispatcher {
+export interface OutgoingEventDispatcher {
   onGestureHandlerStateChange(event: GestureStateChangeEvent): void;
   onGestureHandlerEvent(
     event: GestureStateChangeEvent | GestureUpdateEvent | GestureTouchEvent,

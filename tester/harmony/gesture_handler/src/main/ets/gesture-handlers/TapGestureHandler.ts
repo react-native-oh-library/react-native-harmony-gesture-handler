@@ -1,4 +1,4 @@
-import { GestureHandler, GestureHandlerDependencies, AdaptedEvent, EventType, State, getStateName } from "../core"
+import { GestureHandler, GestureHandlerDependencies, IncomingEvent, EventType, State, getStateName } from "../core"
 
 const DEFAULT_MAX_DURATION_MS = 500;
 const DEFAULT_NUMBER_OF_TAPS = 1;
@@ -29,7 +29,7 @@ export class TapGestureHandler extends GestureHandler {
     this.updateState(event);
   }
 
-  onAdditionalPointerAdd(event: AdaptedEvent): void {
+  onAdditionalPointerAdd(event: IncomingEvent): void {
     super.onAdditionalPointerAdd(event);
     this.tracker.addToTracker(event);
     this.trySettingPosition(event);
@@ -46,7 +46,7 @@ export class TapGestureHandler extends GestureHandler {
     this.updateState(event);
   }
 
-  onPointerUp(event: AdaptedEvent): void {
+  onPointerUp(event: IncomingEvent): void {
     super.onPointerUp(event);
     this.lastX = this.tracker.getLastAvgX();
     this.lastY = this.tracker.getLastAvgY();
@@ -56,7 +56,7 @@ export class TapGestureHandler extends GestureHandler {
     this.updateState(event);
   }
 
-  onAdditionalPointerRemove(event: AdaptedEvent): void {
+  onAdditionalPointerRemove(event: IncomingEvent): void {
     super.onAdditionalPointerRemove(event);
     this.tracker.removeFromTracker(event.pointerId);
 
@@ -72,7 +72,7 @@ export class TapGestureHandler extends GestureHandler {
     this.updateState(event);
   }
 
-  onPointerMove(event: AdaptedEvent): void {
+  onPointerMove(event: IncomingEvent): void {
     this.trySettingPosition(event);
     this.tracker.track(event);
 
@@ -84,7 +84,7 @@ export class TapGestureHandler extends GestureHandler {
     super.onPointerMove(event);
   }
 
-  onPointerOutOfBounds(event: AdaptedEvent): void {
+  onPointerOutOfBounds(event: IncomingEvent): void {
     this.trySettingPosition(event);
     this.tracker.track(event);
 
@@ -100,7 +100,7 @@ export class TapGestureHandler extends GestureHandler {
     return {}
   }
 
-  private trySettingPosition(event: AdaptedEvent): void {
+  private trySettingPosition(event: IncomingEvent): void {
     if (this.currentState !== State.UNDETERMINED) return;
     this.offsetX = 0;
     this.offsetY = 0;
@@ -108,7 +108,7 @@ export class TapGestureHandler extends GestureHandler {
     this.startY = event.y;
   }
 
-  private updateState(event: AdaptedEvent): void {
+  private updateState(event: IncomingEvent): void {
     const logger = this.logger.cloneWithPrefix("updateState")
     if (this.maxNumberOfPointersSoFar < this.tracker.getTrackedPointersCount()) {
       this.maxNumberOfPointersSoFar = this.tracker.getTrackedPointersCount()
