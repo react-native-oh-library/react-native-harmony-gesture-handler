@@ -1,8 +1,7 @@
 import {Tag} from '@rnoh/react-native-openharmony/ts';
-import {GestureHandlerRegistry} from './GestureHandlerRegistry';
 import {GestureHandlerArkUIAdapter} from './GestureHandlerArkUIAdapter';
 import {ViewRegistry} from './ViewRegistry';
-import {RNGHLogger} from './RNGHLogger';
+import {RNGHLogger, GestureHandlerRegistry} from '../core';
 import {TouchEvent, TouchType} from './types';
 
 export class RNGHRootTouchHandlerArkTS {

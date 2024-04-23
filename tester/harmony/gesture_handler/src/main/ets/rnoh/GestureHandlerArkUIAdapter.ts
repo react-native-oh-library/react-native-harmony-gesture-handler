@@ -1,14 +1,14 @@
 import {Point} from '@rnoh/react-native-openharmony/ts';
-import {GestureHandler} from './GestureHandler';
 import {
+  GestureHandler,
   AdaptedEvent,
   EventType,
   PointerType,
   TouchEventType,
   Touch,
-} from './Event';
-import {View} from './View';
-import {RNGHLogger} from './RNGHLogger';
+  RNGHLogger,
+  View
+} from '../core';
 import {TouchEvent, TouchType, TouchObject} from './types';
 
 export class GestureHandlerArkUIAdapter {

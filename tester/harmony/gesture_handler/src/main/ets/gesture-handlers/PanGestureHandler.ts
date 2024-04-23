@@ -1,7 +1,13 @@
-import { GestureHandler, GestureConfig, GestureHandlerDependencies, DEFAULT_TOUCH_SLOP } from "./GestureHandler"
-import { AdaptedEvent } from "./Event"
-import { State } from "./State"
-import { Vector2D } from "./Vector2D"
+import {
+  GestureHandler,
+  GestureConfig,
+  GestureHandlerDependencies,
+  DEFAULT_TOUCH_SLOP,
+  AdaptedEvent,
+  State,
+  Vector2D
+} from "../core"
+
 
 const DEFAULT_MIN_DIST_SQ = DEFAULT_TOUCH_SLOP * DEFAULT_TOUCH_SLOP;
 

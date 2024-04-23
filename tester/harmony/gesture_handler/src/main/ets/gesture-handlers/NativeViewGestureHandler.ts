@@ -1,7 +1,5 @@
-import { GestureHandler, GestureHandlerDependencies, DEFAULT_TOUCH_SLOP } from "./GestureHandler"
-import { Vector2D } from './Vector2D';
-import { State } from "./State"
-import { AdaptedEvent } from './Event';
+import { GestureHandler, GestureHandlerDependencies, DEFAULT_TOUCH_SLOP, Vector2D, State, AdaptedEvent } from "../core"
+
 
 export class NativeViewGestureHandler extends GestureHandler {
   private minDistSq = DEFAULT_TOUCH_SLOP * DEFAULT_TOUCH_SLOP;
@@ -97,14 +95,14 @@ export class NativeViewGestureHandler extends GestureHandler {
     if (
       this.currentState === State.ACTIVE &&
         handler.getState() === State.ACTIVE &&
-        this.canBeInterrupted()
+      this.canBeInterrupted()
     ) {
       return false;
     }
 
     return (
       this.currentState === State.ACTIVE &&
-        this.canBeInterrupted() &&
+      this.canBeInterrupted() &&
         handler.getTag() > 0
     );
   }
