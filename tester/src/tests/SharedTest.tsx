@@ -4,8 +4,9 @@ import {
   TouchableHighlight,
   enableLegacyWebImplementation,
   enableExperimentalWebImplementation,
+  TouchableNativeFeedback,
 } from 'react-native-gesture-handler';
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, View, Platform} from 'react-native';
 import {PALETTE} from '../constants';
 
 const RNGHView = createNativeWrapper(View, {
@@ -70,6 +71,32 @@ export function SharedAPITest() {
                 PRESS ME
               </Text>
             </TouchableHighlight>
+          );
+        }}
+        assert={({expect, state}) => {
+          expect(state).to.be.true;
+        }}
+      />
+      <TestCase
+        itShould="ripple on press"
+        skip={Platform.OS === 'android' ? false : 'android component'}
+        initialState={false}
+        arrange={({setState}) => {
+          return (
+            <>
+              <TouchableNativeFeedback
+                style={{
+                  backgroundColor: PALETTE.DARK_BLUE,
+                  paddingVertical: 16,
+                }}
+                onPress={() => {
+                  setState(true);
+                }}>
+                <Text style={{color: 'white', textAlign: 'center'}}>
+                  PRESS ME
+                </Text>
+              </TouchableNativeFeedback>
+            </>
           );
         }}
         assert={({expect, state}) => {
