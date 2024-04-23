@@ -8,7 +8,7 @@ import { initialize } from 'react-native-gesture-handler/src/init';
 
 // export { Directions } from './Directions';
 export { State } from 'react-native-gesture-handler/src/State';
-// export { default as gestureHandlerRootHOC } from './components/gestureHandlerRootHOC';
+export { default as gestureHandlerRootHOC } from 'react-native-gesture-handler/src/components/gestureHandlerRootHOC';
 export { default as GestureHandlerRootView } from './components/GestureHandlerRootView';
 // export type {
 //   // event types
@@ -63,7 +63,7 @@ export { PanGestureHandler } from 'react-native-gesture-handler/src/handlers/Pan
 // export { PinchGestureHandler } from './handlers/PinchGestureHandler';
 // export { RotationGestureHandler } from './handlers/RotationGestureHandler';
 // export { FlingGestureHandler } from './handlers/FlingGestureHandler';
-// export { default as createNativeWrapper } from './handlers/createNativeWrapper';
+export { default as createNativeWrapper } from 'react-native-gesture-handler/src/handlers/createNativeWrapper';
 // export type {
 //   NativeViewGestureHandlerPayload,
 //   NativeViewGestureHandlerProps,
@@ -164,9 +164,9 @@ export {
 // } from './components/DrawerLayout';
 // export { default as DrawerLayout } from './components/DrawerLayout';
 
-// export {
-//   enableExperimentalWebImplementation,
-//   enableLegacyWebImplementation,
-// } from './EnableNewWebImplementation';
+export {
+  enableExperimentalWebImplementation,
+  enableLegacyWebImplementation,
+} from 'react-native-gesture-handler/src/EnableNewWebImplementation';
 
 initialize();

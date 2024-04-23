@@ -33,6 +33,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/hoist-non-react-statics": "^3.3.1",
     "react-native-gesture-handler": "2.14.1",
     "@rnoh/react-native-harmony": "^0.72.23",
     "@babel/core": "^7.12.9",
