@@ -1,7 +1,7 @@
 import { RNInstance } from '@rnoh/react-native-openharmony/ts';
-import { EventDispatcher, GestureStateChangeEvent, GestureUpdateEvent, GestureTouchEvent, RNGHLogger } from "../core"
+import { OutgoingEventDispatcher, GestureStateChangeEvent, GestureUpdateEvent, GestureTouchEvent, RNGHLogger } from "../core"
 
-export class JSEventDispatcher implements EventDispatcher {
+export class JSEventDispatcher implements OutgoingEventDispatcher {
   constructor(private rnInstance: RNInstance, private logger: RNGHLogger) {
   }
 
@@ -18,7 +18,7 @@ export class JSEventDispatcher implements EventDispatcher {
   }
 }
 
-export class AnimatedEventDispatcher implements EventDispatcher {
+export class AnimatedEventDispatcher implements OutgoingEventDispatcher {
   constructor(
     private rnInstance: RNInstance,
     private logger: RNGHLogger,
@@ -42,7 +42,7 @@ export class AnimatedEventDispatcher implements EventDispatcher {
   }
 }
 
-export class ReanimatedEventDispatcher implements EventDispatcher {
+export class ReanimatedEventDispatcher implements OutgoingEventDispatcher {
   constructor(
     private rnInstance: RNInstance,
     private logger: RNGHLogger,
