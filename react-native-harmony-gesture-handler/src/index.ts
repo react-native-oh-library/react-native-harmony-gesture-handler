@@ -102,7 +102,7 @@ export { GestureObjects as Gesture } from 'react-native-gesture-handler/src/hand
 // } from './components/GestureButtons';
 export {
   TouchableHighlight,
-  // TouchableNativeFeedback,
+  TouchableNativeFeedback,
   TouchableOpacity,
   TouchableWithoutFeedback,
 } from 'react-native-gesture-handler/src/components/touchables';
