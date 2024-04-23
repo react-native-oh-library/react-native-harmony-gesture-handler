@@ -4,3 +4,4 @@ node_modules
 /**/.vscode
 bundle.harmony.js
 *.code-workspace
+**/.DS_Store
