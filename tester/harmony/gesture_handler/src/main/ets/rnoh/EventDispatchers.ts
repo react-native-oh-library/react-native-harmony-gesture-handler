@@ -1,20 +1,9 @@
-import {RNInstance} from '@rnoh/react-native-openharmony/ts';
-import {
-  GestureStateChangeEvent,
-  GestureUpdateEvent,
-  GestureTouchEvent,
-} from './OutgoingEvent';
-import {RNGHLogger} from './RNGHLogger';
-
-export interface EventDispatcher {
-  onGestureHandlerStateChange(event: GestureStateChangeEvent): void;
-  onGestureHandlerEvent(
-    event: GestureStateChangeEvent | GestureUpdateEvent | GestureTouchEvent,
-  ): void;
-}
+import { RNInstance } from '@rnoh/react-native-openharmony/ts';
+import { EventDispatcher, GestureStateChangeEvent, GestureUpdateEvent, GestureTouchEvent, RNGHLogger } from "../core"
 
 export class JSEventDispatcher implements EventDispatcher {
-  constructor(private rnInstance: RNInstance, private logger: RNGHLogger) {}
+  constructor(private rnInstance: RNInstance, private logger: RNGHLogger) {
+  }
 
   public onGestureHandlerStateChange(event: GestureStateChangeEvent) {
     this.logger.info(`onGestureHandlerStateChange`);

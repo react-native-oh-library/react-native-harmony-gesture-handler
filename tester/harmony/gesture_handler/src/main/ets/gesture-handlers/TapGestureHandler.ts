@@ -1,6 +1,4 @@
-import { GestureHandler, GestureHandlerDependencies } from "./GestureHandler"
-import { AdaptedEvent, EventType } from "./Event"
-import { State, getStateName } from "./State"
+import { GestureHandler, GestureHandlerDependencies, AdaptedEvent, EventType, State, getStateName } from "../core"
 
 const DEFAULT_MAX_DURATION_MS = 500;
 const DEFAULT_NUMBER_OF_TAPS = 1;

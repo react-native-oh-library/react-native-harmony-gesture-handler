@@ -1,8 +1,9 @@
 import { TurboModule, TurboModuleContext, Tag } from "@rnoh/react-native-openharmony/ts";
 import { TM } from "@rnoh/react-native-openharmony/generated/ts"
-import { GestureHandlerRegistry } from './GestureHandlerRegistry';
-import { GestureHandlerFactory } from "./GestureHandlerFactory"
+import { GestureHandlerRegistry, State, EventDispatcher, RNGHLogger } from '../core';
+import { GestureHandlerFactory } from "../gesture-handlers"
 import { ViewRegistry } from './ViewRegistry';
+<<<<<<< HEAD:tester/harmony/gesture_handler/src/main/ets/RNGestureHandlerModule.ts
 import { RNGHLogger, StandardRNGHLogger, FakeRNGHLogger } from './RNGHLogger';
 import {
   EventDispatcher,
@@ -16,6 +17,11 @@ import { RNOHScrollLockerArkTS, RNOHScrollLockerCAPI } from "./RNOHScrollLocker"
 import { RNOHScrollLocker } from "./RNOHScrollLocker"
 >>>>>>> 5e7d7ff (feat: support C-API arch)
 import { State } from './State';
+=======
+import { StandardRNGHLogger, FakeRNGHLogger } from './Logger';
+import { JSEventDispatcher, AnimatedEventDispatcher, ReanimatedEventDispatcher } from './EventDispatchers'
+import { RNOHScrollLockerArkTS, RNOHScrollLockerCAPI } from "./RNOHScrollLocker"
+>>>>>>> 3fc766d (refactor: create (sub)modules):tester/harmony/gesture_handler/src/main/ets/rnoh/RNGestureHandlerModule.ts
 import { RNGHRootTouchHandlerCAPI, RawTouchEvent } from "./RNGHRootTouchHandlerCAPI"
 import { RNGHRootTouchHandlerArkTS } from './RNGHRootTouchHandlerArkTS';
 

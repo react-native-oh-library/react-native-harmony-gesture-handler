@@ -1,14 +1,5 @@
 import {RNOHContext} from '@rnoh/react-native-openharmony/ts';
-
-export interface RNGHLogger {
-  info(msg: string): void;
-
-  cloneWithPrefix(prefix: string): RNGHLogger;
-
-  debug(msg: string);
-
-  error(msg: string);
-}
+import { RNGHLogger } from "../core"
 
 export class StandardRNGHLogger implements RNGHLogger {
   constructor(
