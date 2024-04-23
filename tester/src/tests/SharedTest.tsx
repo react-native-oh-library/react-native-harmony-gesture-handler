@@ -1,10 +1,11 @@
 import {TestCase, TestSuite} from '@rnoh/testerino';
 import {
+  createNativeWrapper,
+  TouchableHighlight,
   enableLegacyWebImplementation,
   enableExperimentalWebImplementation,
 } from 'react-native-gesture-handler';
-import {createNativeWrapper} from 'react-native-gesture-handler';
-import {ScrollView, StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, View} from 'react-native';
 import {PALETTE} from '../constants';
 
 const RNGHView = createNativeWrapper(View, {
@@ -52,6 +53,27 @@ export function SharedAPITest() {
         }}
         assert={({expect, state}) => {
           expect(state).to.be.eq(true);
+        }}
+      />
+      <TestCase
+        itShould="change color to red when pressing the button (TouchableHighlight)"
+        initialState={false}
+        arrange={({setState}) => {
+          return (
+            <TouchableHighlight
+              style={{backgroundColor: PALETTE.DARK_BLUE, paddingVertical: 16}}
+              underlayColor={PALETTE.DARK_RED}
+              onPress={() => {
+                setState(true);
+              }}>
+              <Text style={{color: 'white', textAlign: 'center'}}>
+                PRESS ME
+              </Text>
+            </TouchableHighlight>
+          );
+        }}
+        assert={({expect, state}) => {
+          expect(state).to.be.true;
         }}
       />
     </TestSuite>
