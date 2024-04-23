@@ -8,6 +8,7 @@
     "pack:pkg": "cd ../react-native-harmony-gesture-handler && npm run pack:prod && cd ../tester",
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     "install:pkg": "npm uninstall react-native-harmony-gesture-handler && npm run pack:pkg && npm i react-native-harmony-gesture-handler@file:../react-native-harmony-gesture-handler/rnoh-react-native-harmony-gesture-handler-2.12.9.tgz",
 =======
     "install:pkg": "npm uninstall react-native-harmony-gesture-handler && npm run pack:pkg && npm i react-native-harmony-gesture-handler@file:../react-native-harmony-gesture-handler/rnoh-react-native-harmony-gesture-handler-2.12.8.tgz",
@@ -15,6 +16,9 @@
 =======
     "install:pkg": "npm uninstall react-native-harmony-gesture-handler && npm run pack:pkg && npm i react-native-harmony-gesture-handler@file:../react-native-harmony-gesture-handler/rnoh-react-native-harmony-gesture-handler-2.15.0.tgz",
 >>>>>>> 166bc10 (chore: update rngh peer dependency)
+=======
+    "install:pkg": "npm uninstall react-native-harmony-gesture-handler && npm run pack:pkg && npm i react-native-harmony-gesture-handler@file:../react-native-harmony-gesture-handler/rnoh-react-native-harmony-gesture-handler-2.14.0.tgz",
+>>>>>>> 5b0b136 (release: react-native-harmony-gesture-handler@2.14.0)
     "dev:fast": "react-native bundle-harmony",
     "android": "react-native run-android"
   },
