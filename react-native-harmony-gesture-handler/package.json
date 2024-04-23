@@ -50,13 +50,18 @@
 >>>>>>> 8a490d3 (chore: update react-native-harmony to 0.72.21)
 =======
     "react-native-harmony": "npm:@rnoh/react-native-harmony@^0.72.23",
+<<<<<<< HEAD
     "react-native-gesture-handler": "2.15.0"
 >>>>>>> 166bc10 (chore: update rngh peer dependency)
+=======
+    "react-native-gesture-handler": "2.14.1"
+>>>>>>> 53e3409 (unpublish 2.15.0 and change peer rngh to 2.14.1 due to issues on android)
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -72,6 +77,9 @@
 =======
     "react-native-gesture-handler": "2.15.0",
 >>>>>>> 166bc10 (chore: update rngh peer dependency)
+=======
+    "react-native-gesture-handler": "2.14.1",
+>>>>>>> 53e3409 (unpublish 2.15.0 and change peer rngh to 2.14.1 due to issues on android)
     "@rnoh/react-native-harmony": "^0.72.23",
 >>>>>>> 8a490d3 (chore: update react-native-harmony to 0.72.21)
     "@babel/core": "^7.12.9",
