@@ -19,7 +19,7 @@
     "prepack": "bob build",
     "test": "jest",
     "pack:prod": "npm pack",
-    "prepublishOnly": "npm run prepack",
+    "prepublishOnly": "npm run prepack && react-native verify-package-harmony --package-path . --skip-checks oh_package_name_is_derived_from_npm_package_name",
     "update_version": "node ./scripts/update-version.js",
     "deploy": "node ./scripts/deploy.js"
   },
