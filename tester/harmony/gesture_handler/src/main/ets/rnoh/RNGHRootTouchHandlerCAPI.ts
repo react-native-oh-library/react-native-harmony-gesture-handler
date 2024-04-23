@@ -1,6 +1,6 @@
 import { RNGHRootTouchHandlerArkTS } from "./RNGHRootTouchHandlerArkTS"
 import { TouchEvent as TouchEventArkTS, TouchType, TouchObject } from "./types"
-import { RNGHLogger } from "./RNGHLogger"
+import { RNGHLogger } from "../core"
 
 type RawTouchPoint = {
   pointerId: number

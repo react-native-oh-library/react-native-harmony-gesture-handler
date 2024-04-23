@@ -1,17 +1,11 @@
 import { TurboModule, TurboModuleContext, Tag } from "@rnoh/react-native-openharmony/ts";
 import { TM } from "@rnoh/react-native-openharmony/generated/ts"
-import { GestureHandlerRegistry } from './GestureHandlerRegistry';
-import { GestureHandlerFactory } from "./GestureHandlerFactory"
+import { GestureHandlerRegistry, State, EventDispatcher, RNGHLogger } from '../core';
+import { GestureHandlerFactory } from "../gesture-handlers"
 import { ViewRegistry } from './ViewRegistry';
-import { RNGHLogger, StandardRNGHLogger, FakeRNGHLogger } from './RNGHLogger';
-import {
-  EventDispatcher,
-  JSEventDispatcher,
-  AnimatedEventDispatcher,
-  ReanimatedEventDispatcher
-} from './EventDispatcher'
+import { StandardRNGHLogger, FakeRNGHLogger } from './Logger';
+import { JSEventDispatcher, AnimatedEventDispatcher, ReanimatedEventDispatcher } from './EventDispatchers'
 import { RNOHScrollLockerArkTS, RNOHScrollLockerCAPI } from "./RNOHScrollLocker"
-import { State } from './State';
 import { RNGHRootTouchHandlerCAPI, RawTouchEvent } from "./RNGHRootTouchHandlerCAPI"
 import { RNGHRootTouchHandlerArkTS } from './RNGHRootTouchHandlerArkTS';
 

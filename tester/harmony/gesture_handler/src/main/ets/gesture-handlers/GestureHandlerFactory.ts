@@ -1,9 +1,13 @@
-import { GestureHandlerOrchestrator } from './GestureHandlerOrchestrator';
-import { GestureHandler, GestureHandlerDependencies, ScrollLocker } from "./GestureHandler"
-import { PointerTracker } from './PointerTracker';
-import { RNGHError } from "./RNGHError"
-import { InteractionManager } from './InteractionManager';
-import { RNGHLogger } from './RNGHLogger';
+import {
+  RNGHLogger,
+  InteractionManager,
+  RNGHError,
+  PointerTracker,
+  GestureHandler,
+  GestureHandlerDependencies,
+  ScrollLocker,
+  GestureHandlerOrchestrator
+} from "../core"
 import { TapGestureHandler } from './TapGestureHandler';
 import { PanGestureHandler } from "./PanGestureHandler"
 import { NativeViewGestureHandler } from "./NativeViewGestureHandler"
