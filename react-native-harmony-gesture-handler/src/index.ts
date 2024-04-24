@@ -154,15 +154,15 @@ export {
 // } from './handlers/gestureHandlerTypesCompat';
 
 // export { default as Swipeable } from './components/Swipeable';
-// export type {
-//   DrawerLayoutProps,
-//   DrawerPosition,
-//   DrawerState,
-//   DrawerType,
-//   DrawerLockMode,
-//   DrawerKeyboardDismissMode,
-// } from './components/DrawerLayout';
-// export { default as DrawerLayout } from './components/DrawerLayout';
+export type {
+  DrawerLayoutProps,
+  DrawerPosition,
+  DrawerState,
+  DrawerType,
+  DrawerLockMode,
+  DrawerKeyboardDismissMode,
+} from 'react-native-gesture-handler/src/components/DrawerLayout';
+export { default as DrawerLayout } from 'react-native-gesture-handler/src/components/DrawerLayout';
 
 export {
   enableExperimentalWebImplementation,
