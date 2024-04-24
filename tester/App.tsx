@@ -1,7 +1,16 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useState} from 'react';
+import React, {useCallback, useRef, useState} from 'react';
 
-import {Button, SafeAreaView, ScrollView, StatusBar, View} from 'react-native';
+import {
+  Button,
+  SafeAreaView,
+  ScrollView,
+  StatusBar,
+  Text,
+  View,
+} from 'react-native';
+import DrawerLayout from 'react-native-gesture-handler/DrawerLayout';
+
 import {Tester} from '@rnoh/testerino';
 import {
   GestureHandlerRootView,
@@ -38,14 +47,58 @@ function App({}): JSX.Element | null {
 }
 
 function Tests() {
+  const drawerLayoutRef = useRef<DrawerLayout>(null);
+  const [drawerState, setDrawerState] = useState<
+    'OPEN' | 'CLOSED' | 'CHANGING'
+  >('CLOSED');
+
+  const onRenderNavigationView = useCallback(() => {
+    return (
+      <View>
+        <Text>DrawerLayout isn't super responsive on Android</Text>
+      </View>
+    );
+  }, []);
+
   return (
-    <Tester style={{flex: 1}}>
-      <ScrollView style={{width: '100%', flex: 1}}>
-        <SharedAPITest />
-        <NewApiTest />
-        <OldApiTest />
-      </ScrollView>
-    </Tester>
+    <>
+      <Button
+        title={`Toggle Drawer (${drawerState})`}
+        onPress={() => {
+          const drawer = drawerLayoutRef.current;
+          if (drawer) {
+            drawer.state.drawerOpened
+              ? drawer.closeDrawer()
+              : drawer.openDrawer();
+          }
+        }}
+      />
+      <Tester style={{flex: 1}}>
+        <DrawerLayout
+          ref={drawerLayoutRef}
+          useNativeAnimations
+          drawerWidth={200}
+          drawerPosition={'left'}
+          drawerType="slide"
+          drawerBackgroundColor="#ddd"
+          renderNavigationView={onRenderNavigationView}
+          onDrawerOpen={() => {
+            setDrawerState('OPEN');
+          }}
+          onDrawerSlide={() => {
+            setDrawerState('CHANGING');
+          }}
+          onDrawerClose={() => {
+            setDrawerState('CLOSED');
+          }}>
+          <ScrollView style={{width: '100%', flex: 1}}>
+            <SharedAPITest />
+            <NewApiTest />
+            <OldApiTest />
+          </ScrollView>
+        </DrawerLayout>
+      </Tester>
+    </>
   );
 }
 
