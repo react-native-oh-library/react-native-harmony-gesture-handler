@@ -153,7 +153,7 @@ export {
 //   BorderlessButtonProperties,
 // } from './handlers/gestureHandlerTypesCompat';
 
-// export { default as Swipeable } from './components/Swipeable';
+export { default as Swipeable } from 'react-native-gesture-handler/src/components/Swipeable';
 export type {
   DrawerLayoutProps,
   DrawerPosition,
