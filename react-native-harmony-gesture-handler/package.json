@@ -107,7 +107,8 @@
     "./harmony/*",
     "src",
     "lib",
-    "DrawerLayout/"
+    "DrawerLayout/",
+    "Swipeable/"
   ],
   "react-native-builder-bob": {
     "source": "src",
