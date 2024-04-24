@@ -106,7 +106,8 @@
   "files": [
     "./harmony/*",
     "src",
-    "lib"
+    "lib",
+    "DrawerLayout/"
   ],
   "react-native-builder-bob": {
     "source": "src",

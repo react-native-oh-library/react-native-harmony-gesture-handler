@@ -3,5 +3,8 @@
   "exclude": [
     "**/*.test.ts",
     "**/*.test.tsx"
-  ]
+  ],
+  "compilerOptions": {
+    "strict": false
+  }
 }
