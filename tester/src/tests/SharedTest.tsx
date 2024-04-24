@@ -7,6 +7,7 @@ import {
   TouchableNativeFeedback,
   Swipeable as MainSwipeable,
   DrawerLayout,
+  PureNativeButton,
 } from 'react-native-gesture-handler';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import {StyleSheet, Text, View, Platform} from 'react-native';
@@ -14,6 +15,10 @@ import {PALETTE} from '../constants';
 
 const RNGHView = createNativeWrapper(View, {
   disallowInterruption: true,
+});
+
+const WrappedPureNativeButton = createNativeWrapper(PureNativeButton, {
+  shouldActivateOnStart: true,
 });
 
 export function SharedAPITest() {
@@ -156,6 +161,31 @@ export function SharedAPITest() {
         itShould="reexport DrawerLayout"
         fn={({expect}) => {
           expect(DrawerLayout).is.not.undefined;
+        }}
+      />
+      <TestCase
+        itShould="pass on press (PureNativeButton)"
+        initialState={false}
+        arrange={({setState}) => {
+          return (
+            <WrappedPureNativeButton
+              onActivated={() => {
+                setState(true);
+              }}>
+              <Text
+                style={{
+                  backgroundColor: PALETTE.DARK_BLUE,
+                  color: 'white',
+                  textAlign: 'center',
+                  padding: 16,
+                }}>
+                PRESS ME
+              </Text>
+            </WrappedPureNativeButton>
+          );
+        }}
+        assert={({expect, state}) => {
+          expect(state).to.be.true;
         }}
       />
     </TestSuite>
