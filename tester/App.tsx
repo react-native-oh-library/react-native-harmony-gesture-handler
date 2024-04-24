@@ -9,13 +9,13 @@ import {
   Text,
   View,
 } from 'react-native';
-import DrawerLayout from 'react-native-gesture-handler/DrawerLayout';
 
 import {Tester} from '@rnoh/testerino';
 import {
   GestureHandlerRootView,
   gestureHandlerRootHOC,
 } from 'react-native-gesture-handler';
+import DrawerLayout from 'react-native-gesture-handler/DrawerLayout';
 import {NewApiTest, OldApiTest, SharedAPITest} from './src';
 
 type RootViewMode = 'Component' | 'HOC';

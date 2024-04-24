@@ -5,7 +5,10 @@ import {
   enableLegacyWebImplementation,
   enableExperimentalWebImplementation,
   TouchableNativeFeedback,
+  Swipeable as MainSwipeable,
+  DrawerLayout,
 } from 'react-native-gesture-handler';
+import Swipeable from 'react-native-gesture-handler/Swipeable';
 import {StyleSheet, Text, View, Platform} from 'react-native';
 import {PALETTE} from '../constants';
 
@@ -78,7 +81,7 @@ export function SharedAPITest() {
         }}
       />
       <TestCase
-        itShould="ripple on press"
+        itShould="show ripple effect on press (Android)"
         skip={Platform.OS === 'android' ? false : 'android component'}
         initialState={false}
         arrange={({setState}) => {
@@ -101,6 +104,58 @@ export function SharedAPITest() {
         }}
         assert={({expect, state}) => {
           expect(state).to.be.true;
+        }}
+      />
+      <TestCase
+        itShould="pass when green rectangle is visible after moving the blue rectangle to the right"
+        initialState={false}
+        arrange={({setState}) => {
+          return (
+            <Swipeable
+              onSwipeableOpen={() => {
+                setState(true);
+              }}
+              renderLeftActions={() => (
+                <View
+                  style={{
+                    backgroundColor: 'green',
+                    width: 64,
+                    height: 64,
+                    justifyContent: 'center',
+                  }}>
+                  <Text style={{color: 'white', textAlign: 'center'}}>
+                    HELLO THERE
+                  </Text>
+                </View>
+              )}>
+              <View
+                style={{
+                  backgroundColor: PALETTE.DARK_BLUE,
+                  width: '100%',
+                  height: 64,
+                  justifyContent: 'center',
+                }}>
+                <Text style={{color: 'white', textAlign: 'center'}}>
+                  SWIPE ME RIGHT
+                </Text>
+              </View>
+            </Swipeable>
+          );
+        }}
+        assert={({expect, state}) => {
+          expect(state).to.be.true;
+        }}
+      />
+      <TestCase
+        itShould="reexport Swipeable"
+        fn={({expect}) => {
+          expect(MainSwipeable).is.not.undefined;
+        }}
+      />
+      <TestCase
+        itShould="reexport DrawerLayout"
+        fn={({expect}) => {
+          expect(DrawerLayout).is.not.undefined;
         }}
       />
     </TestSuite>
