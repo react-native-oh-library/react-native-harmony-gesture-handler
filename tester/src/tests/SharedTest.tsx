@@ -8,6 +8,7 @@ import {
   Swipeable as MainSwipeable,
   DrawerLayout,
   PureNativeButton,
+  RectButton,
 } from 'react-native-gesture-handler';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import {StyleSheet, Text, View, Platform} from 'react-native';
@@ -182,6 +183,28 @@ export function SharedAPITest() {
                 PRESS ME
               </Text>
             </WrappedPureNativeButton>
+          );
+        }}
+        assert={({expect, state}) => {
+          expect(state).to.be.true;
+        }}
+      />
+      <TestCase
+        itShould="pass when pressed (RectButton) and change color to light red when touched"
+        skip={Platform.OS === 'android' ? "doesn't work on Android" : false}
+        initialState={false}
+        arrange={({setState}) => {
+          return (
+            <RectButton
+              rippleColor={'red'}
+              underlayColor="red"
+              onPress={() => {
+                setState(true);
+              }}>
+              <View style={{padding: 16}}>
+                <Text>List Item 1 - Press me</Text>
+              </View>
+            </RectButton>
           );
         }}
         assert={({expect, state}) => {
