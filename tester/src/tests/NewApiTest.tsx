@@ -15,6 +15,41 @@ import {PALETTE} from '../constants';
 export function NewApiTest() {
   return (
     <TestSuite name="new API">
+      <TestSuite name="Gesture.LongPress">
+        <TestCase
+          itShould="pass after pressing the blue rectangle for one second"
+          initialState={false}
+          arrange={({state, reset, setState}) => {
+            const longPressGesture = Gesture.LongPress()
+              .minDuration(1000)
+              .onStart(() => {
+                if (state) {
+                  reset();
+                } else {
+                  setState(true);
+                }
+              });
+            return (
+              <GestureDetector gesture={longPressGesture}>
+                <View
+                  style={{
+                    width: '100%',
+                    height: 64,
+                    backgroundColor: PALETTE.DARK_BLUE,
+                    justifyContent: 'center',
+                  }}>
+                  <Text style={{color: 'white', textAlign: 'center'}}>
+                    PRESS ME FOR 1 SEC
+                  </Text>
+                </View>
+              </GestureDetector>
+            );
+          }}
+          assert={({state, expect}) => {
+            expect(state).to.be.true;
+          }}
+        />
+      </TestSuite>
       <TestSuite name="Gesture.Manual">
         <TestCase
           itShould="pass after dragging over the blue area (touch down, move, and touch up)"

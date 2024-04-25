@@ -417,7 +417,7 @@ export abstract class GestureHandler<TGestureConfig extends GestureConfig = Gest
       this.cancelTouches()
     }
     this.orchestrator.onHandlerStateChange(this, state, oldState)
-    this.stateDidChange(state, oldState)
+    this.onStateChange(state, oldState)
   }
 
   private isFinished() {
@@ -464,8 +464,8 @@ export abstract class GestureHandler<TGestureConfig extends GestureConfig = Gest
     this.eventDispatcher.onGestureHandlerEvent(cancelEvent)
   }
 
-  protected stateDidChange(newState: State, oldState: State) {
-    this.logger.info(`stateDidChange from ${getStateName(oldState)} to ${getStateName(newState)}`)
+  protected onStateChange(newState: State, oldState: State) {
+    this.logger.info(`onStateChange: from ${getStateName(oldState)} to ${getStateName(newState)}`)
   }
 
 
