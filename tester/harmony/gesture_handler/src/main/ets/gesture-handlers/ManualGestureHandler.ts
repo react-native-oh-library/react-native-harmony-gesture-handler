@@ -1,6 +1,10 @@
-import { GestureHandler, IncomingEvent } from '../core';
+import { GestureHandler, GestureHandlerDependencies, IncomingEvent } from '../core';
 
 export class ManualGestureHandler extends GestureHandler {
+  constructor(deps: GestureHandlerDependencies) {
+    super({...deps, logger: deps.logger.cloneWithPrefix("ManualGestureHandler")})
+  }
+
   public getDefaultConfig() {
     return {}
   }
