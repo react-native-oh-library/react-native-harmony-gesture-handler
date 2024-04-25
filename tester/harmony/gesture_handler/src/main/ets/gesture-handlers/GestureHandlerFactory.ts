@@ -11,6 +11,7 @@ import {
 import { TapGestureHandler } from './TapGestureHandler';
 import { PanGestureHandler } from "./PanGestureHandler"
 import { NativeViewGestureHandler } from "./NativeViewGestureHandler"
+import { ManualGestureHandler } from './ManualGestureHandler';
 
 
 export class GestureHandlerFactory {
@@ -40,6 +41,8 @@ export class GestureHandlerFactory {
         return new PanGestureHandler(deps)
       case "NativeViewGestureHandler":
         return new NativeViewGestureHandler(deps)
+      case "ManualGestureHandler":
+        return new ManualGestureHandler(deps)
       default:
         const msg = `Unknown handler type: ${handlerName}`
         this.factoryLogger.info(msg)

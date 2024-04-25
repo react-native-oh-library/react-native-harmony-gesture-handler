@@ -15,6 +15,63 @@ import {PALETTE} from '../constants';
 export function NewApiTest() {
   return (
     <TestSuite name="new API">
+      <TestSuite name="Gesture.Manual">
+        <TestCase
+          itShould="pass after dragging over the blue area (touch down, move, and touch up)"
+          initialState={{
+            hasTouchedDown: false,
+            hasMoved: false,
+            hasReleased: false,
+          }}
+          arrange={({setState}) => {
+            const state = {
+              hasTouchedDown: false,
+              hasMoved: false,
+              hasReleased: false,
+            };
+            const gesture = Gesture.Manual()
+              .onTouchesDown(() => {
+                state.hasTouchedDown = true;
+              })
+              .onTouchesMove(() => {
+                state.hasMoved = true;
+              })
+              .onTouchesUp(() => {
+                state.hasReleased = true;
+                setState(state);
+              });
+
+            return (
+              <View style={{}}>
+                <GestureDetector gesture={gesture}>
+                  <View
+                    style={[
+                      {
+                        backgroundColor: PALETTE.DARK_BLUE,
+                        width: '100%',
+                      },
+                    ]}>
+                    <Text
+                      style={{
+                        color: 'white',
+                        textAlign: 'center',
+                        paddingVertical: 24,
+                      }}>
+                      DRAG OVER ME
+                    </Text>
+                  </View>
+                </GestureDetector>
+              </View>
+            );
+          }}
+          assert={({expect, state}) => {
+            expect(state).to.be.deep.eq({
+              hasTouchedDown: true,
+              hasMoved: true,
+              hasReleased: true,
+            });
+          }}></TestCase>
+      </TestSuite>
       <TestCase
         itShould="toggle color on tap"
         initialState={false}
