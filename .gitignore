@@ -6,3 +6,4 @@ bundle.harmony.js
 *.code-workspace
 **/.DS_Store
 **/oh-package-lock.json
+**/BuildProfile.ets
