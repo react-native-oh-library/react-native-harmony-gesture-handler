@@ -31,21 +31,24 @@ namespace rnoh {
             payload["action"] = OH_ArkUI_UIInputEvent_GetAction(e);
             payload["actionTouch"] = this->convertNodeTouchPointToDynamic(e);
             folly::dynamic touchPoints = folly::dynamic::array();
-            touchPoints.push_back(this->convertNodeTouchPointToDynamic(e));
+            int32_t pointerCount = OH_ArkUI_PointerEvent_GetPointerCount(e);
+            for (int i = 0; i < pointerCount; i++) {
+              touchPoints.push_back(this->convertNodeTouchPointToDynamic(e, i));
+            }
             payload["touchPoints"] = touchPoints;
             payload["sourceType"] = OH_ArkUI_UIInputEvent_GetSourceType(e);
             payload["timestamp"] = OH_ArkUI_UIInputEvent_GetEventTime(e);
             payload["rootTag"] = m_tag;
             m_deps->arkTSChannel->postMessage("RNGH::TOUCH_EVENT", payload);
         }
-    private: 
-        folly::dynamic convertNodeTouchPointToDynamic(ArkUI_UIInputEvent* e) {
+    private:
+      folly::dynamic convertNodeTouchPointToDynamic(ArkUI_UIInputEvent *e, int32_t index = 0) {
             folly::dynamic result = folly::dynamic::object;
-            result["pointerId"] = OH_ArkUI_PointerEvent_GetPointerId(e, 0);
-            result["windowX"] = OH_ArkUI_PointerEvent_GetWindowX(e);
-            result["windowY"] = OH_ArkUI_PointerEvent_GetWindowY(e);
+            result["pointerId"] = OH_ArkUI_PointerEvent_GetPointerId(e, index);
+            result["windowX"] = OH_ArkUI_PointerEvent_GetWindowXByIndex(e, index);
+            result["windowY"] = OH_ArkUI_PointerEvent_GetWindowYByIndex(e, index);
             return result;
-        }
+      }
 
     protected:
         void onChildInserted(ComponentInstance::Shared const &childComponentInstance, std::size_t index) override {

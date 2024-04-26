@@ -113,7 +113,7 @@ export class GestureHandlerArkUIAdapter {
       buttons: 0,
       time: e.timestamp,
       allTouches: e.touches.map(touch => this.mapTouchObjectToTouch(touch)),
-      changedTouches: e.changedTouches.map(touch =>
+      changedTouches: e.changedTouches.map(touch => // TODO: detect changes
         this.mapTouchObjectToTouch(touch),
       ),
       touchEventType: this.mapTouchTypeToTouchEventType(changedTouch.type),
@@ -159,10 +159,13 @@ export class GestureHandlerArkUIAdapter {
     switch (touchType) {
       case TouchType.Down:
         this.activePointerIds.add(pointerId);
+        break;
       case TouchType.Up:
         this.activePointerIds.delete(pointerId);
+        break;
       case TouchType.Cancel:
         this.activePointerIds.clear();
+        break;
       default:
         return;
     }
