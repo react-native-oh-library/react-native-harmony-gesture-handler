@@ -21,12 +21,16 @@
 =======
   type: 'module',
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> d6f40e7 (chore: switch gesture handler module type to har)
   version: '2.15.0',
 >>>>>>> 166bc10 (chore: update rngh peer dependency)
 =======
   version: '2.14.0',
 >>>>>>> 5b0b136 (release: react-native-harmony-gesture-handler@2.14.0)
+=======
+  version: '2.14.1',
+>>>>>>> fe1af58 (release: react-native-harmony-gesture-handler@2.14.1)
   dependencies: {},
 >>>>>>> 8a490d3 (chore: update react-native-harmony to 0.72.21)
 }
