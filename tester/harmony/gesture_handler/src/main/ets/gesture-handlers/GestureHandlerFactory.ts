@@ -10,6 +10,7 @@ import {
 } from "../core"
 import { TapGestureHandler } from './TapGestureHandler';
 import { PanGestureHandler } from "./PanGestureHandler"
+import { PinchGestureHandler } from "./PinchGestureHandler"
 import { NativeViewGestureHandler } from "./NativeViewGestureHandler"
 import { ManualGestureHandler } from './ManualGestureHandler';
 import { LongPressGestureHandler } from "./LongPressGestureHandler"
@@ -39,6 +40,8 @@ export class GestureHandlerFactory {
         return new TapGestureHandler(deps)
       case "PanGestureHandler":
         return new PanGestureHandler(deps)
+      case "PinchGestureHandler":
+        return new PinchGestureHandler(deps)
       case "NativeViewGestureHandler":
         return new NativeViewGestureHandler(deps)
       case "ManualGestureHandler":

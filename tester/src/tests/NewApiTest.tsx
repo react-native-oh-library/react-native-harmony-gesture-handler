@@ -108,6 +108,31 @@ export function NewApiTest() {
           }}></TestCase>
       </TestSuite>
       <TestCase
+        itShould="toggle color on PINCH"
+        initialState={false}
+        arrange={({setState}) => {
+          return (
+            <Example
+              label="PINCH ME"
+              size={250}
+              createGesture={setBackgroundColor => {
+                return Gesture.Pinch().onStart(() => {
+                  setState(true);
+                  setBackgroundColor(prev =>
+                    prev === PALETTE.DARK_BLUE
+                      ? PALETTE.LIGHT_GREEN
+                      : PALETTE.DARK_BLUE,
+                  );
+                });
+              }}
+            />
+          );
+        }}
+        assert={({expect, state}) => {
+          expect(state).to.be.true;
+        }}
+      />
+      <TestCase
         itShould="toggle color on tap"
         initialState={false}
         arrange={({setState}) => {
@@ -251,6 +276,7 @@ function Example(props: {
     setColor: React.Dispatch<React.SetStateAction<string>>,
   ) => GestureType;
   rightHitSlop?: number;
+  size?: number;
 }) {
   const [backgroundColor, setBackgroundColor] = useState(PALETTE.DARK_BLUE);
 
@@ -263,8 +289,8 @@ function Example(props: {
       <GestureDetector gesture={gesture}>
         <View
           style={{
-            width: 128,
-            height: 128,
+            width: props.size ?? 128,
+            height: props.size ?? 128,
             alignSelf: 'center',
             backgroundColor,
             justifyContent: 'center',
