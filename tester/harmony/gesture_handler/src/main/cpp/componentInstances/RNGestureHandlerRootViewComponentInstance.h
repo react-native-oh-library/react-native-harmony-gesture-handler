@@ -18,7 +18,7 @@ namespace rnoh {
             NativeNodeApi::getInstance()->registerNodeEvent(m_stackNode.getArkUINodeHandle(), NODE_TOUCH_EVENT, NODE_TOUCH_EVENT, 0);
             m_deps->arkTSChannel->postMessage("RNGH::ROOT_CREATED", m_tag);
         };
-  
+
         ~RNGestureHandlerRootViewComponentInstance() override {
           NativeNodeApi::getInstance()->unregisterNodeEvent(m_stackNode.getArkUINodeHandle(),
                                                                               NODE_TOUCH_EVENT);
@@ -29,12 +29,19 @@ namespace rnoh {
         void onTouchEvent(ArkUI_UIInputEvent* e) override {
             folly::dynamic payload = folly::dynamic::object;
             payload["action"] = OH_ArkUI_UIInputEvent_GetAction(e);
-            payload["actionTouch"] = this->convertNodeTouchPointToDynamic(e);
             folly::dynamic touchPoints = folly::dynamic::array();
+            auto activeWindowX = OH_ArkUI_PointerEvent_GetWindowX(e);
+            auto activeWindowY = OH_ArkUI_PointerEvent_GetWindowY(e);
             int32_t pointerCount = OH_ArkUI_PointerEvent_GetPointerCount(e);
+            int activePointerIdx = 0;
             for (int i = 0; i < pointerCount; i++) {
-              touchPoints.push_back(this->convertNodeTouchPointToDynamic(e, i));
+              auto touchPoint = this->convertNodeTouchPointToDynamic(e, i);
+              touchPoints.push_back(touchPoint);
+              if (activeWindowX == touchPoint["windowX"].asDouble() && activeWindowY == touchPoint["windowY"].asDouble()) {
+                  activePointerIdx = i;
+              }
             }
+            payload["actionTouch"] = touchPoints[activePointerIdx];
             payload["touchPoints"] = touchPoints;
             payload["sourceType"] = OH_ArkUI_UIInputEvent_GetSourceType(e);
             payload["timestamp"] = OH_ArkUI_UIInputEvent_GetEventTime(e);

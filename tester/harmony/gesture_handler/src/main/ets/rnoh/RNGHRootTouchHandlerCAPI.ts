@@ -26,7 +26,7 @@ class TouchEvent {
     return {
       type: this.touchTypeFromAction(this.raw.action),
       touches: this.raw.touchPoints.map(tp => this.touchObjectFromTouchPoint(tp, touchType)),
-      changedTouches: this.raw.touchPoints.map(tp => this.touchObjectFromTouchPoint(tp, touchType)),
+      changedTouches:[this.touchObjectFromTouchPoint(this.raw.actionTouch, touchType)],
       timestamp: this.raw.timestamp
     }
   }
