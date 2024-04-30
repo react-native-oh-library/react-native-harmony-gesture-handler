@@ -113,7 +113,7 @@ export class GestureHandlerArkUIAdapter {
       buttons: 0,
       time: e.timestamp,
       allTouches: e.touches.map(touch => this.mapTouchObjectToTouch(touch)),
-      changedTouches: e.changedTouches.map(touch => // TODO: detect changes
+      changedTouches: e.changedTouches.map(touch =>
         this.mapTouchObjectToTouch(touch),
       ),
       touchEventType: this.mapTouchTypeToTouchEventType(changedTouch.type),

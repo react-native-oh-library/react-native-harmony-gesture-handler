@@ -49,7 +49,7 @@ export interface GestureConfig {
   maxDeltaY?: number;
   shouldActivateOnStart?: boolean;
   disallowInterruption?: boolean;
-  direction?: typeof Directions;
+  direction?: Directions;
   needsPointerData?: boolean
   // --- Tap
   minNumberOfPointers?: number
