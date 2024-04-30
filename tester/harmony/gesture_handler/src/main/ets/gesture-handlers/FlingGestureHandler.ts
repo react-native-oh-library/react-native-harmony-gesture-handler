@@ -128,9 +128,9 @@ export class FlingGestureHandler extends GestureHandler {
   }
 
   public onAdditionalPointerAdd(event: IncomingEvent): void {
-    // this.tracker.addToTracker(event);
-    // super.onAdditionalPointerAdd(event);
-    // this.newPointerAction();
+    this.tracker.addToTracker(event);
+    super.onAdditionalPointerAdd(event);
+    this.newPointerAction();
   }
 
   private newPointerAction(): void {
@@ -182,8 +182,8 @@ export class FlingGestureHandler extends GestureHandler {
   }
 
   public onAdditionalPointerRemove(event: IncomingEvent): void {
-    // super.onAdditionalPointerRemove(event);
-    // this.onUp(event);
+    super.onAdditionalPointerRemove(event);
+    this.onUp(event);
   }
 
   private onUp(event: IncomingEvent): void {
