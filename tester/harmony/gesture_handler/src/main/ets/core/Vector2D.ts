@@ -3,8 +3,7 @@ import { Directions, DiagonalDirections } from "./IncomingEvent"
 type Cosine = number
 
 export class Vector2D {
-  static fromDirection(direction: Directions | DiagonalDirections): Vector2D {
-    const DirectionToVectorMappings = new Map<
+  private static VECTOR_BY_DIRECTION = new Map<
       Directions | DiagonalDirections,
       Vector2D
     >([
@@ -17,7 +16,9 @@ export class Vector2D {
       [DiagonalDirections.UP_LEFT, new Vector2D({ x: -1, y: -1 })],
       [DiagonalDirections.DOWN_LEFT, new Vector2D({ x: -1, y: 1 })],
     ]);
-    return DirectionToVectorMappings.get(direction)!;
+
+  static fromDirection(direction: Directions | DiagonalDirections): Vector2D {
+    return Vector2D.VECTOR_BY_DIRECTION.get(direction)!;
   }
 
 
