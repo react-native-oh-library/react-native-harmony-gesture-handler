@@ -6,7 +6,7 @@ global.isFormsStackingContext = () => true; // TODO: add using JSI
 
 import { initialize } from 'react-native-gesture-handler/src/init';
 
-// export { Directions } from './Directions';
+export { Directions } from 'react-native-gesture-handler/src/Directions';
 export { State } from 'react-native-gesture-handler/src/State';
 export { default as gestureHandlerRootHOC } from 'react-native-gesture-handler/src/components/gestureHandlerRootHOC';
 export { default as GestureHandlerRootView } from './components/GestureHandlerRootView';

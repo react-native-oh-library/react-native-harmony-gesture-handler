@@ -9,12 +9,29 @@ export interface HitSlop {
   height?: number;
 }
 
+const RIGHT = 1;
+const LEFT = 2;
+const UP = 4;
+const DOWN = 8;
+
 export const Directions = {
-  RIGHT: 1,
-  LEFT: 2,
-  UP: 4,
-  DOWN: 8,
+  RIGHT: RIGHT,
+  LEFT: LEFT,
+  UP: UP,
+  DOWN: DOWN,
 } as const;
+
+export type Directions = typeof Directions[keyof typeof Directions];
+
+export const DiagonalDirections = {
+  UP_RIGHT: UP | RIGHT,
+  DOWN_RIGHT: DOWN | RIGHT,
+  UP_LEFT: UP | LEFT,
+  DOWN_LEFT: DOWN | LEFT,
+} as const;
+
+export type DiagonalDirections =
+  typeof DiagonalDirections[keyof typeof DiagonalDirections];
 
 export enum PointerType {
   NONE = 'none',
