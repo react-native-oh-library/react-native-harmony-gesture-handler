@@ -9,12 +9,48 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   ScrollView,
+  Directions,
 } from 'react-native-gesture-handler';
 import {PALETTE} from '../constants';
 
 export function NewApiTest() {
   return (
     <TestSuite name="new API">
+      <TestSuite name="Gesture.Fling">
+        <TestCase
+          itShould="pass after swiping from left to right (It fails when the app runs with ArkTS debugger. The debugger has a big impact on the performance which breaks time dependent logic.)"
+          initialState={false}
+          arrange={({setState, state, reset}) => {
+            const flingRightGesture = Gesture.Fling()
+              .direction(Directions.RIGHT)
+              .onStart(() => {
+                if (state) {
+                  reset();
+                } else {
+                  setState(true);
+                }
+              });
+
+            return (
+              <GestureDetector gesture={flingRightGesture}>
+                <View
+                  style={{
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    backgroundColor: PALETTE.DARK_BLUE,
+                  }}>
+                  <Text style={{color: 'white', paddingVertical: 24}}>
+                    SWIPE ME FROM LEFT TO RIGHT
+                  </Text>
+                </View>
+              </GestureDetector>
+            );
+          }}
+          assert={({expect, state}) => {
+            expect(state).to.be.true;
+          }}
+        />
+      </TestSuite>
       <TestSuite name="Gesture.LongPress">
         <TestCase
           itShould="pass after pressing the blue rectangle for one second"

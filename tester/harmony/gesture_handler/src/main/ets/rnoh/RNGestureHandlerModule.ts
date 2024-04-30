@@ -44,7 +44,7 @@ export class RNGestureHandlerModule extends TurboModule implements TM.RNGestureH
 
   constructor(ctx: TurboModuleContext) {
     super(ctx)
-    const debug = false
+    const debug = true
     this.logger = debug ? new StandardRNGHLogger(ctx.logger, "RNGH") : new FakeRNGHLogger()
     if (this.ctx.rnInstance.getArchitecture() === "C_API") {
       this.ctx.rnInstance.cppEventEmitter.subscribe("RNGH::TOUCH_EVENT", (e: any) => {
