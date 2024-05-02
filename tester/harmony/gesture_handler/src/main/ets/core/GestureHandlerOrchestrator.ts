@@ -71,6 +71,12 @@ export class GestureHandlerOrchestrator {
   }
 
   private tryActivate(handler: GestureHandler): void {
+    const logger = this.logger.cloneWithPrefix(`tryActivate(${handler.getTag()})`)
+    logger.debug({
+      gestureHandlers: this.gestureHandlers.map(gh => gh.getTag()),
+      awaitingHandlers: Array.from(this.awaitingHandlers).map(gh => gh.getTag()),
+      handlersToCancel: this.handlersToCancel.map(gh => gh.getTag())
+    })
     if (this.hasOtherHandlerToWaitFor(handler)) {
       this.addAwaitingHandler(handler)
     } else if (handler.getState() !== State.CANCELLED && handler.getState() !== State.FAILED) {
@@ -119,6 +125,7 @@ export class GestureHandlerOrchestrator {
     handler: GestureHandler,
     otherHandler: GestureHandler
   }): boolean {
+    this.logger.cloneWithPrefix(`shouldHandlerBeCancelledByOtherHandler(${handler.getTag()}, ${otherHandler.getTag()})`).debug("")
     if (this.canRunSimultaneously(handler, otherHandler))
       return false;
     if (handler !== otherHandler && (handler.isAwaiting() || handler.getState() === State.ACTIVE))
@@ -127,9 +134,13 @@ export class GestureHandlerOrchestrator {
   }
 
   private canRunSimultaneously(handlerA: GestureHandler, handlerB: GestureHandler) {
-    return handlerA === handlerB
+    const logger = this.logger.cloneWithPrefix("canRunSimultaneously")
+    const result = handlerA === handlerB
       || handlerA.shouldRecognizeSimultaneously(handlerB)
       || handlerB.shouldRecognizeSimultaneously(handlerA)
+
+    logger.debug({ result, handlerA: handlerA.getTag(), handlerB: handlerB.getTag() })
+    return result
   }
 
   private checkOverlap(
@@ -241,7 +252,7 @@ export class GestureHandlerOrchestrator {
   }
 
   public registerHandlerIfNotPresent(handler: GestureHandler) {
-    this.logger.info("registerHandlerIfNotPresent")
+    this.logger.info(`registerHandlerIfNotPresent(${handler.getTag()})`)
     if (this.gestureHandlers.includes(handler)) return;
     this.gestureHandlers.push(handler);
     handler.setActive(false);

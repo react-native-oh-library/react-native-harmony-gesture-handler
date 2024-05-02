@@ -1,6 +1,6 @@
 import { TurboModule, TurboModuleContext, Tag } from "@rnoh/react-native-openharmony/ts";
 import { TM } from "@rnoh/react-native-openharmony/generated/ts"
-import { GestureHandlerRegistry, State, OutgoingEventDispatcher, RNGHLogger } from '../core';
+import { GestureHandlerRegistry, State, OutgoingEventDispatcher, RNGHLogger, InteractionManager } from '../core';
 import { GestureHandlerFactory } from "../gesture-handlers"
 import { ViewRegistry } from './ViewRegistry';
 import { StandardRNGHLogger, FakeRNGHLogger } from './Logger';
@@ -25,6 +25,7 @@ export class RNGestureHandlerModule extends TurboModule implements TM.RNGestureH
   private viewRegistry: ViewRegistry | undefined = undefined
   private logger: RNGHLogger
   private touchHandlerByRootTag = new Map<Tag, RNGHRootTouchHandlerCAPI>()
+  private interactionManager: InteractionManager
 
   constructor(ctx: TurboModuleContext) {
     super(ctx)
@@ -38,6 +39,7 @@ export class RNGestureHandlerModule extends TurboModule implements TM.RNGestureH
         this.onGHRootCreated(rootTag)
       })
     }
+    this.interactionManager = new InteractionManager(this.logger)
   }
 
   private onGHRootCreated(rootTag: Tag) {
@@ -57,7 +59,7 @@ export class RNGestureHandlerModule extends TurboModule implements TM.RNGestureH
   public install() {
     this.viewRegistry = new ViewRegistry(this.ctx.descriptorRegistry, this.ctx.componentManagerRegistry)
     const scrollLocker = this.ctx.rnInstance.getArchitecture() === "ARK_TS" ? new RNOHScrollLockerArkTS(this.ctx.rnInstance) : new RNOHScrollLockerCAPI(this.ctx.rnInstance);
-    this.gestureHandlerFactory = new GestureHandlerFactory(this.logger, scrollLocker)
+    this.gestureHandlerFactory = new GestureHandlerFactory(this.logger, scrollLocker, this.interactionManager)
     return true
   }
 
@@ -66,12 +68,15 @@ export class RNGestureHandlerModule extends TurboModule implements TM.RNGestureH
     handlerTag: number,
     config: Readonly<Record<string, unknown>>
   ) {
+    const logger = this.logger.cloneWithPrefix("createGestureHandler")
     if (!this.gestureHandlerFactory) {
       this.ctx.logger.error("Trying to create a gesture handler before creating gesture handler factory")
       return
     }
+    logger.debug({handlerName, handlerTag, config})
     const gestureHandler = this.gestureHandlerFactory.create(handlerName, handlerTag)
     this.gestureHandlerRegistry.addGestureHandler(gestureHandler)
+    this.interactionManager.configureInteractions(gestureHandler, config);
     gestureHandler.updateGestureConfig(config)
   }
 
@@ -113,6 +118,7 @@ export class RNGestureHandlerModule extends TurboModule implements TM.RNGestureH
     newConfig: Readonly<Record<string, unknown>>
   ) {
     const gestureHandler = this.gestureHandlerRegistry.getGestureHandlerByHandlerTag(handlerTag)
+    this.interactionManager.configureInteractions(gestureHandler, newConfig);
     gestureHandler.updateGestureConfig(newConfig)
   }
 

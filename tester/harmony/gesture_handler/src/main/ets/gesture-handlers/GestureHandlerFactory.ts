@@ -18,22 +18,21 @@ import { FlingGestureHandler } from "./FlingGestureHandler"
 
 export class GestureHandlerFactory {
   private orchestrator: GestureHandlerOrchestrator
-  private interactionManager = new InteractionManager()
-  private factoryLogger: RNGHLogger
+  private logger: RNGHLogger
 
-  constructor(private logger: RNGHLogger, private scrollLocker: ScrollLocker) {
-    this.factoryLogger = logger.cloneWithPrefix("Factory")
-    this.orchestrator = new GestureHandlerOrchestrator(logger.cloneWithPrefix("Orchestrator"))
+  constructor(private cleanLogger: RNGHLogger, private scrollLocker: ScrollLocker, private interactionManager: InteractionManager) {
+    this.logger = cleanLogger.cloneWithPrefix("Factory")
+    this.orchestrator = new GestureHandlerOrchestrator(cleanLogger.cloneWithPrefix("Orchestrator"))
   }
 
   create(handlerName: string, handlerTag: number): GestureHandler {
-    this.factoryLogger.info(`create ${handlerName} with handlerTag: ${handlerTag}`)
+    this.logger.info(`create ${handlerName} with handlerTag: ${handlerTag}`)
     const deps: GestureHandlerDependencies = {
       tracker: new PointerTracker(),
       orchestrator: this.orchestrator,
       handlerTag,
       interactionManager: this.interactionManager,
-      logger: this.logger.cloneWithPrefix("GestureHandler"),
+      logger: this.cleanLogger.cloneWithPrefix("GestureHandler"),
       scrollLocker: this.scrollLocker,
     }
     switch (handlerName) {
@@ -53,7 +52,7 @@ export class GestureHandlerFactory {
         return new FlingGestureHandler(deps)
       default:
         const msg = `Unknown handler type: ${handlerName}`
-        this.factoryLogger.info(msg)
+        this.logger.info(msg)
         throw new RNGHError(msg)
     }
   }

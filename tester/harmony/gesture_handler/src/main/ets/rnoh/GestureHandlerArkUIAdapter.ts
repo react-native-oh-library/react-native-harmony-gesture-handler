@@ -1,4 +1,4 @@
-import {Point} from '@rnoh/react-native-openharmony/ts';
+import { Point } from '@rnoh/react-native-openharmony/ts';
 import {
   GestureHandler,
   IncomingEvent,
@@ -9,20 +9,22 @@ import {
   RNGHLogger,
   View
 } from '../core';
-import {TouchEvent, TouchType, TouchObject} from './types';
+import { TouchEvent, TouchType, TouchObject } from './types';
 
 export class GestureHandlerArkUIAdapter {
   private activePointerIds = new Set<number>();
   private pointersIdInBounds = new Set<number>();
-  private gestureHandler: GestureHandler;
+  private gestureHandlers = new Set<GestureHandler>();
   private view: View;
   private logger: RNGHLogger;
 
-  constructor(gestureHandler: GestureHandler, view: View, logger: RNGHLogger) {
-    logger.info('constructor');
-    this.gestureHandler = gestureHandler;
+  constructor(view: View, logger: RNGHLogger) {
+    this.logger = logger.cloneWithPrefix(`ArkUIAdapter(viewTag: ${view.getTag()})`)
     this.view = view;
-    this.logger = logger;
+  }
+
+  attachGestureHandler(gestureHandler: GestureHandler) {
+    this.gestureHandlers.add(gestureHandler)
   }
 
   handleTouch(e: TouchEvent) {
@@ -41,44 +43,46 @@ export class GestureHandlerArkUIAdapter {
         })}`,
       );
       const adaptedEvent = this.adaptTouchEvent(e, changedTouch);
-      switch (adaptedEvent.eventType) {
-        case EventType.DOWN:
-          this.gestureHandler.onPointerDown(adaptedEvent);
-          break;
-        case EventType.ADDITIONAL_POINTER_DOWN:
-          this.gestureHandler.onAdditionalPointerAdd(adaptedEvent);
-          break;
-        case EventType.UP:
-          this.gestureHandler.onPointerUp(adaptedEvent);
-          break;
-        case EventType.ADDITIONAL_POINTER_UP:
-          this.gestureHandler.onAdditionalPointerRemove(adaptedEvent);
-          break;
-        case EventType.MOVE:
-          if (!wasInBounds && !isInBounds)
-            this.gestureHandler.onPointerOutOfBounds(adaptedEvent);
-          else this.gestureHandler.onPointerMove(adaptedEvent);
-          break;
-        case EventType.ENTER:
-          this.gestureHandler.onPointerEnter(adaptedEvent);
-          break;
-        case EventType.OUT:
-          this.gestureHandler.onPointerOut(adaptedEvent);
-          break;
-        case EventType.CANCEL:
-          this.gestureHandler.onPointerCancel(adaptedEvent);
-          break;
-      }
+      this.gestureHandlers.forEach(gh => {
+        switch (adaptedEvent.eventType) {
+          case EventType.DOWN:
+            gh.onPointerDown(adaptedEvent);
+            break;
+          case EventType.ADDITIONAL_POINTER_DOWN:
+            gh.onAdditionalPointerAdd(adaptedEvent);
+            break;
+          case EventType.UP:
+            gh.onPointerUp(adaptedEvent);
+            break;
+          case EventType.ADDITIONAL_POINTER_UP:
+            gh.onAdditionalPointerRemove(adaptedEvent);
+            break;
+          case EventType.MOVE:
+            if (!wasInBounds && !isInBounds)
+              gh.onPointerOutOfBounds(adaptedEvent);
+            else gh.onPointerMove(adaptedEvent);
+            break;
+          case EventType.ENTER:
+            gh.onPointerEnter(adaptedEvent);
+            break;
+          case EventType.OUT:
+            gh.onPointerOut(adaptedEvent);
+            break;
+          case EventType.CANCEL:
+            gh.onPointerCancel(adaptedEvent);
+            break;
+        }
+      })
     }
   }
 
   private shouldSkipTouch(changedTouch: TouchObject): boolean {
     return (
       changedTouch.type === TouchType.Down &&
-      !this.isInBounds({
-        x: changedTouch.windowX,
-        y: changedTouch.windowY,
-      })
+        !this.isInBounds({
+          x: changedTouch.windowX,
+          y: changedTouch.windowY,
+        })
     );
   }
 
@@ -92,7 +96,7 @@ export class GestureHandlerArkUIAdapter {
     const eventType = this.mapTouchTypeToEventType(
       changedTouch.type,
       this.activePointerIds.size,
-      this.isInBounds({x: xAbsolute, y: yAbsolute}),
+      this.isInBounds({ x: xAbsolute, y: yAbsolute }),
       this.pointersIdInBounds.has(changedTouch.id),
     );
     this.updateIsInBoundsByPointerId(
@@ -114,7 +118,7 @@ export class GestureHandlerArkUIAdapter {
       time: e.timestamp,
       allTouches: e.touches.map(touch => this.mapTouchObjectToTouch(touch)),
       changedTouches: e.changedTouches.map(touch =>
-        this.mapTouchObjectToTouch(touch),
+      this.mapTouchObjectToTouch(touch),
       ),
       touchEventType: this.mapTouchTypeToTouchEventType(changedTouch.type),
     };
@@ -128,10 +132,10 @@ export class GestureHandlerArkUIAdapter {
   ) {
     switch (touchType) {
       case TouchType.Down:
-        if (this.isInBounds({x, y})) this.pointersIdInBounds.add(pointerId);
+        if (this.isInBounds({ x, y })) this.pointersIdInBounds.add(pointerId);
         break;
       case TouchType.Move:
-        if (this.isInBounds({x, y})) this.pointersIdInBounds.add(pointerId);
+        if (this.isInBounds({ x, y })) this.pointersIdInBounds.add(pointerId);
         else this.pointersIdInBounds.delete(pointerId);
         break;
       case TouchType.Up:
@@ -149,9 +153,9 @@ export class GestureHandlerArkUIAdapter {
     const rect = this.view.getBoundingRect();
     const result =
       x >= rect.x &&
-      x <= rect.x + rect.width &&
-      y >= rect.y &&
-      y <= rect.y + rect.height;
+        x <= rect.x + rect.width &&
+        y >= rect.y &&
+        y <= rect.y + rect.height;
     return result;
   }
 

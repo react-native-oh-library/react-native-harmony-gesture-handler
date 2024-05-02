@@ -1,8 +1,14 @@
 import { GestureHandler, Handler, GestureConfig as Config } from "./GestureHandler"
+import { RNGHLogger} from "./RNGHLogger"
 
 export class InteractionManager {
   private readonly waitForRelations: Map<number, number[]> = new Map()
   private readonly simultaneousRelations: Map<number, number[]> = new Map()
+  private logger: RNGHLogger
+
+  constructor(logger: RNGHLogger) {
+    this.logger = logger.cloneWithPrefix("InteractionManager")
+  }
 
   public configureInteractions(handler: GestureHandler, config: Config) {
     this.dropRelationsForHandlerWithTag(handler.getTag());
@@ -63,21 +69,21 @@ export class InteractionManager {
     handler: GestureHandler,
     otherHandler: GestureHandler
   ): boolean {
+    const logger = this.logger.cloneWithPrefix(`shouldRecognizeSimultaneously(${handler.getTag()}, ${otherHandler.getTag()})`)
     const simultaneousHandlers: number[] | undefined =
     this.simultaneousRelations.get(handler.getTag());
     if (!simultaneousHandlers) {
+      logger.debug(`false - Handler ${handler.getTag()} doesn't have simultaneousRelations specified`)
       return false;
     }
-
     let shouldRecognizeSimultaneously = false;
-
     simultaneousHandlers.forEach((tag: number): void => {
       if (tag === otherHandler.getTag()) {
         shouldRecognizeSimultaneously = true;
         return;
       }
     });
-
+    logger.debug(`${shouldRecognizeSimultaneously} ${JSON.stringify({ simultaneousHandlers })}`)
     return shouldRecognizeSimultaneously;
   }
 

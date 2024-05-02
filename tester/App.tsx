@@ -92,9 +92,9 @@ function Tests() {
             setDrawerState('CLOSED');
           }}>
           <ScrollView style={{width: '100%', flex: 1}}>
-            <SharedAPITest />
             <NewApiTest />
             <OldApiTest />
+            <SharedAPITest />
           </ScrollView>
         </DrawerLayout>
       </Tester>
