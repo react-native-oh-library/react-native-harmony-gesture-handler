@@ -3,7 +3,7 @@ export interface RNGHLogger {
 
   cloneWithPrefix(prefix: string): RNGHLogger;
 
-  debug(msg: string);
+  debug(msg: string | Object);
 
   error(msg: string);
 }

@@ -1,11 +1,10 @@
 import {TestCase, TestSuite} from '@rnoh/testerino';
 import React from 'react';
 import {useState} from 'react';
-import {View, StyleSheet, Text} from 'react-native';
+import {View, StyleSheet, Text, Button} from 'react-native';
 import {
   Gesture,
   GestureDetector,
-  GestureType,
   TouchableOpacity,
   TouchableWithoutFeedback,
   ScrollView,
@@ -16,6 +15,54 @@ import {PALETTE} from '../constants';
 export function NewApiTest() {
   return (
     <TestSuite name="new API">
+      <TestSuite name="Gesture.Race & Gesture.Simultaneous">
+        <TestCase<
+          'DOUBLE_TAP' | 'DOUBLE_AND_TRIPLE_TAP' | 'TRIPLE_TAP' | undefined
+        >
+          itShould="pass when double tap was chosen by Gesture.Race and tripleTap was fired by Gesture.Simultaneous"
+          initialState={undefined}
+          arrange={({setState, reset}) => {
+            let hasDoublePressed = false;
+
+            return (
+              <Example
+                label="TRIPLE TAP ME"
+                onReset={setBackgroundColor => {
+                  reset();
+                  setBackgroundColor(PALETTE.DARK_BLUE);
+                }}
+                size={128}
+                createGesture={setBackgroundColor => {
+                  const doubleTap = Gesture.Tap()
+                    .numberOfTaps(2)
+                    .onEnd(() => {
+                      setBackgroundColor('gray');
+                      hasDoublePressed = true;
+                    });
+                  const tripleTap = Gesture.Tap()
+                    .numberOfTaps(3)
+                    .maxDelay(2000)
+                    .onEnd(() => {
+                      setBackgroundColor(PALETTE.LIGHT_GREEN);
+                      if (hasDoublePressed) {
+                        setState('DOUBLE_AND_TRIPLE_TAP');
+                      } else {
+                        setState('TRIPLE_TAP');
+                      }
+                    });
+                  return Gesture.Simultaneous(
+                    Gesture.Race(doubleTap, tripleTap),
+                    tripleTap,
+                  );
+                }}
+              />
+            );
+          }}
+          assert={({expect, state}) => {
+            expect(state).to.be.eq('DOUBLE_AND_TRIPLE_TAP');
+          }}
+        />
+      </TestSuite>
       <TestSuite name="Gesture.Fling">
         <TestCase
           itShould="pass after swiping from left to right (It fails when the app runs with ArkTS debugger. The debugger has a big impact on the performance which breaks time dependent logic.)"
@@ -310,9 +357,10 @@ function Example(props: {
   label: string;
   createGesture: (
     setColor: React.Dispatch<React.SetStateAction<string>>,
-  ) => GestureType;
+  ) => React.ComponentProps<typeof GestureDetector>['gesture'];
   rightHitSlop?: number;
   size?: number;
+  onReset?: (setColor: React.Dispatch<React.SetStateAction<string>>) => void;
 }) {
   const [backgroundColor, setBackgroundColor] = useState(PALETTE.DARK_BLUE);
 
@@ -322,6 +370,16 @@ function Example(props: {
 
   return (
     <View style={styles.testCaseContainer}>
+      {props.onReset && (
+        <View style={{position: 'absolute', top: 0, right: 0}}>
+          <Button
+            title="Reset"
+            onPress={() => {
+              props.onReset!(setBackgroundColor);
+            }}
+          />
+        </View>
+      )}
       <GestureDetector gesture={gesture}>
         <View
           style={{

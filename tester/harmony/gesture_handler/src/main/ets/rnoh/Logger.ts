@@ -15,8 +15,8 @@ export class StandardRNGHLogger implements RNGHLogger {
     this.rnohLogger.info(`${this.prefix}::${msg}`);
   }
 
-  debug(msg: string) {
-    this.rnohLogger.debug(`${this.prefix}::${msg}`);
+  debug(msg: string | Object) {
+    this.rnohLogger.debug(`${this.prefix}::${typeof msg === "string" ? msg : JSON.stringify(msg)}`);
   }
 
   cloneWithPrefix(prefix: string) {

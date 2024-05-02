@@ -73,11 +73,13 @@ export class RNGHRootTouchHandlerCAPI {
   }
 
   handleTouch(rawTouchEvent: RawTouchEvent) {
-    this.logger
+    const logger = this.logger
       .cloneWithPrefix('handleTouch')
-      .debug(JSON.stringify(rawTouchEvent));
+    logger.debug(JSON.stringify(rawTouchEvent));
+    const touchEventArkTS = new TouchEvent(rawTouchEvent).asTouchEventArkTS()
+    logger.debug(JSON.stringify({ touchEventArkTS }))
     this.touchHandlerArkTS.handleTouch(
-      new TouchEvent(rawTouchEvent).asTouchEventArkTS(),
+      touchEventArkTS,
     );
   }
 }

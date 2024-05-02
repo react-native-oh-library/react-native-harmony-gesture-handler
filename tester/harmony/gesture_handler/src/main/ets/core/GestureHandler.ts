@@ -640,8 +640,10 @@ export abstract class GestureHandler<TGestureConfig extends GestureConfig = Gest
   }
 
   shouldRecognizeSimultaneously(otherHandler: GestureHandler): boolean {
-    if (otherHandler === this)
+    this.logger.cloneWithPrefix(`shouldRecognizeSimultaneously(${otherHandler.getTag()})`).debug("")
+    if (otherHandler === this) {
       return true;
+    }
     return this.interactionManager.shouldRecognizeSimultaneously(this, otherHandler);
   }
 

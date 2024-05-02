@@ -17,7 +17,7 @@ export class TapGestureHandler extends GestureHandler {
   private delayTimeout: number | undefined;
 
   constructor(deps: GestureHandlerDependencies) {
-    super({...deps, logger: deps.logger.cloneWithPrefix("TapGestureHandler")})
+    super({...deps, logger: deps.logger.cloneWithPrefix(`TapGestureHandler${deps.handlerTag}`)})
   }
 
   onPointerDown(event) {
@@ -175,11 +175,13 @@ export class TapGestureHandler extends GestureHandler {
   }
 
   private endTap() {
+    const logger = this.logger.cloneWithPrefix("endTap")
     this.clearTimeouts();
     if (
       ++this.numberOfTapsSoFar === (this.config.numberOfTaps ?? DEFAULT_NUMBER_OF_TAPS) &&
         this.maxNumberOfPointersSoFar >= (this.config.minNumberOfPointers ?? 0)
     ) {
+      logger.info(JSON.stringify({numberOfTapsSoFar: this.numberOfTapsSoFar}))
       this.activate();
     } else {
       this.delayTimeout = setTimeout(() => this.fail(), this.config.maxDelayMs ?? DEFAULT_MAX_DELAY_MS);
