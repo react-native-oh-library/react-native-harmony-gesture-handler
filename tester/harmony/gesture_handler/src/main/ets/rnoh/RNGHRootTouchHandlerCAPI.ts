@@ -113,6 +113,7 @@ export class RNGHRootTouchHandlerCAPI {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     this.logger.cloneWithPrefix("handleTouch").debug(JSON.stringify(rawTouchEvent))
 =======
 >>>>>>> 5e7d7ff (feat: support C-API arch)
@@ -122,10 +123,15 @@ export class RNGHRootTouchHandlerCAPI {
     this.touchHandlerArkTS.handleTouch(new TouchEvent(rawTouchEvent).asTouchEventArkTS())
 =======
     this.logger
+=======
+    const logger = this.logger
+>>>>>>> 04dc789 (feat: Gesture.Simultaneous; chore: test Gesture.Race)
       .cloneWithPrefix('handleTouch')
-      .debug(JSON.stringify(rawTouchEvent));
+    logger.debug(JSON.stringify(rawTouchEvent));
+    const touchEventArkTS = new TouchEvent(rawTouchEvent).asTouchEventArkTS()
+    logger.debug(JSON.stringify({ touchEventArkTS }))
     this.touchHandlerArkTS.handleTouch(
-      new TouchEvent(rawTouchEvent).asTouchEventArkTS(),
+      touchEventArkTS,
     );
 >>>>>>> 9ab27a3 (feat: Gesture.Fling; fix: event timestamp)
   }

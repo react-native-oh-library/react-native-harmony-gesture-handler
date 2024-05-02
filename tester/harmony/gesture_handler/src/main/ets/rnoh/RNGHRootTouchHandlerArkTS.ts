@@ -5,8 +5,11 @@ import {RNGHLogger, GestureHandlerRegistry} from '../core';
 import {TouchEvent, TouchType} from './types';
 
 export class RNGHRootTouchHandlerArkTS {
-  private adapterByViewTag: Map<number, GestureHandlerArkUIAdapter> = new Map(); // TODO: remove an adapter when a view or gesture handler is removed
-  private activeViewTags: number[] = [];
+  private adapterByViewTag: Map<number, GestureHandlerArkUIAdapter> = new Map(); // TODO: remove adapter when view is removed
+  /**
+   * A view is ACTIVE in a window defined by two POINTER_DOWN events
+   */
+  private activeViewTags = new Set<number>();
   private viewRegistry: ViewRegistry;
   private gestureHandlerRegistry: GestureHandlerRegistry;
   private logger: RNGHLogger;
@@ -27,7 +30,7 @@ export class RNGHRootTouchHandlerArkTS {
   public handleTouch(touchEvent: any) {
     const e = touchEvent as TouchEvent;
     if (e.type === TouchType.Down) {
-      this.activeViewTags = [];
+      this.activeViewTags.clear();
     }
     for (const changedTouch of e.changedTouches) {
       const views = this.viewRegistry.getTouchableViewsAt(
@@ -44,28 +47,29 @@ export class RNGHRootTouchHandlerArkTS {
           this.logger.info(
             `Found GestureHandler ${handler.getTag()} for view ${view.getTag()}`,
           );
-          if (!this.adapterByViewTag.has(view.getTag()))
+
+          // create adapter if necessary
+          if (!this.adapterByViewTag.has(view.getTag())) {
             this.adapterByViewTag.set(
               view.getTag(),
               new GestureHandlerArkUIAdapter(
-                handler,
                 view,
-                this.logger.cloneWithPrefix('ArkUIAdapter'),
+                this.logger,
               ),
             );
-          if (!this.activeViewTags.includes(view.getTag())) {
-            const adapter = this.adapterByViewTag.get(view.getTag());
-            if (adapter) {
-              adapter.handleTouch(e);
-            } else {
-              console.warn("RNGH: Couldn't find adapter");
-            }
           }
+
+          // attach handler (there might be multiple handlers per view)
+          this.adapterByViewTag.get(view.getTag())!.attachGestureHandler(handler) // TODO: detachGestureHandler
+
+          // register active view tags
           if (e.type === TouchType.Down) {
-            this.activeViewTags.push(view.getTag());
+            this.activeViewTags.add(view.getTag());
           }
         }
       }
+
+      // send touch to gesture handlers
       for (const viewTag of this.activeViewTags) {
         const adapter = this.adapterByViewTag.get(viewTag);
         if (adapter) {
