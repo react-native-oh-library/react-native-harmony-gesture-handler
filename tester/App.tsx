@@ -20,6 +20,8 @@ import {NewApiTest, OldApiTest, SharedAPITest} from './src';
 
 type RootViewMode = 'Component' | 'HOC';
 
+const DEV_MODE = false;
+
 function App({}): JSX.Element | null {
   const [rootViewMode, setRootViewMode] = useState<RootViewMode>('Component');
 
@@ -27,20 +29,32 @@ function App({}): JSX.Element | null {
     <View style={{flex: 1}}>
       <StatusBar />
       <SafeAreaView style={{backgroundColor: '#222', flex: 1}}>
-        <Button
-          title={`toggle rootViewMode (current: ${rootViewMode})`}
-          onPress={() => {
-            setRootViewMode(prev =>
-              prev === 'Component' ? 'HOC' : 'Component',
-            );
-          }}
-        />
-        {rootViewMode === 'Component' && (
+        {DEV_MODE ? (
           <GestureHandlerRootView style={{flex: 1}}>
-            <Tests />
+            <Tester style={{flex: 1}} filter={{tags: ['dev']}}>
+              <NewApiTest />
+              <OldApiTest />
+              <SharedAPITest />
+            </Tester>
           </GestureHandlerRootView>
+        ) : (
+          <>
+            <Button
+              title={`toggle rootViewMode (current: ${rootViewMode})`}
+              onPress={() => {
+                setRootViewMode(prev =>
+                  prev === 'Component' ? 'HOC' : 'Component',
+                );
+              }}
+            />
+            {rootViewMode === 'Component' && (
+              <GestureHandlerRootView style={{flex: 1}}>
+                <Tests />
+              </GestureHandlerRootView>
+            )}
+            {rootViewMode === 'HOC' && <WrappedTests />}
+          </>
         )}
-        {rootViewMode === 'HOC' && <WrappedTests />}
       </SafeAreaView>
     </View>
   );

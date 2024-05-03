@@ -9,16 +9,20 @@ import { HitSlop, Directions, IncomingEvent, PointerType, TouchEventType, EventT
 import { GestureStateChangeEvent, GestureTouchEvent, TouchData } from "./OutgoingEvent"
 
 
+export type GHTag = number
+
 export interface Handler {
-  handlerTag: number;
+  handlerTag: GHTag;
 }
 
 export const DEFAULT_TOUCH_SLOP = 15;
 
 export interface GestureConfig {
   enabled?: boolean;
+  manualActivation?: boolean;
   simultaneousHandlers?: Handler[] | null;
   waitFor?: Handler[] | null;
+  blocksHandlers?: Handler[] | null;
   hitSlop?: HitSlop;
   shouldCancelWhenOutside?: boolean;
   activateAfterLongPress?: number;
@@ -403,7 +407,7 @@ export abstract class GestureHandler<TGestureConfig extends GestureConfig = Gest
 
   public activate(): void {
     this.logger.info("activate")
-    if (this.currentState === State.UNDETERMINED || this.currentState === State.BEGAN) {
+    if (this.config.manualActivation !== true || this.currentState === State.UNDETERMINED || this.currentState === State.BEGAN) {
       this.moveToState(State.ACTIVE)
     }
   }
@@ -418,6 +422,10 @@ export abstract class GestureHandler<TGestureConfig extends GestureConfig = Gest
     }
     this.orchestrator.onHandlerStateChange(this, state, oldState)
     this.onStateChange(state, oldState)
+
+    if (!this.isEnabled() && this.isFinished()) {
+      this.currentState = State.UNDETERMINED;
+    }
   }
 
   private isFinished() {
@@ -535,14 +543,16 @@ export abstract class GestureHandler<TGestureConfig extends GestureConfig = Gest
     oldState: State,
     newState: State
   }): void {
-    this.logger.info(`sendEvent`)
+    const logger = this.logger.cloneWithPrefix(`sendEvent(newState=${getStateName(newState)}, oldState=${getStateName(oldState)})`)
     const stateChangeEvent = this.createStateChangeEvent(newState, oldState);
     if (this.lastSentState !== newState) {
       this.lastSentState = newState;
+      logger.debug("calling onGestureHandlerStateChange")
       this.eventDispatcher.onGestureHandlerStateChange(stateChangeEvent);
     }
     if (this.currentState === State.ACTIVE) {
       stateChangeEvent.oldState = undefined;
+      logger.debug("calling onGestureHandlerEvent")
       this.eventDispatcher.onGestureHandlerEvent(stateChangeEvent);
     }
   }
@@ -583,11 +593,14 @@ export abstract class GestureHandler<TGestureConfig extends GestureConfig = Gest
   }
 
   shouldWaitFor(otherHandler: GestureHandler): boolean {
-    return (
+    const logger = this.logger.cloneWithPrefix(`shouldWaitFor(${otherHandler.getTag()})`)
+    const result = (
       this !== otherHandler &&
         (this.shouldWaitForHandlerFailure(otherHandler) ||
         otherHandler.shouldRequireToWaitForFailure(this))
     );
+    logger.debug(result)
+    return result
   }
 
   reset(): void {

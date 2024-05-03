@@ -1,5 +1,5 @@
 import { GestureHandler } from "./GestureHandler"
-import { State } from "./State"
+import { State, getStateName } from "./State"
 import { PointerType } from "./IncomingEvent"
 import { RNGHLogger } from "./RNGHLogger"
 
@@ -13,61 +13,63 @@ export class GestureHandlerOrchestrator {
   }
 
   public onHandlerStateChange(handler: GestureHandler, newState: State, oldState: State, sendIfDisabled?: boolean) {
-    this.logger.info("onHandlerStateChange")
-    if (this.shouldCancelStateChange(handler, sendIfDisabled)) return;
-    if (this.isFinishedState(newState)) {
-      this.handleChangingToFinishedState(handler, newState)
+    const logger = this.logger.cloneWithPrefix(`onHandlerStateChange(handler=${handler.getTag()}, newState=${getStateName(newState)}, oldState=${getStateName(oldState)})`)
+    logger.debug("start")
+
+    if (!handler.isEnabled() && !sendIfDisabled) {
+      return;
     }
+
+    // this.handlingChangeSemaphore += 1;
+
+    if (this.isFinishedState(newState)) {
+      this.awaitingHandlers.forEach((otherHandler) => {
+        if (otherHandler.shouldWaitFor(handler)) {
+          if (newState === State.END) {
+            otherHandler?.cancel();
+            if (otherHandler.getState() === State.END) {
+              // Handle edge case, where discrete gestures end immediately after activation thus
+              // their state is set to END and when the gesture they are waiting for activates they
+              // should be cancelled, however `cancel` was never sent as gestures were already in the END state.
+              // Send synthetic BEGAN -> CANCELLED to properly handle JS logic
+              otherHandler.sendEvent({ newState: State.CANCELLED, oldState: State.BEGAN });
+            }
+            otherHandler?.setAwaiting(false);
+          } else {
+            this.tryActivate(otherHandler);
+          }
+        }
+      });
+    }
+
     if (newState === State.ACTIVE) {
-      this.tryActivate(handler)
+      this.tryActivate(handler);
     } else if (oldState === State.ACTIVE || oldState === State.END) {
       if (handler.isActive()) {
-        handler.sendEvent({ newState, oldState })
-      } else if (oldState === State.ACTIVE && (newState === State.CANCELLED || newState === State.FAILED)) {
-        // Handle edge case where handler awaiting for another one tries to activate but finishes
-        // before the other would not send state change event upon ending. Note that we only want
-        // to do this if the newState is either CANCELLED or FAILED, if it is END we still want to
-        // wait for the other handler to finish as in that case synthetic events will be sent by the
-        // makeActive method.
-        handler.sendEvent({ newState, oldState: State.BEGAN })
+        handler.sendEvent({ newState, oldState });
+      } else if (
+        oldState === State.ACTIVE &&
+          (newState === State.CANCELLED || newState === State.FAILED)
+      ) {
+        handler.sendEvent({ newState, oldState: State.BEGAN });
       }
-    } else if (newState !== State.CANCELLED || oldState !== State.UNDETERMINED) {
-      // If handler is changing state from UNDETERMINED to CANCELLED, the state change event shouldn't
-      // be sent. Handler hasn't yet began so it may not be initialized which results in crashes.
-      // If it doesn't crash, there may be some weird behavior on JS side, as `onFinalize` will be
-      // called without calling `onBegin` first.
-      handler.sendEvent({ newState, oldState })
+    } else if (
+      oldState !== State.UNDETERMINED ||
+        newState !== State.CANCELLED
+    ) {
+      handler.sendEvent({ newState, oldState });
     }
-    this.cleanUpHandlers(handler)
+
+    // this.handlingChangeSemaphore -= 1;
+
+    this.cleanUpFinishedHandlers();
+    if (!this.awaitingHandlers.has(handler)) {
+      this.cleanupAwaitingHandlers(handler);
+    }
   }
 
   private isFinishedState(state: State) {
     return [State.END, State.FAILED, State.CANCELLED].includes(state)
-  }
-
-  private shouldCancelStateChange(handler: GestureHandler, sendIfDisabled?: boolean) {
-    const isHandlerDisabled = !handler.isEnabled()
-    return!sendIfDisabled && isHandlerDisabled
-  }
-
-  private handleChangingToFinishedState(handler: GestureHandler, newState: State) {
-    this.awaitingHandlers.forEach(awaitingHandler => {
-      if (handler.shouldWaitFor(awaitingHandler)) {
-        if (newState === State.END) {
-          awaitingHandler.cancel()
-          if (awaitingHandler.getState() === State.END) {
-            // Handle edge case, where discrete gestures end immediately after activation thus
-            // their state is set to END and when the gesture they are waiting for activates they
-            // should be cancelled, however `cancel` was never sent as gestures were already in the END state.
-            // Send synthetic BEGAN -> CANCELLED to properly handle JS logic
-            awaitingHandler.sendEvent({ newState: State.CANCELLED, oldState: State.BEGAN })
-          }
-          awaitingHandler.setAwaiting(false)
-        } else {
-          this.tryActivate(awaitingHandler)
-        }
-      }
-    })
   }
 
   private tryActivate(handler: GestureHandler): void {
@@ -77,34 +79,67 @@ export class GestureHandlerOrchestrator {
       awaitingHandlers: Array.from(this.awaitingHandlers).map(gh => gh.getTag()),
       handlersToCancel: this.handlersToCancel.map(gh => gh.getTag())
     })
+    if (this.shouldBeCancelledByFinishedHandler(handler)) {
+      logger.debug("failed to activate - cancelling")
+      handler.cancel();
+      return;
+    }
     if (this.hasOtherHandlerToWaitFor(handler)) {
-      this.addAwaitingHandler(handler)
-    } else if (handler.getState() !== State.CANCELLED && handler.getState() !== State.FAILED) {
-      if (this.shouldActivate(handler)) {
-        this.makeActive(handler);
-      } else {
-        switch (handler.getState()) {
-          case State.ACTIVE:
-            handler.fail();
-            break;
-          case State.BEGAN:
-            handler.cancel();
-            break;
-        }
-      }
+      this.addAwaitingHandler(handler);
+      logger.debug("request ignored - has other handler waiting")
+      return;
+    }
+    const handlerState = handler.getState();
+    if (handlerState === State.CANCELLED || handlerState === State.FAILED) {
+      logger.debug("request ignored - handler is in cancelled or failed state")
+      return;
+    }
+    if (this.shouldActivate(handler)) {
+      logger.debug("activating")
+      this.makeActive(handler);
+      return;
+    }
+    if (handlerState === State.ACTIVE) {
+      logger.debug("failed to activate - handler is already active, marking as fail")
+      handler.fail();
+      return;
+    }
+    if (handlerState === State.BEGAN) {
+      logger.debug("handler is in BEGAN state but shouldActivate returned false - cancelling")
+      handler.cancel();
     }
   }
 
+  private shouldBeCancelledByFinishedHandler(
+    handler: GestureHandler
+  ): boolean {
+    const shouldBeCancelled = (otherHandler: GestureHandler) => {
+      return (
+        handler.shouldWaitFor(otherHandler) &&
+          otherHandler.getState() === State.END
+      );
+    };
+    return this.gestureHandlers.some(shouldBeCancelled);
+  }
+
   private hasOtherHandlerToWaitFor(handler: GestureHandler): boolean {
+    const logger = this.logger.cloneWithPrefix(`hasOtherHandlerToWaitFor(handler=${handler.getTag()})`)
     for (const otherHandler of this.gestureHandlers) {
-      if (!this.isFinishedState(otherHandler.getState()) && otherHandler.shouldWaitFor(handler)) {
+      if (otherHandler === handler) {
+        return false
+      }
+      if (!this.isFinishedState(otherHandler.getState()) && handler.shouldWaitFor(otherHandler)) {
+        logger.debug("true")
         return true
       }
     }
+    logger.debug("false")
     return false;
   }
 
   private addAwaitingHandler(handler: GestureHandler) {
+    const logger = this.logger.cloneWithPrefix(`addAwaitingHandler(handlerTag=${handler.getTag()})`)
+    logger.debug({ awaitingHandlers: this.awaitingHandlers })
     if (!this.awaitingHandlers.has(handler)) {
       this.awaitingHandlers.add(handler)
       handler.setAwaiting(true)
@@ -125,12 +160,19 @@ export class GestureHandlerOrchestrator {
     handler: GestureHandler,
     otherHandler: GestureHandler
   }): boolean {
-    this.logger.cloneWithPrefix(`shouldHandlerBeCancelledByOtherHandler(${handler.getTag()}, ${otherHandler.getTag()})`).debug("")
-    if (this.canRunSimultaneously(handler, otherHandler))
+    const logger = this.logger.cloneWithPrefix(`shouldHandlerBeCancelledByOtherHandler(${handler.getTag()}, ${otherHandler.getTag()})`)
+    if (this.canRunSimultaneously(handler, otherHandler)) {
+      logger.debug("false")
       return false;
-    if (handler !== otherHandler && (handler.isAwaiting() || handler.getState() === State.ACTIVE))
-      return handler.shouldBeCancelledByOther(otherHandler)
-    return this.checkOverlap(handler, otherHandler)
+    }
+    if (handler !== otherHandler && (handler.isAwaiting() || handler.getState() === State.ACTIVE)) {
+      const result = handler.shouldBeCancelledByOther(otherHandler)
+      logger.debug(`${result} (1)`)
+      return result
+    }
+    const result = this.checkOverlap(handler, otherHandler)
+    logger.debug(`${result} (2)`)
+    return result;
   }
 
   private canRunSimultaneously(handlerA: GestureHandler, handlerB: GestureHandler) {
@@ -233,6 +275,8 @@ export class GestureHandlerOrchestrator {
   }
 
   private cleanupAwaitingHandlers(handler: GestureHandler): void {
+    const logger = this.logger.cloneWithPrefix(`cleanupAwaitingHandlers(handler=${handler.getTag()})`)
+    logger.debug({ awaitingHandlers: this.awaitingHandlers })
     for (const awaitingHandler of this.awaitingHandlers) {
       if (
         awaitingHandler.isAwaiting() &&
