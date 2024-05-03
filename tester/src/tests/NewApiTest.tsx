@@ -15,6 +15,52 @@ import {PALETTE} from '../constants';
 export function NewApiTest() {
   return (
     <TestSuite name="new API">
+      <TestSuite name="Gesture.Exclusive">
+        <TestCase<
+          | undefined
+          | 'DOUBLE_TAP_WITHOUT_SINGLE_TAP'
+          | 'SINGLE_TAP_AND_DOUBLE_TAP'
+        >
+          itShould="pass when tap and later double tap are detected"
+          initialState={undefined}
+          arrange={({setState, reset}) => {
+            let hasPressedOnce = false;
+
+            return (
+              <Example
+                onReset={setBackgroundColor => {
+                  hasPressedOnce = false;
+                  setBackgroundColor(PALETTE.DARK_BLUE);
+                  reset();
+                }}
+                createGesture={setBackgroundColor => {
+                  const singleTap = Gesture.Tap().onStart(() => {
+                    setBackgroundColor('gray');
+                    hasPressedOnce = true;
+                  });
+                  const doubleTap = Gesture.Tap()
+                    .onStart(() => {
+                      if (hasPressedOnce) {
+                        setState('SINGLE_TAP_AND_DOUBLE_TAP');
+                        setBackgroundColor(PALETTE.LIGHT_GREEN);
+                      } else {
+                        setState('DOUBLE_TAP_WITHOUT_SINGLE_TAP');
+                      }
+                    })
+                    .numberOfTaps(2)
+                    .maxDelay(1000);
+                  return Gesture.Exclusive(doubleTap, singleTap);
+                }}
+                size={128}
+                label="TAP; WAIT 1 SEC; DOUBLE TAP"
+              />
+            );
+          }}
+          assert={({expect, state}) => {
+            expect(state).to.be.eq('SINGLE_TAP_AND_DOUBLE_TAP');
+          }}
+        />
+      </TestSuite>
       <TestSuite name="Gesture.Race & Gesture.Simultaneous">
         <TestCase<
           'DOUBLE_TAP' | 'DOUBLE_AND_TRIPLE_TAP' | 'TRIPLE_TAP' | undefined
