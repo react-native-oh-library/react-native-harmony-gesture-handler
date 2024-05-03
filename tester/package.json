@@ -6,23 +6,7 @@
     "start": "npm run install:pkg && npm run codegen && hdc rport tcp:8081 tcp:8081 && react-native start",
     "codegen": "react-native codegen-harmony --rnoh-module-path ./harmony/oh_modules/@rnoh/react-native-openharmony",
     "pack:pkg": "cd ../react-native-harmony-gesture-handler && npm run pack:prod && cd ../tester",
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-    "install:pkg": "npm uninstall react-native-harmony-gesture-handler && npm run pack:pkg && npm i react-native-harmony-gesture-handler@file:../react-native-harmony-gesture-handler/rnoh-react-native-harmony-gesture-handler-2.12.9.tgz",
-=======
-    "install:pkg": "npm uninstall react-native-harmony-gesture-handler && npm run pack:pkg && npm i react-native-harmony-gesture-handler@file:../react-native-harmony-gesture-handler/rnoh-react-native-harmony-gesture-handler-2.12.8.tgz",
->>>>>>> 141d036 (release 2.12.8)
-=======
-    "install:pkg": "npm uninstall react-native-harmony-gesture-handler && npm run pack:pkg && npm i react-native-harmony-gesture-handler@file:../react-native-harmony-gesture-handler/rnoh-react-native-harmony-gesture-handler-2.15.0.tgz",
->>>>>>> 166bc10 (chore: update rngh peer dependency)
-=======
-    "install:pkg": "npm uninstall react-native-harmony-gesture-handler && npm run pack:pkg && npm i react-native-harmony-gesture-handler@file:../react-native-harmony-gesture-handler/rnoh-react-native-harmony-gesture-handler-2.14.0.tgz",
->>>>>>> 5b0b136 (release: react-native-harmony-gesture-handler@2.14.0)
-=======
     "install:pkg": "npm uninstall react-native-harmony-gesture-handler && npm run pack:pkg && npm i react-native-harmony-gesture-handler@file:../react-native-harmony-gesture-handler/rnoh-react-native-harmony-gesture-handler-2.14.1.tgz",
->>>>>>> fe1af58 (release: react-native-harmony-gesture-handler@2.14.1)
     "dev:fast": "react-native bundle-harmony",
     "android": "react-native run-android"
   },
@@ -30,44 +14,9 @@
     "@rnoh/testerino": "^0.0.9",
     "react": "18.2.0",
     "react-native": "0.72.5",
-<<<<<<< HEAD
-<<<<<<< HEAD
-    "react-native-gesture-handler": "2.12.1",
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-    "react-native-harmony": "npm:@rnoh/react-native-harmony@^0.72.20",
-=======
-    "react-native-harmony": "npm:@rnoh/react-native-harmony@^0.72.23",
->>>>>>> 8a490d3 (chore: update react-native-harmony to 0.72.21)
-    "react-native-harmony-gesture-handler": "file:../react-native-harmony-gesture-handler/rnoh-react-native-harmony-gesture-handler-2.12.9.tgz"
-=======
-    "react-native-harmony": "npm:@rnoh/react-native-harmony@^0.72.18",
-=======
-    "react-native-harmony": "npm:@rnoh/react-native-harmony@^0.72.19",
-<<<<<<< HEAD
->>>>>>> 43d4b3b (chore: bump react-native-harmony)
-    "react-native-harmony-gesture-handler": "file:../react-native-harmony-gesture-handler/rnoh-react-native-harmony-gesture-handler-2.12.7.tgz"
->>>>>>> 5e7d7ff (feat: support C-API arch)
-=======
-    "react-native-harmony-gesture-handler": "file:../react-native-harmony-gesture-handler/rnoh-react-native-harmony-gesture-handler-2.12.8.tgz"
->>>>>>> 141d036 (release 2.12.8)
-=======
-    "react-native-gesture-handler": "2.15.0",
-=======
     "react-native-gesture-handler": "2.14.1",
->>>>>>> 53e3409 (unpublish 2.15.0 and change peer rngh to 2.14.1 due to issues on android)
     "react-native-harmony": "npm:@rnoh/react-native-harmony@^0.72.23",
-<<<<<<< HEAD
-<<<<<<< HEAD
-    "react-native-harmony-gesture-handler": "file:../react-native-harmony-gesture-handler/rnoh-react-native-harmony-gesture-handler-2.15.0.tgz"
->>>>>>> 166bc10 (chore: update rngh peer dependency)
-=======
-    "react-native-harmony-gesture-handler": "file:../react-native-harmony-gesture-handler/rnoh-react-native-harmony-gesture-handler-2.14.0.tgz"
->>>>>>> 26032c5 (feat: reexport utility functions)
-=======
     "react-native-harmony-gesture-handler": "file:../react-native-harmony-gesture-handler/rnoh-react-native-harmony-gesture-handler-2.14.1.tgz"
->>>>>>> 04dc789 (feat: Gesture.Simultaneous; chore: test Gesture.Race)
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

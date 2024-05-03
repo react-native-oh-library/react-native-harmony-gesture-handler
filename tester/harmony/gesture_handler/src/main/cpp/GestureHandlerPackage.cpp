@@ -1,9 +1,6 @@
 #pragma once
 #include "GestureHandlerPackage.h"
-<<<<<<< HEAD
 #include "RNOH/RNInstanceCAPI.h"
-=======
->>>>>>> 5e7d7ff (feat: support C-API arch)
 #include "componentInstances/RNGestureHandlerButtonComponentInstance.h"
 #include "componentInstances/RNGestureHandlerRootViewComponentInstance.h"
 
@@ -36,24 +33,6 @@ public:
   }
 };
 
-<<<<<<< HEAD
-=======
-class RNOHCorePackageComponentInstanceFactoryDelegate : public ComponentInstanceFactoryDelegate {
-public:
-    using ComponentInstanceFactoryDelegate::ComponentInstanceFactoryDelegate;
-
-    ComponentInstance::Shared create(ComponentInstance::Context ctx) override {
-        if (ctx.componentName == "RNGestureHandlerButton") {
-            return std::make_shared<RNGestureHandlerButtonComponentInstance>(ctx);
-        } else if (ctx.componentName == "RNGestureHandlerRootView") {
-            return std::make_shared<RNGestureHandlerRootViewComponentInstance>(ctx);
-        }
-
-        return nullptr;
-    }
-};
-
->>>>>>> 5e7d7ff (feat: support C-API arch)
 
 EventEmitRequestHandlers GestureHandlerPackage::createEventEmitRequestHandlers() {
   return {
@@ -62,7 +41,6 @@ EventEmitRequestHandlers GestureHandlerPackage::createEventEmitRequestHandlers()
 }
 
 ComponentInstanceFactoryDelegate::Shared GestureHandlerPackage::createComponentInstanceFactoryDelegate() {
-<<<<<<< HEAD
   return std::make_shared<RNOHCorePackageComponentInstanceFactoryDelegate>();
 }
 
@@ -90,7 +68,3 @@ public:
 std::vector<ArkTSMessageHandler::Shared> GestureHandlerPackage::createArkTSMessageHandlers() {
   return {std::make_shared<ScrollLockerArkTSMessageHandler>()};
 }
-=======
-    return std::make_shared<RNOHCorePackageComponentInstanceFactoryDelegate>();
-}
->>>>>>> 5e7d7ff (feat: support C-API arch)

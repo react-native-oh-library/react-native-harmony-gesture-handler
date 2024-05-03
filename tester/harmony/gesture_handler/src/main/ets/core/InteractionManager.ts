@@ -1,9 +1,11 @@
-import { GestureHandler, Handler, GestureConfig as Config } from "./GestureHandler"
-import { RNGHLogger} from "./RNGHLogger"
+import { GestureHandler, Handler, GestureConfig as Config, GHTag } from "./GestureHandler"
+import { RNGHLogger } from "./RNGHLogger"
 
 export class InteractionManager {
-  private readonly waitForRelations: Map<number, number[]> = new Map()
-  private readonly simultaneousRelations: Map<number, number[]> = new Map()
+  private readonly waitForRelations: Map<GHTag, Set<GHTag>> = new Map()
+  private readonly simultaneousRelations: Map<GHTag, GHTag[]> = new Map()
+  private readonly blocksHandlersRelations: Map<GHTag, GHTag[]> = new Map();
+
   private logger: RNGHLogger
 
   constructor(logger: RNGHLogger) {
@@ -14,14 +16,14 @@ export class InteractionManager {
     this.dropRelationsForHandlerWithTag(handler.getTag());
 
     if (config.waitFor) {
-      const waitFor: number[] = [];
+      const waitFor = new Set<GHTag>();
       config.waitFor.forEach((otherHandler: Handler): void => {
         // New API reference
         if (typeof otherHandler === 'number') {
-          waitFor.push(otherHandler);
+          waitFor.add(otherHandler);
         } else {
           // Old API reference
-          waitFor.push(otherHandler.handlerTag);
+          waitFor.add(otherHandler.handlerTag);
         }
       });
 
@@ -40,28 +42,42 @@ export class InteractionManager {
 
       this.simultaneousRelations.set(handler.getTag(), simultaneousHandlers);
     }
+
+     if (config.blocksHandlers) {
+       const blocksHandlers: number[] = [];
+       config.blocksHandlers.forEach((otherHandler: Handler): void => {
+         if (typeof otherHandler === 'number') {
+           blocksHandlers.push(otherHandler);
+         } else {
+           blocksHandlers.push(otherHandler.handlerTag);
+         }
+       });
+       this.blocksHandlersRelations.set(handler.getTag(), blocksHandlers);
+     }
   }
 
   public shouldWaitForHandlerFailure(
     handler: GestureHandler,
     otherHandler: GestureHandler
   ): boolean {
-    const waitFor: number[] | undefined = this.waitForRelations.get(
+    const logger = this.logger.cloneWithPrefix(`shouldWaitForHandlerFailure(${handler.getTag()}, ${otherHandler.getTag()})`)
+    const waitFor = this.waitForRelations.get(
       handler.getTag()
     );
+    logger.debug({waitFor: Array.from(waitFor ?? [])})
     if (!waitFor) {
+      logger.debug("false")
       return false;
     }
 
     let shouldWait = false;
-
     waitFor.forEach((tag: number): void => {
       if (tag === otherHandler.getTag()) {
         shouldWait = true;
         return; //Returns from callback
       }
     });
-
+    logger.debug(shouldWait)
     return shouldWait;
   }
 
@@ -71,7 +87,7 @@ export class InteractionManager {
   ): boolean {
     const logger = this.logger.cloneWithPrefix(`shouldRecognizeSimultaneously(${handler.getTag()}, ${otherHandler.getTag()})`)
     const simultaneousHandlers: number[] | undefined =
-    this.simultaneousRelations.get(handler.getTag());
+      this.simultaneousRelations.get(handler.getTag());
     if (!simultaneousHandlers) {
       logger.debug(`false - Handler ${handler.getTag()} doesn't have simultaneousRelations specified`)
       return false;
@@ -88,19 +104,32 @@ export class InteractionManager {
   }
 
   public shouldRequireHandlerToWaitForFailure(
-    _handler: GestureHandler,
-    _otherHandler: GestureHandler
+    handler: GestureHandler,
+    otherHandler: GestureHandler
   ): boolean {
-    //TODO: Implement logic
-    return false;
+    const waitFor: number[] | undefined = this.blocksHandlersRelations.get(
+      handler.getTag()
+    );
+
+    return (
+      waitFor?.find((tag: number) => {
+        return tag === otherHandler.getTag();
+      }) !== undefined
+    );
   }
 
   public shouldHandlerBeCancelledBy(
-    _handler: GestureHandler,
-    _otherHandler: GestureHandler
+    handler: GestureHandler,
+    otherHandler: GestureHandler
   ): boolean {
-    //TODO: Implement logic
-    return false;
+    const logger = this.logger.cloneWithPrefix(`shouldHandlerBeCancelledBy(handler=${handler.getTag()}, otherHandler=${otherHandler.getTag()})`)
+    // We check constructor name instead of using `instanceof` in order do avoid circular dependencies
+    // const isNativeHandler =
+    //   otherHandler.constructor.name === 'NativeViewGestureHandler';
+    // const isActive = otherHandler.getState() === State.ACTIVE;
+    // const isButton = otherHandler.isButton?.() === true;
+    // return isNativeHandler && isActive && !isButton;
+    return false
   }
 
   public dropRelationsForHandlerWithTag(handlerTag: number): void {
