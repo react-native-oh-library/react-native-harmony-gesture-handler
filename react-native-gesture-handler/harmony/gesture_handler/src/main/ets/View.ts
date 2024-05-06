@@ -1,4 +1,4 @@
-import { DescriptorRegistry, Descriptor, Tag } from "rnoh/ts"
+import { DescriptorRegistry, Descriptor, Tag } from "@rnoh/react-native-openharmony/ts"
 import { Vector2D } from "./Vector2D"
 
 export type BoundingBox = {

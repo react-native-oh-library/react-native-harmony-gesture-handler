@@ -1,10 +1,7 @@
 {
-  "module": {
-    "name": "gesture_handler",
-    "type": "har",
-    "deviceTypes": [
-      "default",
-      "tablet"
-    ]
-  }
+  module: {
+    name: 'gesture_handler',
+    type: 'har',
+    deviceTypes: ['default'],
+  },
 }

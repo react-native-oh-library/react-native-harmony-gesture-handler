@@ -2,11 +2,11 @@
   license: '',
   devDependencies: {},
   author: '',
-  name: 'rnoh-gesture-handler',
+  name: '@react-native-oh-tpl/react-native-gesture-handler',
   description: '',
   main: 'index.ets',
-  version: '2.12.6',
+  version: '2.12.9-1',
   dependencies: {
-    rnoh: 'file:../rnoh',
+    "@rnoh/react-native-openharmony": 'file:../react_native_openharmony',
   },
 }

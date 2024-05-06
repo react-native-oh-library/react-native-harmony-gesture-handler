@@ -1,4 +1,4 @@
-import { RNInstance } from "rnoh/ts"
+import { RNInstance } from "@rnoh/react-native-openharmony/ts"
 import { GestureStateChangeEvent, GestureUpdateEvent, GestureTouchEvent } from "./OutgoingEvent"
 import { RNGHLogger } from './RNGHLogger'
 

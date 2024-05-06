@@ -1,13 +1,19 @@
-import { TurboModule, TurboModuleContext } from 'rnoh/ts';
-import { TM } from "rnoh/generated/ts"
+import { TurboModule, TurboModuleContext, Tag } from '@rnoh/react-native-openharmony/ts';
+// import { TM } from "rnoh/generated/ts"
 import { GestureHandlerRegistry } from './GestureHandlerRegistry';
 import { GestureHandlerFactory } from "./GestureHandlerFactory"
 import { ViewRegistry } from './ViewRegistry';
 import { RNGHLogger, StandardRNGHLogger, FakeRNGHLogger } from './RNGHLogger';
-import { EventDispatcher, JSEventDispatcher, AnimatedEventDispatcher,
-  ReanimatedEventDispatcher } from './EventDispatcher'
-import { RNOHScrollLocker } from "./RNOHScrollLocker"
+import {
+  EventDispatcher,
+  JSEventDispatcher,
+  AnimatedEventDispatcher,
+  ReanimatedEventDispatcher
+} from './EventDispatcher'
+import { RNOHScrollLockerArkTS, RNOHScrollLockerCAPI } from "./RNOHScrollLocker"
 import { State } from './State';
+import { RNGHRootTouchHandlerCAPI, RawTouchEvent } from "./RNGHRootTouchHandlerCAPI"
+import { RNGHRootTouchHandlerArkTS } from './RNGHRootTouchHandlerArkTS';
 
 export enum ActionType {
   REANIMATED_WORKLET = 1,
@@ -17,23 +23,48 @@ export enum ActionType {
 }
 
 
-export class RNGestureHandlerModule extends TurboModule implements TM.RNGestureHandlerModule.Spec {
+export class RNGestureHandlerModule extends TurboModule {
+// implements TM.RNGestureHandlerModule.Spec {
   static NAME = "RNGestureHandlerModule"
 
   private gestureHandlerRegistry = new GestureHandlerRegistry()
   private gestureHandlerFactory: GestureHandlerFactory | undefined = undefined
   private viewRegistry: ViewRegistry | undefined = undefined
   private logger: RNGHLogger
+  private touchHandlerByRootTag = new Map<Tag, RNGHRootTouchHandlerCAPI>()
 
   constructor(ctx: TurboModuleContext) {
     super(ctx)
     const debug = false
     this.logger = debug ? new StandardRNGHLogger(ctx.logger, "RNGH") : new FakeRNGHLogger()
+    if (this.ctx.rnInstance.getArchitecture() === "C_API") {
+      this.ctx.rnInstance.cppEventEmitter.subscribe("RNGH::TOUCH_EVENT", (e: any) => {
+        this.onTouch(e)
+      })
+      this.ctx.rnInstance.cppEventEmitter.subscribe("RNGH::ROOT_CREATED", (rootTag: any) => {
+        this.onGHRootCreated(rootTag)
+      })
+    }
+  }
+
+  private onGHRootCreated(rootTag: Tag) {
+    this.touchHandlerByRootTag.set(rootTag, new RNGHRootTouchHandlerCAPI(this.logger, new RNGHRootTouchHandlerArkTS(rootTag, this.viewRegistry, this.gestureHandlerRegistry, this.logger)));
+  }
+
+  private onTouch(e: RawTouchEvent & { rootTag: Tag }) {
+    const touchHandler = this.touchHandlerByRootTag.get(e.rootTag)
+    if (touchHandler) {
+      touchHandler.handleTouch(e);
+    } else {
+      this.logger.info(`Couldn't find touch handler for root tag: ${e.rootTag}`)
+    }
+
   }
 
   public install() {
     this.viewRegistry = new ViewRegistry(this.ctx.descriptorRegistry, this.ctx.componentManagerRegistry)
-    this.gestureHandlerFactory = new GestureHandlerFactory(this.logger, new RNOHScrollLocker(this.ctx.rnInstance))
+    const scrollLocker = this.ctx.rnInstance.getArchitecture() === "ARK_TS" ? new RNOHScrollLockerArkTS(this.ctx.rnInstance) : new RNOHScrollLockerCAPI(this.ctx.rnInstance);
+    this.gestureHandlerFactory = new GestureHandlerFactory(this.logger, scrollLocker)
     return true
   }
 
@@ -148,4 +179,5 @@ export class RNGestureHandlerModule extends TurboModule implements TM.RNGestureH
         handler.cancel();
         break;
     }
-  }}
+  }
+}
