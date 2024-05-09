@@ -1,2 +1,2 @@
-export * from "./src/main/ets/GestureHandlerPackage"
-export * from "./src/main/ets/RNGestureHandlerModule"
+export * from "./src/main/ets/rnoh/GestureHandlerPackage"
+export * from "./src/main/ets/rnoh/RNGestureHandlerModule"
