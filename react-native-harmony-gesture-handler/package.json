@@ -26,7 +26,7 @@
   "peerDependencies": {
     "react": "*",
     "react-native": "*",
-    "react-native-harmony": "npm:@rnoh/react-native-harmony@^0.72.25",
+    "react-native-harmony": "npm:@rnoh/react-native-harmony@^0.72.26",
     "react-native-gesture-handler": "2.14.1"
   },
   "keywords": [],
@@ -35,7 +35,7 @@
   "devDependencies": {
     "@types/hoist-non-react-statics": "^3.3.1",
     "react-native-gesture-handler": "2.14.1",
-    "@rnoh/react-native-harmony": "^0.72.25",
+    "@rnoh/react-native-harmony": "^0.72.26",
     "@babel/core": "^7.12.9",
     "@babel/plugin-proposal-class-properties": "^7.12.1",
     "@babel/preset-env": "^7.12.11",
