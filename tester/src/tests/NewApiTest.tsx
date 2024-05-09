@@ -1,20 +1,266 @@
 import {TestCase, TestSuite} from '@rnoh/testerino';
 import React from 'react';
 import {useState} from 'react';
-import {View, StyleSheet, Text} from 'react-native';
+import {View, StyleSheet, Text, Button} from 'react-native';
 import {
   Gesture,
   GestureDetector,
-  GestureType,
   TouchableOpacity,
   TouchableWithoutFeedback,
   ScrollView,
+  Directions,
 } from 'react-native-gesture-handler';
 import {PALETTE} from '../constants';
 
 export function NewApiTest() {
   return (
     <TestSuite name="new API">
+      <TestSuite name="Gesture.Exclusive">
+        <TestCase<
+          | undefined
+          | 'DOUBLE_TAP_WITHOUT_SINGLE_TAP'
+          | 'SINGLE_TAP_AND_DOUBLE_TAP'
+        >
+          itShould="pass when tap and later double tap are detected"
+          initialState={undefined}
+          arrange={({setState, reset}) => {
+            let hasPressedOnce = false;
+
+            return (
+              <Example
+                onReset={setBackgroundColor => {
+                  hasPressedOnce = false;
+                  setBackgroundColor(PALETTE.DARK_BLUE);
+                  reset();
+                }}
+                createGesture={setBackgroundColor => {
+                  const singleTap = Gesture.Tap().onStart(() => {
+                    setBackgroundColor('gray');
+                    hasPressedOnce = true;
+                  });
+                  const doubleTap = Gesture.Tap()
+                    .onStart(() => {
+                      if (hasPressedOnce) {
+                        setState('SINGLE_TAP_AND_DOUBLE_TAP');
+                        setBackgroundColor(PALETTE.LIGHT_GREEN);
+                      } else {
+                        setState('DOUBLE_TAP_WITHOUT_SINGLE_TAP');
+                      }
+                    })
+                    .numberOfTaps(2)
+                    .maxDelay(1000);
+                  return Gesture.Exclusive(doubleTap, singleTap);
+                }}
+                size={128}
+                label="TAP; WAIT 1 SEC; DOUBLE TAP"
+              />
+            );
+          }}
+          assert={({expect, state}) => {
+            expect(state).to.be.eq('SINGLE_TAP_AND_DOUBLE_TAP');
+          }}
+        />
+      </TestSuite>
+      <TestSuite name="Gesture.Race & Gesture.Simultaneous">
+        <TestCase<
+          'DOUBLE_TAP' | 'DOUBLE_AND_TRIPLE_TAP' | 'TRIPLE_TAP' | undefined
+        >
+          itShould="pass when double tap was chosen by Gesture.Race and tripleTap was fired by Gesture.Simultaneous"
+          initialState={undefined}
+          arrange={({setState, reset}) => {
+            let hasDoublePressed = false;
+
+            return (
+              <Example
+                label="TRIPLE TAP ME"
+                onReset={setBackgroundColor => {
+                  reset();
+                  setBackgroundColor(PALETTE.DARK_BLUE);
+                }}
+                size={128}
+                createGesture={setBackgroundColor => {
+                  const doubleTap = Gesture.Tap()
+                    .numberOfTaps(2)
+                    .onEnd(() => {
+                      setBackgroundColor('gray');
+                      hasDoublePressed = true;
+                    });
+                  const tripleTap = Gesture.Tap()
+                    .numberOfTaps(3)
+                    .maxDelay(2000)
+                    .onEnd(() => {
+                      setBackgroundColor(PALETTE.LIGHT_GREEN);
+                      if (hasDoublePressed) {
+                        setState('DOUBLE_AND_TRIPLE_TAP');
+                      } else {
+                        setState('TRIPLE_TAP');
+                      }
+                    });
+                  return Gesture.Simultaneous(
+                    Gesture.Race(doubleTap, tripleTap),
+                    tripleTap,
+                  );
+                }}
+              />
+            );
+          }}
+          assert={({expect, state}) => {
+            expect(state).to.be.eq('DOUBLE_AND_TRIPLE_TAP');
+          }}
+        />
+      </TestSuite>
+      <TestSuite name="Gesture.Fling">
+        <TestCase
+          itShould="pass after swiping from left to right (It fails when the app runs with ArkTS debugger. The debugger has a big impact on the performance which breaks time dependent logic.)"
+          initialState={false}
+          arrange={({setState, state, reset}) => {
+            const flingRightGesture = Gesture.Fling()
+              .direction(Directions.RIGHT)
+              .onStart(() => {
+                if (state) {
+                  reset();
+                } else {
+                  setState(true);
+                }
+              });
+
+            return (
+              <GestureDetector gesture={flingRightGesture}>
+                <View
+                  style={{
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    backgroundColor: PALETTE.DARK_BLUE,
+                  }}>
+                  <Text style={{color: 'white', paddingVertical: 24}}>
+                    SWIPE ME FROM LEFT TO RIGHT
+                  </Text>
+                </View>
+              </GestureDetector>
+            );
+          }}
+          assert={({expect, state}) => {
+            expect(state).to.be.true;
+          }}
+        />
+      </TestSuite>
+      <TestSuite name="Gesture.LongPress">
+        <TestCase
+          itShould="pass after pressing the blue rectangle for one second"
+          initialState={false}
+          arrange={({state, reset, setState}) => {
+            const longPressGesture = Gesture.LongPress()
+              .minDuration(1000)
+              .onStart(() => {
+                if (state) {
+                  reset();
+                } else {
+                  setState(true);
+                }
+              });
+            return (
+              <GestureDetector gesture={longPressGesture}>
+                <View
+                  style={{
+                    width: '100%',
+                    height: 64,
+                    backgroundColor: PALETTE.DARK_BLUE,
+                    justifyContent: 'center',
+                  }}>
+                  <Text style={{color: 'white', textAlign: 'center'}}>
+                    PRESS ME FOR 1 SEC
+                  </Text>
+                </View>
+              </GestureDetector>
+            );
+          }}
+          assert={({state, expect}) => {
+            expect(state).to.be.true;
+          }}
+        />
+      </TestSuite>
+      <TestSuite name="Gesture.Manual">
+        <TestCase
+          itShould="pass after dragging over the blue area (touch down, move, and touch up)"
+          initialState={{
+            hasTouchedDown: false,
+            hasMoved: false,
+            hasReleased: false,
+          }}
+          arrange={({setState}) => {
+            const state = {
+              hasTouchedDown: false,
+              hasMoved: false,
+              hasReleased: false,
+            };
+            const gesture = Gesture.Manual()
+              .onTouchesDown(() => {
+                state.hasTouchedDown = true;
+              })
+              .onTouchesMove(() => {
+                state.hasMoved = true;
+              })
+              .onTouchesUp(() => {
+                state.hasReleased = true;
+                setState(state);
+              });
+
+            return (
+              <View style={{}}>
+                <GestureDetector gesture={gesture}>
+                  <View
+                    style={[
+                      {
+                        backgroundColor: PALETTE.DARK_BLUE,
+                        width: '100%',
+                      },
+                    ]}>
+                    <Text
+                      style={{
+                        color: 'white',
+                        textAlign: 'center',
+                        paddingVertical: 24,
+                      }}>
+                      DRAG OVER ME
+                    </Text>
+                  </View>
+                </GestureDetector>
+              </View>
+            );
+          }}
+          assert={({expect, state}) => {
+            expect(state).to.be.deep.eq({
+              hasTouchedDown: true,
+              hasMoved: true,
+              hasReleased: true,
+            });
+          }}></TestCase>
+      </TestSuite>
+      <TestCase
+        itShould="toggle color on PINCH"
+        initialState={false}
+        arrange={({setState}) => {
+          return (
+            <Example
+              label="PINCH ME"
+              size={250}
+              createGesture={setBackgroundColor => {
+                return Gesture.Pinch().onStart(() => {
+                  setState(true);
+                  setBackgroundColor(prev =>
+                    prev === PALETTE.DARK_BLUE
+                      ? PALETTE.LIGHT_GREEN
+                      : PALETTE.DARK_BLUE,
+                  );
+                });
+              }}
+            />
+          );
+        }}
+        assert={({expect, state}) => {
+          expect(state).to.be.true;
+        }}
+      />
       <TestCase
         itShould="toggle color on tap"
         initialState={false}
@@ -157,8 +403,10 @@ function Example(props: {
   label: string;
   createGesture: (
     setColor: React.Dispatch<React.SetStateAction<string>>,
-  ) => GestureType;
+  ) => React.ComponentProps<typeof GestureDetector>['gesture'];
   rightHitSlop?: number;
+  size?: number;
+  onReset?: (setColor: React.Dispatch<React.SetStateAction<string>>) => void;
 }) {
   const [backgroundColor, setBackgroundColor] = useState(PALETTE.DARK_BLUE);
 
@@ -168,11 +416,21 @@ function Example(props: {
 
   return (
     <View style={styles.testCaseContainer}>
+      {props.onReset && (
+        <View style={{position: 'absolute', top: 0, right: 0}}>
+          <Button
+            title="Reset"
+            onPress={() => {
+              props.onReset!(setBackgroundColor);
+            }}
+          />
+        </View>
+      )}
       <GestureDetector gesture={gesture}>
         <View
           style={{
-            width: 128,
-            height: 128,
+            width: props.size ?? 128,
+            height: props.size ?? 128,
             alignSelf: 'center',
             backgroundColor,
             justifyContent: 'center',
