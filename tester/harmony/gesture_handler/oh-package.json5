@@ -5,6 +5,6 @@
   name: '@rnoh/react-native-openharmony-gesture-handler',
   description: '',
   type: 'module',
-  version: '2.14.1',
+  version: '2.14.2',
   dependencies: {},
 }
