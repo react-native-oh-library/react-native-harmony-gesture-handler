@@ -12,6 +12,8 @@ import {
 
 import {Tester} from '@rnoh/testerino';
 import {
+  Gesture,
+  GestureDetector,
   GestureHandlerRootView,
   gestureHandlerRootHOC,
 } from 'react-native-gesture-handler';
@@ -63,8 +65,8 @@ function App({}): JSX.Element | null {
 function Tests() {
   const drawerLayoutRef = useRef<DrawerLayout>(null);
   const [drawerState, setDrawerState] = useState<
-    'OPEN' | 'CLOSED' | 'CHANGING'
-  >('CLOSED');
+    'OPEN' | 'CLOSED' | 'CHANGING' | 'UNINITIALIZED'
+  >('UNINITIALIZED');
 
   const onRenderNavigationView = useCallback(() => {
     return (
@@ -79,38 +81,51 @@ function Tests() {
       <Button
         title={`Toggle Drawer (${drawerState})`}
         onPress={() => {
-          const drawer = drawerLayoutRef.current;
-          if (drawer) {
-            drawer.state.drawerOpened
-              ? drawer.closeDrawer()
-              : drawer.openDrawer();
+          if (drawerState === 'UNINITIALIZED') {
+            setDrawerState('CLOSED');
+          } else {
+            const drawer = drawerLayoutRef.current;
+            if (drawer) {
+              drawer.state.drawerOpened
+                ? drawer.closeDrawer()
+                : drawer.openDrawer();
+            }
           }
         }}
       />
       <Tester style={{flex: 1}}>
-        <DrawerLayout
-          ref={drawerLayoutRef}
-          useNativeAnimations
-          drawerWidth={200}
-          drawerPosition={'left'}
-          drawerType="slide"
-          drawerBackgroundColor="#ddd"
-          renderNavigationView={onRenderNavigationView}
-          onDrawerOpen={() => {
-            setDrawerState('OPEN');
-          }}
-          onDrawerSlide={() => {
-            setDrawerState('CHANGING');
-          }}
-          onDrawerClose={() => {
-            setDrawerState('CLOSED');
-          }}>
+        {drawerState !== 'UNINITIALIZED' && (
+          <DrawerLayout
+            ref={drawerLayoutRef}
+            useNativeAnimations
+            drawerWidth={200}
+            drawerPosition={'left'}
+            drawerType="slide"
+            drawerBackgroundColor="#ddd"
+            renderNavigationView={onRenderNavigationView}
+            onDrawerOpen={() => {
+              setDrawerState('OPEN');
+            }}
+            onDrawerSlide={() => {
+              setDrawerState('CHANGING');
+            }}
+            onDrawerClose={() => {
+              setDrawerState('CLOSED');
+            }}>
+            <ScrollView style={{width: '100%', flex: 1}}>
+              <NewApiTest />
+              <OldApiTest />
+              <SharedAPITest />
+            </ScrollView>
+          </DrawerLayout>
+        )}
+        {drawerState === 'UNINITIALIZED' && (
           <ScrollView style={{width: '100%', flex: 1}}>
             <NewApiTest />
             <OldApiTest />
             <SharedAPITest />
           </ScrollView>
-        </DrawerLayout>
+        )}
       </Tester>
     </>
   );

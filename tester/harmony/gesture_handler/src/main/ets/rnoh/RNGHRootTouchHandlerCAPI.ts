@@ -1,6 +1,7 @@
 import { RNGHRootTouchHandlerArkTS } from './RNGHRootTouchHandlerArkTS';
 import { TouchEvent as TouchEventArkTS, TouchType, TouchObject } from './types';
-import { RNGHLogger } from '../core';
+import { RNGHLogger, View } from '../core';
+import { RawTouchableView } from "./View"
 
 type RawTouchPoint = {
   pointerId: number;
@@ -14,53 +15,9 @@ export type RawTouchEvent = {
   touchPoints: RawTouchPoint[];
   sourceType: number;
   timestamp: number;
+  /** TouchableViews is a list of views from root to leaf which contain the touch point specified by `actionTouch` in their boundary boxes. */
+  touchableViews: RawTouchableView[]
 };
-
-class TouchEvent {
-  constructor(private raw: RawTouchEvent) {
-  }
-
-  asTouchEventArkTS(): TouchEventArkTS {
-    const touchType = this.touchTypeFromAction(this.raw.action);
-    return {
-      type: this.touchTypeFromAction(this.raw.action),
-      touches: this.raw.touchPoints.map(tp =>
-      this.touchObjectFromTouchPoint(tp, touchType),
-      ),
-      changedTouches: [
-        this.touchObjectFromTouchPoint(this.raw.actionTouch, touchType),
-      ],
-      timestamp: this.raw.timestamp / Math.pow(10, 6),
-    };
-  }
-
-  private touchTypeFromAction(action: number): TouchType {
-    switch (action) {
-      case 1:
-        return TouchType.Down;
-      case 2:
-        return TouchType.Move;
-      case 3:
-        return TouchType.Up;
-      default:
-        return TouchType.Cancel;
-    }
-  }
-
-  private touchObjectFromTouchPoint(
-    touchPoint: RawTouchPoint,
-    touchType: TouchType,
-  ): TouchObject {
-    return {
-      id: touchPoint.pointerId,
-      windowX: touchPoint.windowX,
-      windowY: touchPoint.windowY,
-      x: touchPoint.windowX,
-      y: touchPoint.windowY,
-      type: touchType,
-    };
-  }
-}
 
 export class RNGHRootTouchHandlerCAPI {
   private logger: RNGHLogger;
@@ -72,14 +29,50 @@ export class RNGHRootTouchHandlerCAPI {
     this.logger = logger.cloneWithPrefix('RNGHRootTouchHandlerCAPI');
   }
 
-  handleTouch(rawTouchEvent: RawTouchEvent) {
-    const logger = this.logger
-      .cloneWithPrefix('handleTouch')
-    logger.debug(JSON.stringify(rawTouchEvent));
-    const touchEventArkTS = new TouchEvent(rawTouchEvent).asTouchEventArkTS()
-    logger.debug(JSON.stringify({ touchEventArkTS }))
+  handleTouch(rawTouchEvent: RawTouchEvent, touchableViews: View[]) {
     this.touchHandlerArkTS.handleTouch(
-      touchEventArkTS,
+      touchEventArkTSFromRawTouchEvent(rawTouchEvent), touchableViews
     );
   }
+}
+
+function touchEventArkTSFromRawTouchEvent(raw: RawTouchEvent): TouchEventArkTS {
+  const touchType = touchTypeFromAction(raw.action);
+  return {
+    type: touchTypeFromAction(raw.action),
+    touches: raw.touchPoints.map(tp =>
+    touchObjectFromTouchPoint(tp, touchType),
+    ),
+    changedTouches: [
+      touchObjectFromTouchPoint(raw.actionTouch, touchType),
+    ],
+    timestamp: raw.timestamp / Math.pow(10, 6),
+  };
+}
+
+function touchTypeFromAction(action: number): TouchType {
+  switch (action) {
+    case 1:
+      return TouchType.Down;
+    case 2:
+      return TouchType.Move;
+    case 3:
+      return TouchType.Up;
+    default:
+      return TouchType.Cancel;
+  }
+}
+
+function touchObjectFromTouchPoint(
+  touchPoint: RawTouchPoint,
+  touchType: TouchType,
+): TouchObject {
+  return {
+    id: touchPoint.pointerId,
+    windowX: touchPoint.windowX,
+    windowY: touchPoint.windowY,
+    x: touchPoint.windowX,
+    y: touchPoint.windowY,
+    type: touchType,
+  };
 }
