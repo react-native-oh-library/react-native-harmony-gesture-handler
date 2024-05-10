@@ -1,8 +1,17 @@
-import {Tag} from '@rnoh/react-native-openharmony/ts';
-import {GestureHandlerArkUIAdapter} from './GestureHandlerArkUIAdapter';
-import {ViewRegistry} from './ViewRegistry';
-import {RNGHLogger, GestureHandlerRegistry} from '../core';
-import {TouchEvent, TouchType} from './types';
+import { Tag } from '@rnoh/react-native-openharmony/ts';
+import { GestureHandlerArkUIAdapter } from './GestureHandlerArkUIAdapter';
+import { RNGHLogger, GestureHandlerRegistry, View } from '../core';
+import { TouchEvent, TouchType } from './types';
+
+export interface ViewFinder {
+  getTouchableViewsAt(
+    pointRelativeToRoot: {
+      x: number,
+      y: number
+    },
+    rootTag: Tag
+  ): View[]
+}
 
 export class RNGHRootTouchHandlerArkTS {
   private adapterByViewTag: Map<number, GestureHandlerArkUIAdapter> = new Map(); // TODO: remove adapter when view is removed
@@ -10,30 +19,35 @@ export class RNGHRootTouchHandlerArkTS {
    * A view is ACTIVE in a window defined by two POINTER_DOWN events
    */
   private activeViewTags = new Set<number>();
-  private viewRegistry: ViewRegistry;
+  private viewFinder: ViewFinder;
   private gestureHandlerRegistry: GestureHandlerRegistry;
   private logger: RNGHLogger;
   private rootTag: Tag;
 
   constructor(
     rootTag: Tag,
-    viewRegistry: ViewRegistry,
+    viewFinder: ViewFinder,
     gestureHandlerRegistry: GestureHandlerRegistry,
     logger: RNGHLogger,
   ) {
     this.rootTag = rootTag;
-    this.viewRegistry = viewRegistry;
+    this.viewFinder = viewFinder;
     this.gestureHandlerRegistry = gestureHandlerRegistry;
     this.logger = logger;
   }
 
-  public handleTouch(touchEvent: any) {
+  /**
+   *
+   * @param touchEvent - TouchEvent. The type is any to allow providing the type in ets file (any and unknowns aren't allowed in ets files).
+   * @param touchableViews - Optional. List of views that can have gesture handler attached for given touch. If not provided, viewFinder will be used.
+   */
+  public handleTouch(touchEvent: any, touchableViews: View[] | null = null) {
     const e = touchEvent as TouchEvent;
     if (e.type === TouchType.Down) {
       this.activeViewTags.clear();
     }
     for (const changedTouch of e.changedTouches) {
-      const views = this.viewRegistry.getTouchableViewsAt(
+      const views = touchableViews ?? this.viewFinder.getTouchableViewsAt(
         {
           x: changedTouch.windowX,
           y: changedTouch.windowY,

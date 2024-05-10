@@ -407,7 +407,7 @@ export abstract class GestureHandler<TGestureConfig extends GestureConfig = Gest
 
   public activate(): void {
     this.logger.info("activate")
-    if (this.config.manualActivation !== true || this.currentState === State.UNDETERMINED || this.currentState === State.BEGAN) {
+    if (!this.config.manualActivation || this.currentState === State.UNDETERMINED || this.currentState === State.BEGAN) {
       this.moveToState(State.ACTIVE)
     }
   }

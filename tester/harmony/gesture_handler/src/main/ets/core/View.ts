@@ -8,8 +8,6 @@ export type BoundingBox = {
 };
 
 export interface View {
-  getChildren(): View[]
-
   getTag(): Tag
 
   isPositionInBounds({x, y}: {
