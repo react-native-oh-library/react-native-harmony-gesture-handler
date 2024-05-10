@@ -151,6 +151,7 @@ export class GestureHandlerArkUIAdapter {
     const x = point.x;
     const y = point.y;
     const rect = this.view.getBoundingRect();
+    this.logger.cloneWithPrefix("isInBounds").debug({rect})
     const result =
       x >= rect.x &&
         x <= rect.x + rect.width &&
