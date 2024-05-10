@@ -111,7 +111,7 @@ export function NewApiTest() {
       </TestSuite>
       <TestSuite name="Gesture.Fling">
         <TestCase
-          itShould="pass after swiping from left to right (It fails when the app runs with ArkTS debugger. The debugger has a big impact on the performance which breaks time dependent logic.)"
+          itShould="pass after swiping from left to right"
           initialState={false}
           arrange={({setState, state, reset}) => {
             const flingRightGesture = Gesture.Fling()

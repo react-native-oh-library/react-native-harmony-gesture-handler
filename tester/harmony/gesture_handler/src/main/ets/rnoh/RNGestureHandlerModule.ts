@@ -2,12 +2,13 @@ import { TurboModule, TurboModuleContext, Tag } from "@rnoh/react-native-openhar
 import { TM } from "@rnoh/react-native-openharmony/generated/ts"
 import { GestureHandlerRegistry, State, OutgoingEventDispatcher, RNGHLogger, InteractionManager } from '../core';
 import { GestureHandlerFactory } from "../gesture-handlers"
-import { ViewRegistry } from './ViewRegistry';
+import { ViewRegistry, ViewRegistryArkTS, ViewRegistryCAPI } from './ViewRegistry';
 import { StandardRNGHLogger, FakeRNGHLogger } from './Logger';
 import { JSEventDispatcher, AnimatedEventDispatcher, ReanimatedEventDispatcher } from './OutgoingEventDispatchers'
 import { RNOHScrollLockerArkTS, RNOHScrollLockerCAPI } from "./RNOHScrollLocker"
 import { RNGHRootTouchHandlerCAPI, RawTouchEvent } from "./RNGHRootTouchHandlerCAPI"
 import { RNGHRootTouchHandlerArkTS } from './RNGHRootTouchHandlerArkTS';
+import { ViewCAPI } from "./View"
 
 export enum ActionType {
   REANIMATED_WORKLET = 1,
@@ -20,7 +21,7 @@ export enum ActionType {
 export class RNGestureHandlerModule extends TurboModule implements TM.RNGestureHandlerModule.Spec {
   static NAME = "RNGestureHandlerModule"
 
-  private gestureHandlerRegistry = new GestureHandlerRegistry()
+  private gestureHandlerRegistry: GestureHandlerRegistry
   private gestureHandlerFactory: GestureHandlerFactory | undefined = undefined
   private viewRegistry: ViewRegistry | undefined = undefined
   private logger: RNGHLogger
@@ -31,6 +32,9 @@ export class RNGestureHandlerModule extends TurboModule implements TM.RNGestureH
     super(ctx)
     const debug = false
     this.logger = debug ? new StandardRNGHLogger(ctx.logger, "RNGH") : new FakeRNGHLogger()
+    this.interactionManager = new InteractionManager(this.logger)
+    this.gestureHandlerRegistry = new GestureHandlerRegistry(this.logger)
+
     if (this.ctx.rnInstance.getArchitecture() === "C_API") {
       this.ctx.rnInstance.cppEventEmitter.subscribe("RNGH::TOUCH_EVENT", (e: any) => {
         this.onTouch(e)
@@ -39,25 +43,52 @@ export class RNGestureHandlerModule extends TurboModule implements TM.RNGestureH
         this.onGHRootCreated(rootTag)
       })
     }
-    this.interactionManager = new InteractionManager(this.logger)
   }
 
+  /**
+   * @architecture: C-API
+   * Called from C++.
+   */
   private onGHRootCreated(rootTag: Tag) {
     this.touchHandlerByRootTag.set(rootTag, new RNGHRootTouchHandlerCAPI(this.logger, new RNGHRootTouchHandlerArkTS(rootTag, this.viewRegistry, this.gestureHandlerRegistry, this.logger)));
   }
 
+  /**
+   * @architecture: C-API
+   * Called from C++.
+   */
   private onTouch(e: RawTouchEvent & { rootTag: Tag }) {
-    const touchHandler = this.touchHandlerByRootTag.get(e.rootTag)
-    if (touchHandler) {
-      touchHandler.handleTouch(e);
-    } else {
-      this.logger.info(`Couldn't find touch handler for root tag: ${e.rootTag}`)
+    const logger = this.logger.cloneWithPrefix("onTouch")
+    if (!(this.viewRegistry instanceof ViewRegistryCAPI)) {
+      logger.error("Expected ViewRegistryCAPI")
+      return;
     }
-
+    const touchHandler = this.touchHandlerByRootTag.get(e.rootTag)
+    if (!touchHandler) {
+      logger.error(`Couldn't find touch handler for gesture root tag: ${e.rootTag}`)
+      return;
+    }
+    // update view registry
+    e.touchableViews.forEach(touchableView => {
+      const view = this.viewRegistry.getViewByTag(touchableView.tag)
+      if (view) {
+        if (!(view instanceof ViewCAPI)) {
+          logger.error(`Expected ViewCAPI`)
+          return
+        }
+        view.updateBoundingBox(touchableView)
+      } else {
+        this.viewRegistry.save(new ViewCAPI(touchableView))
+      }
+    })
+    // relay touch
+    touchHandler.handleTouch(e, e.touchableViews.map(({tag}) => this.viewRegistry.getViewByTag(tag)));
   }
 
+  // -------------------------------------------------------------------------------------------------------------------
+
   public install() {
-    this.viewRegistry = new ViewRegistry(this.ctx.descriptorRegistry, this.ctx.componentManagerRegistry)
+    this.viewRegistry = this.ctx.rnInstance.getArchitecture() === "ARK_TS" ? new ViewRegistryArkTS(this.ctx.descriptorRegistry) : new ViewRegistryCAPI()
     const scrollLocker = this.ctx.rnInstance.getArchitecture() === "ARK_TS" ? new RNOHScrollLockerArkTS(this.ctx.rnInstance) : new RNOHScrollLockerCAPI(this.ctx.rnInstance);
     this.gestureHandlerFactory = new GestureHandlerFactory(this.logger, scrollLocker, this.interactionManager)
     return true
@@ -73,7 +104,7 @@ export class RNGestureHandlerModule extends TurboModule implements TM.RNGestureH
       this.ctx.logger.error("Trying to create a gesture handler before creating gesture handler factory")
       return
     }
-    logger.debug({handlerName, handlerTag, config})
+    logger.debug({ handlerName, handlerTag, config })
     const gestureHandler = this.gestureHandlerFactory.create(handlerName, handlerTag)
     this.gestureHandlerRegistry.addGestureHandler(gestureHandler)
     this.interactionManager.configureInteractions(gestureHandler, config);
@@ -90,9 +121,20 @@ export class RNGestureHandlerModule extends TurboModule implements TM.RNGestureH
       this.ctx.logger.error("RNGH: Couldn't create EventDispatcher")
       return
     }
-    const view = this.viewRegistry.getViewByTag(viewTag)
+    const viewRegistry = this.viewRegistry
+    let view = this.viewRegistry.getViewByTag(viewTag)
+    if (!view && viewRegistry instanceof ViewRegistryCAPI) {
+      view = new ViewCAPI({
+        tag: viewTag,
+        x: 0,
+        y: 0,
+        width: 0,
+        height: 0
+      })
+      viewRegistry.save(view)
+    }
     if (!view) {
-      this.ctx.logger.error(`RNGH: Couldn't attachGestureHandler to view ${viewTag}`)
+      this.ctx.logger.error("Expected view")
       return;
     }
     this.gestureHandlerRegistry.bindGestureHandlerWithView(handlerTag, view)

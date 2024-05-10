@@ -1,36 +1,85 @@
-import {DescriptorRegistry, Descriptor, Tag} from '@rnoh/react-native-openharmony/ts';
-import { View as IView, Vector2D, BoundingBox } from "../core"
+import { DescriptorRegistry, Descriptor, Tag } from '@rnoh/react-native-openharmony/ts';
+import { View, Vector2D, BoundingBox } from "../core"
 
-export class View implements IView {
+
+export type RawTouchableView = {
+  tag: number,
+  /**
+   * Relative to application window.
+   */
+  x: number,
+  /**
+   * Relative to application window.
+   */
+  y: number,
+  width: number,
+  height: number
+}
+
+export class ViewCAPI implements View {
+  private tag: number
+  private boundingBox: BoundingBox
+
+  constructor({ tag, ...boundingBox }: RawTouchableView) {
+    this.tag = tag
+    this.boundingBox = boundingBox
+  }
+
+  getTag(): number {
+    return this.tag
+  }
+
+  getBoundingRect(): BoundingBox {
+    return { ...this.boundingBox }
+  }
+
+  isPositionInBounds({x, y}: {
+    x: number;
+    y: number
+  }): boolean {
+    const rect = this.getBoundingRect();
+    return (
+      x >= rect.x &&
+        x <= rect.x + rect.width &&
+        y >= rect.y &&
+        y <= rect.y + rect.height
+    );
+  }
+
+  updateBoundingBox(boundingBox: BoundingBox) {
+    this.boundingBox = boundingBox
+  }
+}
+
+export class ViewArkTS implements View {
   constructor(
     private descriptorRegistry: DescriptorRegistry,
     private viewTag: number,
-  ) {}
-
-  public getChildren() {
-    return this.getDescriptor().childrenTags.map(childrenTag => {
-      return new View(this.descriptorRegistry, childrenTag);
-    });
+  ) {
   }
+
 
   public getTag(): Tag {
     return this.viewTag;
   }
 
-  public isPositionInBounds({x, y}: {x: number; y: number}): boolean {
+  public isPositionInBounds({x, y}: {
+    x: number;
+    y: number
+  }): boolean {
     const rect = this.getBoundingRect();
     return (
       x >= rect.x &&
-      x <= rect.x + rect.width &&
-      y >= rect.y &&
-      y <= rect.y + rect.height
+        x <= rect.x + rect.width &&
+        y >= rect.y &&
+        y <= rect.y + rect.height
     );
   }
 
   public getBoundingRect(): BoundingBox {
     const d = this.getDescriptor();
     if (!d) {
-      return {x: 0, y: 0, width: 0, height: 0};
+      return { x: 0, y: 0, width: 0, height: 0 };
     }
     const offsetToAbsolutePosition = this.getOffsetToAbsolutePosition();
     return {
