@@ -11,13 +11,13 @@ class RNGestureHandlerRootViewJSIBinder : public ViewComponentJSIBinder {
         auto object = ViewComponentJSIBinder::createNativeProps(rt);
         return object;
     }
-
-    facebook::jsi::Object createBubblingEventTypes(facebook::jsi::Runtime &rt) override {
-        facebook::jsi::Object events(rt);
         return events;
     }
 
     facebook::jsi::Object createDirectEventTypes(facebook::jsi::Runtime &rt) override {
+        facebook::jsi::Object events(rt);
+
+    facebook::jsi::Object createBubblingEventTypes(facebook::jsi::Runtime &rt) override {
         facebook::jsi::Object events(rt);
         return events;
     }

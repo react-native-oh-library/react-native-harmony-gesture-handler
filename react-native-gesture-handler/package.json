@@ -8,7 +8,7 @@
     "type": "git",
     "url": "https://github.com/react-native-oh-library/react-native-harmony-gesture-handler.git"
   },
-  "version": "2.12.9-1",
+  "version": "2.14.1",
   "description": "",
   "react-native": "src/index.ts",
   "main": "lib/commonjs/index.js",
@@ -17,19 +17,22 @@
   "scripts": {
     "prepack": "bob build",
     "test": "jest",
-    "pack:harmony": "react-native pack-harmony --oh-module-path ../tester/harmony/react_native_modules/gesture_handler --harmony-dir-path ./harmony --package-json-path ./package.json",
-    "pack:prod": "npm run pack:harmony && npm pack"
+    "pack:prod": "npm pack",
+    "prepublishOnly": "npm run prepack && react-native verify-package-harmony --package-path . --skip-checks oh_package_name_is_derived_from_npm_package_name",
+    "update_version": "node ./scripts/update-version.js",
+    "deploy": "node ./scripts/deploy.js"
   },
   "peerDependencies": {
     "react": "*",
     "react-native": "*",
+    "react-native-gesture-handler": "2.14.1",
     "react-native-harmony": "*"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "react-native-gesture-handler": "2.12.1"
+    "react-native-gesture-handler": "2.14.1"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
@@ -37,17 +40,23 @@
     "@babel/preset-env": "^7.12.11",
     "@babel/preset-typescript": "^7.12.7",
     "@babel/runtime": "^7.12.5",
+    "@types/hoist-non-react-statics": "^3.3.1",
+    "@types/invariant": "^2.2.37",
     "@types/react": "^18.2.18",
     "metro-react-native-babel-preset": "^0.64.0",
     "react": "^18.2.0",
     "react-native": "^0.72.0",
     "react-native-builder-bob": "^0.21.3",
+    "react-native-gesture-handler": "2.14.1",
+    "react-native-harmony": "*",
     "typescript": "4.5.5"
   },
   "files": [
-    "harmony",
+    "./harmony/*",
     "src",
-    "lib"
+    "lib",
+    "DrawerLayout/",
+    "Swipeable/"
   ],
   "react-native-builder-bob": {
     "source": "src",
