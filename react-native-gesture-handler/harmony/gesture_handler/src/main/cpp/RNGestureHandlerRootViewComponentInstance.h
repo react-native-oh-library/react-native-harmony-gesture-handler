@@ -4,120 +4,70 @@
 #import "RNOH/arkui/ArkUINodeRegistry.h"
 #import "RNOH/arkui/NativeNodeApi.h"
 #import "RNGestureHandlerRootViewComponentDescriptor.h"
-#include "RNOH/arkui/TouchEventDispatcher.h"
 
 namespace rnoh {
-class RNGestureHandlerRootViewComponentInstance
-    : public CppComponentInstance<facebook::react::RNGestureHandlerRootViewShadowNode>,
-      public TouchEventHandler {
-private:
-    StackNode m_stackNode;
+    class RNGestureHandlerRootViewComponentInstance
+        : public CppComponentInstance<facebook::react::RNGestureHandlerRootViewShadowNode>,
+          public TouchEventHandler {
+    private:
+        StackNode m_stackNode;
 
-public:
-    RNGestureHandlerRootViewComponentInstance(Context context) : CppComponentInstance(std::move(context)) {
-        ArkUINodeRegistry::getInstance().registerTouchHandler(&m_stackNode, this);
-        NativeNodeApi::getInstance()->registerNodeEvent(m_stackNode.getArkUINodeHandle(), NODE_TOUCH_EVENT, 0, nullptr);
-        m_deps->arkTSChannel->postMessage("RNGH::ROOT_CREATED", m_tag);
-    };
-
-    ~RNGestureHandlerRootViewComponentInstance() {
-        ArkUINodeRegistry::getInstance().unregisterTouchHandler(&m_stackNode);
-        NativeNodeApi::getInstance()->unregisterNodeEvent(m_stackNode.getArkUINodeHandle(), NODE_TOUCH_EVENT);
-    }
-
-    StackNode &getLocalRootArkUINode() override { return m_stackNode; };
-
-    void onTouchEvent(ArkUI_UIInputEvent *e) override {
-        folly::dynamic payload = folly::dynamic::object;
-        payload["action"] = static_cast<int>(OH_ArkUI_UIInputEvent_GetAction(e));
-        payload["actionTouch"] = this->convertNodeTouchPointToDynamic(getActiveTouchFromEvent(e));
-        folly::dynamic touchPoints = folly::dynamic::array();
-        touchPoints.push_back(this->convertNodeTouchPointToDynamic(getActiveTouchFromEvent(e)));
-        payload["touchPoints"] = touchPoints;
-        payload["sourceType"] = static_cast<int>(OH_ArkUI_UIInputEvent_GetSourceType(e));
-        payload["timestamp"] = OH_ArkUI_UIInputEvent_GetEventTime(e);
-        payload["rootTag"] = m_tag;
-        m_deps->arkTSChannel->postMessage("RNGH::TOUCH_EVENT", payload);
-    }
-
-private:
-    struct TouchPoint {
-        int32_t contactAreaHeight;
-        int32_t contactAreaWidth;
-        int32_t id;
-        int32_t nodeX;
-        int32_t nodeY;
-        int64_t pressedTime;
-        double pressure;
-        int32_t rawX;
-        int32_t rawY;
-        int32_t screenX;
-        int32_t screenY;
-        double tiltX;
-        double tiltY;
-        int32_t toolHeight;
-        int32_t toolWidth;
-        int32_t toolX;
-        int32_t toolY;
-        int32_t toolType;
-        int32_t windowX;
-        int32_t windowY;
-    };
-
-    TouchPoint getActiveTouchFromEvent(ArkUI_UIInputEvent *event) {
-        TouchPoint actionTouch{};
-        actionTouch = TouchPoint{
-            .contactAreaHeight = int32_t(OH_ArkUI_PointerEvent_GetTouchAreaHeight(event, 0)),
-            .contactAreaWidth = int32_t(OH_ArkUI_PointerEvent_GetTouchAreaWidth(event, 0)),
-            .id = OH_ArkUI_PointerEvent_GetPointerId(event, 0),
-            .nodeX = int32_t(OH_ArkUI_PointerEvent_GetX(event)),
-            .nodeY = int32_t(OH_ArkUI_PointerEvent_GetY(event)),
-            .pressure = double(OH_ArkUI_PointerEvent_GetPressure(event, 0)),
-            .screenX = int32_t(OH_ArkUI_PointerEvent_GetDisplayX(event)),
-            .screenY = int32_t(OH_ArkUI_PointerEvent_GetDisplayY(event)),
-            .tiltX = double(OH_ArkUI_PointerEvent_GetTiltX(event, 0)),
-            .tiltY = double(OH_ArkUI_PointerEvent_GetTiltX(event, 0)),
-            .toolType = int32_t(OH_ArkUI_UIInputEvent_GetToolType(event)),
-            .windowX = int32_t(OH_ArkUI_PointerEvent_GetWindowX(event)),
-            .windowY = int32_t(OH_ArkUI_PointerEvent_GetWindowY(event)),
+    public:
+        RNGestureHandlerRootViewComponentInstance(Context context) : CppComponentInstance(std::move(context)) {
+            ArkUINodeRegistry::getInstance().registerTouchHandler(&m_stackNode, this);
+            NativeNodeApi::getInstance()->registerNodeEvent(m_stackNode.getArkUINodeHandle(), NODE_TOUCH_EVENT,
+                                                            NODE_TOUCH_EVENT, 0);
+            m_deps->arkTSChannel->postMessage("RNGH::ROOT_CREATED", m_tag);
         };
-        return actionTouch;
-    }
 
-    folly::dynamic convertNodeTouchPointToDynamic(TouchPoint actionTouch) {
-        folly::dynamic result = folly::dynamic::object;
-        result["contactAreaHeight"] = actionTouch.contactAreaHeight;
-        result["contactAreaWidth"] = actionTouch.contactAreaWidth;
-        result["id"] = actionTouch.id;
-        result["nodeX"] = actionTouch.nodeX;
-        result["nodeY"] = actionTouch.nodeY;
-        //         result["pressedTime"] = actionTouch.pressedTime;
-        result["pressure"] = actionTouch.pressure;
-        //         result["rawX"] = actionTouch.rawX;
-        //         result["rawY"] = actionTouch.rawY;
-        result["screenX"] = actionTouch.screenX;
-        result["screenY"] = actionTouch.screenY;
-        result["tiltX"] = actionTouch.tiltX;
-        result["tiltY"] = actionTouch.tiltY;
-        //         result["toolHeight"] = actionTouch.toolHeight;
-        //         result["toolWidth"] = actionTouch.toolWidth;
-        //         result["toolX"] = actionTouch.toolX;
-        //         result["toolY"] = actionTouch.toolY;
-        result["toolType"] = static_cast<int>(actionTouch.toolType);
-        result["windowX"] = actionTouch.windowX;
-        result["windowY"] = actionTouch.windowY;
-        return result;
-    }
+        ~RNGestureHandlerRootViewComponentInstance() override {
+            NativeNodeApi::getInstance()->unregisterNodeEvent(m_stackNode.getArkUINodeHandle(), NODE_TOUCH_EVENT);
+        }
 
-protected:
-    void onChildInserted(ComponentInstance::Shared const &childComponentInstance, std::size_t index) override {
-        CppComponentInstance::onChildInserted(childComponentInstance, index);
-        m_stackNode.insertChild(childComponentInstance->getLocalRootArkUINode(), index);
+        StackNode &getLocalRootArkUINode() override { return m_stackNode; };
+
+        void onTouchEvent(ArkUI_UIInputEvent *e) override {
+            folly::dynamic payload = folly::dynamic::object;
+            payload["action"] = OH_ArkUI_UIInputEvent_GetAction(e);
+            folly::dynamic touchPoints = folly::dynamic::array();
+            auto activeWindowX = OH_ArkUI_PointerEvent_GetWindowX(e);
+            auto activeWindowY = OH_ArkUI_PointerEvent_GetWindowY(e);
+            int32_t pointerCount = OH_ArkUI_PointerEvent_GetPointerCount(e);
+            int activePointerIdx = 0;
+            for (int i = 0; i < pointerCount; i++) {
+                auto touchPoint = this->convertNodeTouchPointToDynamic(e, i);
+                touchPoints.push_back(touchPoint);
+                if (activeWindowX == touchPoint["windowX"].asDouble() &&
+                    activeWindowY == touchPoint["windowY"].asDouble()) {
+                    activePointerIdx = i;
+                }
+            }
+            payload["actionTouch"] = touchPoints[activePointerIdx];
+            payload["touchPoints"] = touchPoints;
+            payload["sourceType"] = OH_ArkUI_UIInputEvent_GetSourceType(e);
+            payload["timestamp"] = OH_ArkUI_UIInputEvent_GetEventTime(e);
+            payload["rootTag"] = m_tag;
+            m_deps->arkTSChannel->postMessage("RNGH::TOUCH_EVENT", payload);
+        }
+
+    private:
+        folly::dynamic convertNodeTouchPointToDynamic(ArkUI_UIInputEvent *e, int32_t index = 0) {
+            folly::dynamic result = folly::dynamic::object;
+            result["pointerId"] = OH_ArkUI_PointerEvent_GetPointerId(e, index);
+            result["windowX"] = OH_ArkUI_PointerEvent_GetWindowXByIndex(e, index);
+            result["windowY"] = OH_ArkUI_PointerEvent_GetWindowYByIndex(e, index);
+            return result;
+        }
+
+    protected:
+        void onChildInserted(ComponentInstance::Shared const &childComponentInstance, std::size_t index) override {
+            CppComponentInstance::onChildInserted(childComponentInstance, index);
+            m_stackNode.insertChild(childComponentInstance->getLocalRootArkUINode(), index);
+        };
+
+        void onChildRemoved(ComponentInstance::Shared const &childComponentInstance) override {
+            CppComponentInstance::onChildRemoved(childComponentInstance);
+            m_stackNode.removeChild(childComponentInstance->getLocalRootArkUINode());
+        };
     };
-
-    void onChildRemoved(ComponentInstance::Shared const &childComponentInstance) override {
-        CppComponentInstance::onChildRemoved(childComponentInstance);
-        m_stackNode.removeChild(childComponentInstance->getLocalRootArkUINode());
-    };
-};
 } // namespace rnoh
