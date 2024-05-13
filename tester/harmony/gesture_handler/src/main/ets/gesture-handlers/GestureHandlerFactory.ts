@@ -15,6 +15,7 @@ import { NativeViewGestureHandler } from "./NativeViewGestureHandler"
 import { ManualGestureHandler } from './ManualGestureHandler';
 import { LongPressGestureHandler } from "./LongPressGestureHandler"
 import { FlingGestureHandler } from "./FlingGestureHandler"
+import { RotationGestureHandler } from "./RotationGestureHandler"
 
 export class GestureHandlerFactory {
   private orchestrator: GestureHandlerOrchestrator
@@ -50,6 +51,8 @@ export class GestureHandlerFactory {
         return new LongPressGestureHandler(deps)
       case "FlingGestureHandler":
         return new FlingGestureHandler(deps)
+      case "RotationGestureHandler":
+        return new RotationGestureHandler(deps)
       default:
         const msg = `Unknown handler type: ${handlerName}`
         this.logger.info(msg)
