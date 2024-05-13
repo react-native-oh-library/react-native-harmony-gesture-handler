@@ -1,7 +1,7 @@
 import {TestCase, TestSuite} from '@rnoh/testerino';
 import React from 'react';
 import {useState} from 'react';
-import {View, StyleSheet, Text, Button} from 'react-native';
+import {View, StyleSheet, Text, Button, Animated} from 'react-native';
 import {
   Gesture,
   GestureDetector,
@@ -15,6 +15,50 @@ import {PALETTE} from '../constants';
 export function NewApiTest() {
   return (
     <TestSuite name="new API">
+      <TestSuite name="Gesture.Rotation">
+        <TestCase
+          itShould="rotate blue square 45 deg clockwise"
+          initialState={new Animated.Value(0)}
+          arrange={({setState, state}) => {
+            const rotationGh = Gesture.Rotation()
+              .onUpdate(({rotation}) => {
+                state.setValue(rotation);
+              })
+              .onEnd(({rotation}) => {
+                setState(new Animated.Value(rotation));
+              });
+            return (
+              <GestureDetector gesture={rotationGh}>
+                <Animated.View
+                  style={{
+                    width: 128,
+                    height: 128,
+                    margin: 32,
+                    alignSelf: 'center',
+                    backgroundColor: PALETTE.DARK_BLUE,
+                    justifyContent: 'center',
+                    transform: [
+                      {
+                        rotate: state.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: ['0rad', '1rad'],
+                        }),
+                      },
+                    ],
+                  }}>
+                  <Text
+                    style={{textAlign: 'center', color: 'white', padding: 8}}>
+                    ROTATE ME 45 DEG CLOCKWISE
+                  </Text>
+                </Animated.View>
+              </GestureDetector>
+            );
+          }}
+          assert={({expect, state}) => {
+            expect((state as any).__getValue()).to.be.greaterThan(Math.PI / 4);
+          }}
+        />
+      </TestSuite>
       <TestSuite name="Gesture.Exclusive">
         <TestCase<
           | undefined
