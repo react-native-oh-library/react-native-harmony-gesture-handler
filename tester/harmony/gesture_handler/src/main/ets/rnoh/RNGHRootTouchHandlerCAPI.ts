@@ -19,6 +19,15 @@ export type RawTouchEvent = {
   touchableViews: RawTouchableView[]
 };
 
+const CACHED_TOUCHES_MAP = new Map<number, RawTouchPoint>();
+let lastChangedPointerId: number | null = null;
+const MAX_SIZE = 10;
+const areRawTouchPointsEqual = (a: RawTouchPoint, b: RawTouchPoint) =>
+  a.pointerId === b.pointerId &&
+  a.windowX === b.windowX &&
+  a.windowY === b.windowY;
+
+
 export class RNGHRootTouchHandlerCAPI {
   private logger: RNGHLogger;
 
@@ -38,13 +47,32 @@ export class RNGHRootTouchHandlerCAPI {
 
 function touchEventArkTSFromRawTouchEvent(raw: RawTouchEvent): TouchEventArkTS {
   const touchType = touchTypeFromAction(raw.action);
+  const actionTouch = raw.actionTouch;
+  let hasTouchChanged = true;
+  let lastChangedTouch: RawTouchPoint = actionTouch;
+  if (CACHED_TOUCHES_MAP.has(actionTouch.pointerId)) {
+    if (areRawTouchPointsEqual(actionTouch, CACHED_TOUCHES_MAP.get(actionTouch.pointerId) as RawTouchPoint)) {
+      hasTouchChanged = false;
+    } else {
+      lastChangedPointerId = actionTouch.pointerId;
+      CACHED_TOUCHES_MAP.set(actionTouch.pointerId, actionTouch);
+    }
+  } else {
+    // remove first element if the cache is full
+    if (CACHED_TOUCHES_MAP.size >= MAX_SIZE) {
+      CACHED_TOUCHES_MAP.delete(CACHED_TOUCHES_MAP.keys().next().value);
+    }
+    lastChangedPointerId = actionTouch.pointerId;
+    CACHED_TOUCHES_MAP.set(actionTouch.pointerId, actionTouch);
+  }
+  lastChangedTouch = CACHED_TOUCHES_MAP.get(lastChangedPointerId as number) as RawTouchPoint
   return {
     type: touchTypeFromAction(raw.action),
     touches: raw.touchPoints.map(tp =>
     touchObjectFromTouchPoint(tp, touchType),
     ),
     changedTouches: [
-      touchObjectFromTouchPoint(raw.actionTouch, touchType),
+      touchObjectFromTouchPoint(lastChangedTouch, touchType),
     ],
     timestamp: raw.timestamp / Math.pow(10, 6),
   };
