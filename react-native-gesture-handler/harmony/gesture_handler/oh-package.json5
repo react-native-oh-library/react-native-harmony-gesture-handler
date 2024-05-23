@@ -5,6 +5,8 @@
   name: '@react-native-oh-tpl/react-native-gesture-handler',
   description: '',
   type: 'module',
-  version: '2.14.1',
-  dependencies: {},
+  version: '2.14.1-1',
+  dependencies: {
+	  "@rnoh/react-native-openharmony": "file:../react_native_openharmony"
+  },
 }
