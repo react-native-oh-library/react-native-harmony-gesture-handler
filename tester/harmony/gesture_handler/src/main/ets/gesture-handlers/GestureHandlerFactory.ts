@@ -6,7 +6,8 @@ import {
   GestureHandler,
   GestureHandlerDependencies,
   ScrollLocker,
-  GestureHandlerOrchestrator
+  GestureHandlerOrchestrator,
+  RNGestureResponder
 } from "../core"
 import { TapGestureHandler } from './TapGestureHandler';
 import { PanGestureHandler } from "./PanGestureHandler"
@@ -21,7 +22,7 @@ export class GestureHandlerFactory {
   private orchestrator: GestureHandlerOrchestrator
   private logger: RNGHLogger
 
-  constructor(private cleanLogger: RNGHLogger, private scrollLocker: ScrollLocker, private interactionManager: InteractionManager) {
+  constructor(private cleanLogger: RNGHLogger, private scrollLocker: ScrollLocker, private interactionManager: InteractionManager, private rnGestureResponder: RNGestureResponder) {
     this.logger = cleanLogger.cloneWithPrefix("Factory")
     this.orchestrator = new GestureHandlerOrchestrator(cleanLogger.cloneWithPrefix("Orchestrator"))
   }
@@ -35,6 +36,7 @@ export class GestureHandlerFactory {
       interactionManager: this.interactionManager,
       logger: this.cleanLogger.cloneWithPrefix("GestureHandler"),
       scrollLocker: this.scrollLocker,
+      rnGestureResponder: this.rnGestureResponder,
     }
     switch (handlerName) {
       case "TapGestureHandler":
