@@ -1,7 +1,14 @@
 import {TestCase, TestSuite} from '@rnoh/testerino';
 import React from 'react';
 import {useState} from 'react';
-import {View, StyleSheet, Text, Button, Animated} from 'react-native';
+import {
+  View,
+  StyleSheet,
+  Text,
+  Button,
+  Animated,
+  Pressable,
+} from 'react-native';
 import {
   Gesture,
   GestureDetector,
@@ -280,6 +287,83 @@ export function NewApiTest() {
             });
           }}></TestCase>
       </TestSuite>
+      <TestSuite name="Gesture.Pan">
+        <TestCase
+          itShould="change color to green when panning"
+          initialState={false}
+          arrange={({setState}) => {
+            return (
+              <Example
+                label="PAN ME"
+                createGesture={setBackgroundColor => {
+                  return Gesture.Pan()
+                    .onStart(() => {
+                      setBackgroundColor(PALETTE.LIGHT_GREEN);
+                      setState(true);
+                    })
+                    .onEnd(() => {
+                      setBackgroundColor(PALETTE.DARK_BLUE);
+                    });
+                }}
+              />
+            );
+          }}
+          assert={({expect, state}) => {
+            expect(state).to.be.true;
+          }}
+        />
+        <TestCase
+          itShould="not trigger onPress from RN after panning"
+          initialState={{hasPanningEnded: false, hasRNTriggeredOnPress: false}}
+          arrange={({setState, reset}) => {
+            return (
+              <View style={styles.testCaseContainer}>
+                <View style={{position: 'absolute', top: 0, right: 0}}>
+                  <Button
+                    title="Reset"
+                    onPress={() => {
+                      reset();
+                    }}
+                  />
+                </View>
+                <GestureDetector
+                  gesture={Gesture.Pan().onEnd(() => {
+                    setState(prev => ({...prev, hasPanningEnded: true}));
+                  })}>
+                  <Pressable
+                    onPress={() => {
+                      setState(prev => ({
+                        ...prev,
+                        hasRNTriggeredOnPress: true,
+                      }));
+                    }}
+                    style={{
+                      width: 128,
+                      height: 128,
+                      alignSelf: 'center',
+                      backgroundColor: PALETTE.DARK_BLUE,
+                      justifyContent: 'center',
+                    }}>
+                    <Text
+                      style={{
+                        color: 'white',
+                        fontSize: 12,
+                        textAlign: 'center',
+                      }}>
+                      PAN ME
+                    </Text>
+                  </Pressable>
+                </GestureDetector>
+              </View>
+            );
+          }}
+          assert={({expect, state}) => {
+            expect(state.hasPanningEnded, 'hasRNTriggeredOnPress').to.be.true;
+            expect(state.hasRNTriggeredOnPress, 'hasRNTriggeredOnPress').to.be
+              .false;
+          }}
+        />
+      </TestSuite>
       <TestCase
         itShould="toggle color on PINCH"
         initialState={false}
@@ -329,32 +413,6 @@ export function NewApiTest() {
           expect(state).to.be.true;
         }}
       />
-
-      <TestCase
-        itShould="change color to green when panning"
-        initialState={false}
-        arrange={({setState}) => {
-          return (
-            <Example
-              label="PAN ME"
-              createGesture={setBackgroundColor => {
-                return Gesture.Pan()
-                  .onStart(() => {
-                    setBackgroundColor(PALETTE.LIGHT_GREEN);
-                    setState(true);
-                  })
-                  .onEnd(() => {
-                    setBackgroundColor(PALETTE.DARK_BLUE);
-                  });
-              }}
-            />
-          );
-        }}
-        assert={({expect, state}) => {
-          expect(state).to.be.true;
-        }}
-      />
-
       <TestCase
         itShould="support TouchableOpacity"
         initialState={false}
