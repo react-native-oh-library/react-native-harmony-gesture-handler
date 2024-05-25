@@ -63,6 +63,7 @@ namespace rnoh {
 
     ~RNGestureHandlerRootViewComponentInstance() override {
       NativeNodeApi::getInstance()->unregisterNodeEvent(m_stackNode.getArkUINodeHandle(), NODE_TOUCH_EVENT);
+      ArkUINodeRegistry::getInstance().unregisterTouchHandler(&m_stackNode);
     }
 
     StackNode &getLocalRootArkUINode() override { return m_stackNode; };
