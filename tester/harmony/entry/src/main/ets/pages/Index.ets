@@ -1,5 +1,5 @@
 import { RNApp, RNOHErrorDialog, ComponentBuilderContext, RNOHCoreContext, MetroJSBundleProvider } from "@rnoh/react-native-openharmony"
-import { RNGestureHandlerRootView, RNGestureHandlerButton, GestureHandlerPackage } from "@rnoh/react-native-openharmony-gesture-handler"
+import { RNGestureHandlerRootView, RNGestureHandlerButton, GestureHandlerPackage } from "@react-native-oh-tpl/react-native-gesture-handler"
 
 @Builder
 function CustomComponentBuilder(ctx: ComponentBuilderContext) {
