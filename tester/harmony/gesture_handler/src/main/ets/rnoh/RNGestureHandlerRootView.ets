@@ -1,14 +1,14 @@
 import { RNOHContext, RNViewBase, ComponentBuilderContext, RNComponentFactory, Tag } from "@rnoh/react-native-openharmony"
-import { RNC } from "@rnoh/react-native-openharmony/generated/ts"
+import { RNGestureHandlerRootView as RNC } from "../namespace/RNGestureHandlerRootView"
 import { RNGHRootTouchHandlerArkTS as RNGHRootTouchHandler } from "./RNGHRootTouchHandlerArkTS"
 import { RNGestureHandlerModule } from "./RNGestureHandlerModule"
 
 
-export type RNGestureHandlerRootViewDescriptor = RNC.RNGestureHandlerRootView.Descriptor
+export type RNGestureHandlerRootViewDescriptor = RNC.Descriptor
 
 @Component
 export struct RNGestureHandlerRootView {
-  static readonly NAME = RNC.RNGestureHandlerRootView.NAME
+  static readonly NAME = RNC.NAME
   ctx!: RNOHContext
   tag: number = -1
   @BuilderParam buildCustomComponent: (componentBuilderContext: ComponentBuilderContext) => void

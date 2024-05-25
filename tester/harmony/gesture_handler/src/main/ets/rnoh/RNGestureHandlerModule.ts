@@ -1,5 +1,5 @@
 import { TurboModule, TurboModuleContext, Tag } from "@rnoh/react-native-openharmony/ts";
-import { TM } from "@rnoh/react-native-openharmony/generated/ts"
+import { RNGestureHandlerModule as TM } from "../namespace/RNGestureHandlerModule"
 import { GestureHandlerRegistry, State, OutgoingEventDispatcher, RNGHLogger, InteractionManager } from '../core';
 import { GestureHandlerFactory } from "../gesture-handlers"
 import { ViewRegistry, ViewRegistryArkTS, ViewRegistryCAPI } from './ViewRegistry';
@@ -19,7 +19,7 @@ export enum ActionType {
 }
 
 
-export class RNGestureHandlerModule extends TurboModule implements TM.RNGestureHandlerModule.Spec {
+export class RNGestureHandlerModule extends TurboModule implements TM.Spec {
   static NAME = "RNGestureHandlerModule"
 
   private gestureHandlerRegistry: GestureHandlerRegistry

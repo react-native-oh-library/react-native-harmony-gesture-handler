@@ -1,11 +1,11 @@
 import { RNOHContext, RNViewBase, ComponentBuilderContext, RNComponentFactory, Tag } from "@rnoh/react-native-openharmony"
-import { RNC } from "@rnoh/react-native-openharmony/generated"
+import { RNGestureHandlerButton as RNC } from "../namespace/RNGestureHandlerButton"
 
-export type RNGestureHandlerButtonDescriptor = RNC.RNGestureHandlerButton.Descriptor
+export type RNGestureHandlerButtonDescriptor = RNC.Descriptor
 
 @Component
 export struct RNGestureHandlerButton {
-  static readonly NAME = RNC.RNGestureHandlerButton.NAME
+  static readonly NAME = RNC.NAME
   public ctx!: RNOHContext
   public tag: number = -1
   @BuilderParam public buildCustomComponent: (componentBuilderContext: ComponentBuilderContext) => void
