@@ -2,17 +2,17 @@ Language: Cpp
 # BasedOnStyle: LLVM
 ColumnLimit: 120
 SortIncludes: false
-TabWidth: 2
-IndentWidth: 2
+TabWidth: 4
+IndentWidth: 4
 UseTab: Never
-AccessModifierOffset: -2
-ContinuationIndentWidth: 2
+AccessModifierOffset: -4
+ContinuationIndentWidth: 4
 IndentCaseBlocks: false
 IndentCaseLabels: false
 IndentGotoLabels: true
 IndentWrappedFunctionNames: false
 SortUsingDeclarations: false
-NamespaceIndentation: All
+NamespaceIndentation: None
 SpaceAfterCStyleCast: false
 SpaceAfterLogicalNot: false
 SpaceAfterTemplateKeyword: true
