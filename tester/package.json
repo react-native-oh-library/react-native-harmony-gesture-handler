@@ -6,17 +6,18 @@
     "start": "npm run install:pkg && npm run codegen && hdc rport tcp:8081 tcp:8081 && react-native start",
     "codegen": "react-native codegen-harmony --rnoh-module-path ./harmony/oh_modules/@rnoh/react-native-openharmony",
     "pack:pkg": "cd ../react-native-harmony-gesture-handler && npm run pack:prod && cd ../tester",
-    "install:pkg": "npm uninstall react-native-harmony-gesture-handler && npm run pack:pkg && npm i react-native-harmony-gesture-handler@file:../react-native-harmony-gesture-handler/rnoh-react-native-harmony-gesture-handler-2.14.4.tgz",
+    "install:pkg": "npm uninstall react-native-harmony-gesture-handler && npm run pack:pkg && npm i react-native-harmony-gesture-handler@file:../react-native-harmony-gesture-handler/react-native-oh-tpl-react-native-gesture-handler-2.14.4.tgz",
     "dev:fast": "react-native bundle-harmony",
+    "dev": "npm run codegen && hdc rport tcp:8081 tcp:8081 && react-native bundle-harmony --dev --minify=false",
     "android": "react-native run-android"
   },
   "dependencies": {
-    "@rnoh/testerino": "^0.0.9",
+    "@rnoh/testerino": "../testerino/rnoh-testerino-0.0.9.tgz",
     "react": "18.2.0",
     "react-native": "0.72.5",
     "react-native-gesture-handler": "2.14.1",
-    "react-native-harmony": "npm:@rnoh/react-native-harmony@^0.72.27",
-    "react-native-harmony-gesture-handler": "file:../react-native-harmony-gesture-handler/rnoh-react-native-harmony-gesture-handler-2.14.3.tgz"
+    "react-native-harmony": "file:../react-native-harmony/rnoh-react-native-harmony-0.72.26.tgz",
+    "react-native-harmony-gesture-handler": "file:../react-native-harmony-gesture-handler/react-native-oh-tpl-react-native-gesture-handler-2.14.4.tgz"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
@@ -42,7 +43,7 @@
     "preset": "react-native"
   },
   "overrides": {
-    "@rnoh/react-native-harmony-cli": "^0.0.23",
+    "@rnoh/react-native-harmony-cli": "file:../react-native-harmony-cli/rnoh-react-native-harmony-cli-0.0.25.tgz",
     "@react-native/codegen": "0.74.0"
   }
 }
