@@ -7,3 +7,4 @@ bundle.harmony.js
 **/.DS_Store
 **/oh-package-lock.json5
 **/BuildProfile.ets
+react-native-gesture-handler
