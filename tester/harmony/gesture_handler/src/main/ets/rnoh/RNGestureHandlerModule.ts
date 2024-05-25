@@ -9,6 +9,7 @@ import { RNOHScrollLockerArkTS, RNOHScrollLockerCAPI } from "./RNOHScrollLocker"
 import { RNGHRootTouchHandlerCAPI, RawTouchEvent } from "./RNGHRootTouchHandlerCAPI"
 import { RNGHRootTouchHandlerArkTS } from './RNGHRootTouchHandlerArkTS';
 import { ViewCAPI } from "./View"
+import { FakeRNGestureResponder, RNOHGestureResponder } from "./RNOHGestureResponder"
 
 export enum ActionType {
   REANIMATED_WORKLET = 1,
@@ -89,8 +90,9 @@ export class RNGestureHandlerModule extends TurboModule implements TM.RNGestureH
 
   public install() {
     this.viewRegistry = this.ctx.rnInstance.getArchitecture() === "ARK_TS" ? new ViewRegistryArkTS(this.ctx.descriptorRegistry) : new ViewRegistryCAPI()
-    const scrollLocker = this.ctx.rnInstance.getArchitecture() === "ARK_TS" ? new RNOHScrollLockerArkTS(this.ctx.rnInstance) : new RNOHScrollLockerCAPI(this.ctx.rnInstance);
-    this.gestureHandlerFactory = new GestureHandlerFactory(this.logger, scrollLocker, this.interactionManager)
+    const scrollLocker = this.ctx.rnInstance.getArchitecture() === "ARK_TS" ? new RNOHScrollLockerArkTS(this.ctx.rnInstance) : new RNOHScrollLockerCAPI(this.ctx.rnInstance, this.logger);
+    const rnGestureResponder =  this.ctx.rnInstance.getArchitecture() === "ARK_TS" ? new FakeRNGestureResponder() : new RNOHGestureResponder(this.ctx.rnInstance)
+    this.gestureHandlerFactory = new GestureHandlerFactory(this.logger, scrollLocker, this.interactionManager, rnGestureResponder)
     return true
   }
 

@@ -10,7 +10,6 @@ namespace rnoh {
   class RNGestureHandlerRootViewComponentInstance
       : public CppComponentInstance<facebook::react::RNGestureHandlerRootViewShadowNode>,
         public TouchEventHandler {
-
     using Point = facebook::react::Point;
 
     /**
@@ -40,6 +39,7 @@ namespace rnoh {
     }
 
   private:
+    bool m_isHandlingTouches = false;
     StackNode m_stackNode;
 
     struct TouchableView {
@@ -96,6 +96,14 @@ namespace rnoh {
       if (rnInstance) {
         rnInstance->postMessageToArkTS("RNGH::TOUCH_EVENT", payload);
       }
+    }
+  
+    void setIsHandlingTouches(bool isHandlingTouches) {
+      m_isHandlingTouches = isHandlingTouches;
+    }
+  
+    bool isHandlingTouches() const override {
+      return m_isHandlingTouches;
     }
 
   private:

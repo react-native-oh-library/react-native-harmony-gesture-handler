@@ -88,6 +88,7 @@ export class PanGestureHandler extends GestureHandler<PanGestureHandlerConfig> {
   }
 
   private unlockScrolls: (() => void) | undefined
+  private unlockRNGestureResponder: (() => void) | undefined
 
   public constructor(deps: GestureHandlerDependencies) {
     super({ ...deps, logger: deps.logger.cloneWithPrefix("PanGestureHandler") })
@@ -329,6 +330,11 @@ export class PanGestureHandler extends GestureHandler<PanGestureHandlerConfig> {
       this.unlockScrolls = this.scrollLocker.lockScrollContainingViewTag(this.view.getTag())
     } else if (newState !== State.ACTIVE) {
       this.unlockScrolls?.()
+    }
+    if (newState === State.ACTIVE) {
+      this.unlockRNGestureResponder = this.rnGestureResponder.lock(this.view.getTag())
+    } else {
+      this.unlockRNGestureResponder?.()
     }
   }
 }

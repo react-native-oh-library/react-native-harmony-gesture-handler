@@ -1,5 +1,5 @@
 import { RNInstance } from '@rnoh/react-native-openharmony/ts';
-import { ScrollLocker } from '../core';
+import { ScrollLocker, RNGHLogger } from '../core';
 
 export class RNOHScrollLockerArkTS implements ScrollLocker {
   constructor(private rnInstance: RNInstance) {
@@ -11,7 +11,10 @@ export class RNOHScrollLockerArkTS implements ScrollLocker {
 }
 
 export class RNOHScrollLockerCAPI implements ScrollLocker {
-  constructor(private rnInstance: RNInstance) {
+  private logger: RNGHLogger
+
+  constructor(private rnInstance: RNInstance, logger: RNGHLogger) {
+    this.logger = logger.cloneWithPrefix("RNOHScrollLockerCAPI")
   }
 
   lockScrollContainingViewTag(viewTag: number) {
