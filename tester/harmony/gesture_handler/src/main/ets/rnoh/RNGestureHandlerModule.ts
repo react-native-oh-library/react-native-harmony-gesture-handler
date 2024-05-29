@@ -43,6 +43,10 @@ export class RNGestureHandlerModule extends TurboModule implements TM.Spec {
       this.ctx.rnInstance.cppEventEmitter.subscribe("RNGH::ROOT_CREATED", (rootTag: any) => {
         this.onGHRootCreated(rootTag)
       })
+      this.ctx.rnInstance.cppEventEmitter.subscribe("RNGH::CANCEL_TOUCHES", (rootTag: any) => {
+        const touchHandler = this.touchHandlerByRootTag.get(rootTag)
+        touchHandler?.cancelTouches()
+      })
     }
   }
 
