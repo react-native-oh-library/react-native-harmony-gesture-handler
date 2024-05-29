@@ -43,6 +43,10 @@ export class RNGHRootTouchHandlerCAPI {
       touchEventArkTSFromRawTouchEvent(rawTouchEvent), touchableViews
     );
   }
+
+  cancelTouches() {
+    this.touchHandlerArkTS.cancelTouches()
+  }
 }
 
 function touchEventArkTSFromRawTouchEvent(raw: RawTouchEvent): TouchEventArkTS {
