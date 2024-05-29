@@ -69,13 +69,32 @@ namespace rnoh {
     StackNode &getLocalRootArkUINode() override { return m_stackNode; };
 
     void onTouchEvent(ArkUI_UIInputEvent *e) override {
+      auto ancestorTouchTarget = this->getTouchTargetParent();
+      auto rnInstance = m_deps->rnInstance.lock();
+      while (ancestorTouchTarget != nullptr) {
+        if (ancestorTouchTarget->isHandlingTouches()) {
+          rnInstance->postMessageToArkTS("RNGH::CANCEL_TOUCHES", m_tag);
+          return;
+        }
+        ancestorTouchTarget = ancestorTouchTarget->getTouchTargetParent();
+      }
+    
       folly::dynamic payload = folly::dynamic::object;
       payload["action"] = OH_ArkUI_UIInputEvent_GetAction(e);
       folly::dynamic touchPoints = folly::dynamic::array();
       auto activeWindowX = OH_ArkUI_PointerEvent_GetWindowX(e);
       auto activeWindowY = OH_ArkUI_PointerEvent_GetWindowY(e);
 
-      auto touchableViews = this->findTouchableViews(activeWindowX, activeWindowY);
+      // point relative to top left corner of this component
+      auto componentX = OH_ArkUI_PointerEvent_GetX(e);
+      auto componentY = OH_ArkUI_PointerEvent_GetY(e);
+      auto touchableViews = this->findTouchableViews(componentX, componentY);
+
+      std::stringstream touchableViewTags;
+      for (auto touchableView : touchableViews) {
+        touchableViewTags << touchableView.tag << ";";
+      }
+
       payload["touchableViews"] = this->dynamicFromTouchableViews(touchableViews);
 
       int32_t pointerCount = OH_ArkUI_PointerEvent_GetPointerCount(e);
@@ -92,24 +111,20 @@ namespace rnoh {
       payload["sourceType"] = OH_ArkUI_UIInputEvent_GetSourceType(e);
       payload["timestamp"] = OH_ArkUI_UIInputEvent_GetEventTime(e);
       payload["rootTag"] = m_tag;
-      auto rnInstance = m_deps->rnInstance.lock();
       if (rnInstance) {
         rnInstance->postMessageToArkTS("RNGH::TOUCH_EVENT", payload);
       }
     }
-  
-    void setIsHandlingTouches(bool isHandlingTouches) {
-      m_isHandlingTouches = isHandlingTouches;
-    }
-  
-    bool isHandlingTouches() const override {
-      return m_isHandlingTouches;
-    }
+
+    void setIsHandlingTouches(bool isHandlingTouches) { m_isHandlingTouches = isHandlingTouches; }
+
+    bool isHandlingTouches() const override { return m_isHandlingTouches; }
 
   private:
-    std::vector<TouchableView> findTouchableViews(float x, float y) {
+    std::vector<TouchableView> findTouchableViews(float componentX, float componentY) {
       auto touchTarget = findTargetForTouchPoint(
-        {.x = x - m_layoutMetrics.frame.origin.x, .y = y - m_layoutMetrics.frame.origin.y}, this->shared_from_this());
+        {.x = componentX, .y = componentY},
+        this->shared_from_this());
       std::vector<TouchTarget::Shared> touchTargets{};
       auto tmp = touchTarget;
       while (tmp != nullptr) {
@@ -158,9 +173,7 @@ namespace rnoh {
       result["windowY"] = OH_ArkUI_PointerEvent_GetWindowYByIndex(e, index);
       return result;
     }
-
-    folly::dynamic findViewCandidates() {}
-
+  
   protected:
     void onChildInserted(ComponentInstance::Shared const &childComponentInstance, std::size_t index) override {
       CppComponentInstance::onChildInserted(childComponentInstance, index);

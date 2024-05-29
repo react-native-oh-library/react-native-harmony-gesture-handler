@@ -57,6 +57,14 @@ public:
         if (rnInstanceCAPI != nullptr) {
           auto tmpComponentInstance = rnInstanceCAPI->findComponentInstanceByTag(targetComponentInstanceTag);
           while (tmpComponentInstance != nullptr) {
+            auto rnghRootViewComponentInstance =
+              std::dynamic_pointer_cast<RNGestureHandlerRootViewComponentInstance>(tmpComponentInstance);
+            if (rnghRootViewComponentInstance != nullptr) {
+              /**
+               * Don't block Scrolls above RNGHRootView to match Android behavior.
+               */
+              return;
+            } 
             tmpComponentInstance->setNativeResponderBlocked(shouldBlock, "RNGH");
             tmpComponentInstance = tmpComponentInstance->getParent().lock();
           }
