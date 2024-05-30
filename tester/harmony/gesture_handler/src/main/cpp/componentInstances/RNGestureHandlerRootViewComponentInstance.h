@@ -69,6 +69,16 @@ namespace rnoh {
     StackNode &getLocalRootArkUINode() override { return m_stackNode; };
 
     void onTouchEvent(ArkUI_UIInputEvent *e) override {
+      auto ancestor = this->getParent().lock();
+      while (ancestor != nullptr) {
+        auto ancestorRNGHRootView = std::dynamic_pointer_cast<RNGestureHandlerRootViewComponentInstance>(ancestor);
+        if (ancestorRNGHRootView != nullptr) {
+          // If there are multiple nested GestureHandlerRootViews, the one nearest to the actual root will handle the touch.
+          return;
+        }
+        ancestor = ancestor->getParent().lock();
+      }
+    
       auto ancestorTouchTarget = this->getTouchTargetParent();
       auto rnInstance = m_deps->rnInstance.lock();
       while (ancestorTouchTarget != nullptr) {
@@ -78,7 +88,7 @@ namespace rnoh {
         }
         ancestorTouchTarget = ancestorTouchTarget->getTouchTargetParent();
       }
-    
+
       folly::dynamic payload = folly::dynamic::object;
       payload["action"] = OH_ArkUI_UIInputEvent_GetAction(e);
       folly::dynamic touchPoints = folly::dynamic::array();
@@ -122,9 +132,7 @@ namespace rnoh {
 
   private:
     std::vector<TouchableView> findTouchableViews(float componentX, float componentY) {
-      auto touchTarget = findTargetForTouchPoint(
-        {.x = componentX, .y = componentY},
-        this->shared_from_this());
+      auto touchTarget = findTargetForTouchPoint({.x = componentX, .y = componentY}, this->shared_from_this());
       std::vector<TouchTarget::Shared> touchTargets{};
       auto tmp = touchTarget;
       while (tmp != nullptr) {
@@ -173,7 +181,7 @@ namespace rnoh {
       result["windowY"] = OH_ArkUI_PointerEvent_GetWindowYByIndex(e, index);
       return result;
     }
-  
+
   protected:
     void onChildInserted(ComponentInstance::Shared const &childComponentInstance, std::size_t index) override {
       CppComponentInstance::onChildInserted(childComponentInstance, index);
