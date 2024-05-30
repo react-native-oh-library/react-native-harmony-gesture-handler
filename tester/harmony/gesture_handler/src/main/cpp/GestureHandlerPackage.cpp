@@ -89,18 +89,32 @@ public:
       if (rnInstance != nullptr) {
         auto rnInstanceCAPI = std::dynamic_pointer_cast<RNInstanceCAPI>(rnInstance);
         if (rnInstanceCAPI != nullptr) {
+          
+          std::vector<ComponentInstance::Shared> ancestors;
           auto tmpComponentInstance = rnInstanceCAPI->findComponentInstanceByTag(targetComponentInstanceTag);
           while (tmpComponentInstance != nullptr) {
-            auto rnghRootViewComponentInstance =
-              std::dynamic_pointer_cast<RNGestureHandlerRootViewComponentInstance>(tmpComponentInstance);
-            if (rnghRootViewComponentInstance != nullptr) {
-              /**
-               * Don't block Scrolls above RNGHRootView to match Android behavior.
-               */
-              return;
-            } 
-            tmpComponentInstance->setNativeResponderBlocked(shouldBlock, "RNGH");
+            ancestors.push_back(tmpComponentInstance);
             tmpComponentInstance = tmpComponentInstance->getParent().lock();
+          }
+          if (ancestors.size() == 0) {
+            return;
+          }
+          /**
+           * Ensure consistent behavior with Android by not blocking scrolls above the GestureHandlerRootView handling
+           * the touch. If there are multiple nested GestureHandlerRootViews, the one nearest to the actual root will
+           * handle the touch.
+           */
+          auto isChangingResponderStatusAllowed = false; 
+          for (size_t i = ancestors.size() - 1; i > 0; i--) {
+            auto ancestor = ancestors[i];
+            if (!isChangingResponderStatusAllowed) {
+              auto rootView = std::dynamic_pointer_cast<RNGestureHandlerRootViewComponentInstance>(ancestor);
+              if (rootView != nullptr) {
+                isChangingResponderStatusAllowed = true;
+              }
+            } else {
+              ancestor->setNativeResponderBlocked(shouldBlock, "RNGH");
+            } 
           }
         }
       }
@@ -114,12 +128,13 @@ public:
           auto tmpComponentInstance = rnInstanceCAPI->findComponentInstanceByTag(descendantViewTag);
           while (tmpComponentInstance != nullptr) {
             tmpComponentInstance = tmpComponentInstance->getParent().lock();
-              if (tmpComponentInstance) {
-                auto rnghRootViewComponentInstance = std::dynamic_pointer_cast<RNGestureHandlerRootViewComponentInstance>(tmpComponentInstance);
-                if (rnghRootViewComponentInstance) {
-                  rnghRootViewComponentInstance->setIsHandlingTouches(isHandlingTouches);
-                }
+            if (tmpComponentInstance) {
+              auto rnghRootViewComponentInstance =
+                std::dynamic_pointer_cast<RNGestureHandlerRootViewComponentInstance>(tmpComponentInstance);
+              if (rnghRootViewComponentInstance) {
+                rnghRootViewComponentInstance->setIsHandlingTouches(isHandlingTouches);
               }
+            }
           }
         }
       }
