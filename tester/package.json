@@ -6,7 +6,7 @@
     "start": "npm run install:pkg && npm run codegen && hdc rport tcp:8081 tcp:8081 && react-native start",
     "codegen": "react-native codegen-harmony --rnoh-module-path ./harmony/oh_modules/@rnoh/react-native-openharmony",
     "pack:pkg": "cd ../react-native-harmony-gesture-handler && npm run pack:prod && cd ../tester",
-    "install:pkg": "npm uninstall react-native-harmony-gesture-handler && npm run pack:pkg && npm i react-native-harmony-gesture-handler@file:../react-native-harmony-gesture-handler/react-native-oh-tpl-react-native-gesture-handler-2.14.5.tgz",
+    "install:pkg": "npm uninstall react-native-harmony-gesture-handler && npm run pack:pkg && npm i react-native-harmony-gesture-handler@file:../react-native-harmony-gesture-handler/react-native-oh-tpl-react-native-gesture-handler-2.14.6.tgz",
     "dev:fast": "react-native bundle-harmony",
     "dev": "npm run codegen && hdc rport tcp:8081 tcp:8081 && react-native bundle-harmony --dev --minify=false",
     "android": "react-native run-android"
@@ -17,7 +17,7 @@
     "react-native": "0.72.5",
     "react-native-gesture-handler": "2.14.1",
     "react-native-harmony": "file:../react-native-harmony/rnoh-react-native-harmony-0.72.26.tgz",
-    "react-native-harmony-gesture-handler": "file:../react-native-harmony-gesture-handler/react-native-oh-tpl-react-native-gesture-handler-2.14.4.tgz"
+    "react-native-harmony-gesture-handler": "file:../react-native-harmony-gesture-handler/react-native-oh-tpl-react-native-gesture-handler-2.14.6.tgz"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
