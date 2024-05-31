@@ -95,8 +95,10 @@ export class RNGHRootTouchHandlerArkTS {
 
   public cancelTouches() {
     for (const activeViewTag of this.activeViewTags) {
-      this.gestureHandlerRegistry.getGestureHandlersByViewTag(activeViewTag).forEach(gh => gh.cancel())
+      this.gestureHandlerRegistry.getGestureHandlersByViewTag(activeViewTag).forEach(gh => {
+        gh.cancel()
+        gh.reset()
+      })
     }
-    this.activeViewTags.clear()
   }
 }
