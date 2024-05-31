@@ -615,7 +615,6 @@ export abstract class GestureHandler<TGestureConfig extends GestureConfig = Gest
     this.tracker.resetTracker();
     this.onReset();
     this.resetProgress();
-    // TODO: reset ArkUIAdapters
     // this.eventManagers.forEach((manager: EventManager) =>
     // manager.resetManager()
     // );
