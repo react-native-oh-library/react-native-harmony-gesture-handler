@@ -5,7 +5,8 @@ import {
   DEFAULT_TOUCH_SLOP,
   IncomingEvent,
   State,
-  Vector2D
+  Vector2D,
+  getStateName
 } from "../core"
 
 
@@ -182,8 +183,9 @@ export class PanGestureHandler extends GestureHandler<PanGestureHandlerConfig> {
   }
 
   private tryBegin(e: IncomingEvent): void {
+    this.logger.cloneWithPrefix("tryBegin").debug({currentState: getStateName(this.currentState), trackedPointersCount: this.tracker.getTrackedPointersCount(), minPointers: this.minPointers})
     if (
-      this.currentState === State.UNDETERMINED &&
+      (this.currentState === State.UNDETERMINED) &&
         this.tracker.getTrackedPointersCount() >= this.minPointers
     ) {
       this.resetProgress();

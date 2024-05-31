@@ -13,3 +13,4 @@ rnoh_modules/
 /.clangd
 /.clang-tidy
 /build-profile.json5
+sqlite_storage

@@ -41,14 +41,14 @@ export enum PointerType {
 }
 
 export enum EventType {
-  DOWN,
-  ADDITIONAL_POINTER_DOWN,
-  UP,
-  ADDITIONAL_POINTER_UP,
-  MOVE,
-  ENTER,
-  OUT,
-  CANCEL,
+  DOWN = "DOWN",
+  ADDITIONAL_POINTER_DOWN = "ADDITIONAL_POINTER_DOWN",
+  UP = "UP",
+  ADDITIONAL_POINTER_UP = "ADDITIONAL_POINTER_UP",
+  MOVE = "MOVE",
+  ENTER = "ENTER",
+  OUT = "OUT",
+  CANCEL = "CANCEL",
 }
 
 export type Touch = {id: number, x: number, y: number, absoluteX: number, absoluteY: number}
