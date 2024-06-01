@@ -1,5 +1,5 @@
 import { RNOHContext, RNViewBase, ComponentBuilderContext, RNComponentFactory, Tag } from "@rnoh/react-native-openharmony"
-import { RNC } from "@rnoh/react-native-openharmony/generated/ts"
+import { RNC } from "../namespace/ts"
 import { RNGHRootTouchHandlerArkTS as RNGHRootTouchHandler } from "./RNGHRootTouchHandlerArkTS"
 import { RNGestureHandlerModule } from "./RNGestureHandlerModule"
 

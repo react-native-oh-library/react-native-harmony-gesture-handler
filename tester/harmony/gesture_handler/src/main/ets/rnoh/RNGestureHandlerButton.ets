@@ -1,5 +1,5 @@
 import { RNOHContext, RNViewBase, ComponentBuilderContext, RNComponentFactory, Tag } from "@rnoh/react-native-openharmony"
-import { RNC } from "@rnoh/react-native-openharmony/generated"
+import { RNC } from "../namespace/ts"
 
 export type RNGestureHandlerButtonDescriptor = RNC.RNGestureHandlerButton.Descriptor
 

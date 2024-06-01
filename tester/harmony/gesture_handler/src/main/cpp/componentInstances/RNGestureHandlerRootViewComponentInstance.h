@@ -4,7 +4,7 @@
 #import "RNOH/arkui/ArkUINodeRegistry.h"
 #import "RNOH/arkui/NativeNodeApi.h"
 #import "RNOH/RNInstanceCAPI.h"
-#import "generated/RNGestureHandlerRootViewComponentDescriptor.h"
+#import "../RNGestureHandlerRootViewComponentDescriptor.h"
 
 namespace rnoh {
   class RNGestureHandlerRootViewComponentInstance

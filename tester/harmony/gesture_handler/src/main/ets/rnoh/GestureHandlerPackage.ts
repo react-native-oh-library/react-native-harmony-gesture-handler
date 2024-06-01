@@ -1,5 +1,5 @@
-import {RNPackage, TurboModuleContext, TurboModulesFactory} from "@rnoh/react-native-openharmony/ts";
-import type {TurboModule} from "@rnoh/react-native-openharmony/ts";
+import {RNPackage, TurboModulesFactory} from "@rnoh/react-native-openharmony/ts";
+import type {TurboModule, TurboModuleContext} from "@rnoh/react-native-openharmony/ts";
 import {RNGestureHandlerModule} from './RNGestureHandlerModule';
 
 class GestureHandlerTurboModulesFactory extends TurboModulesFactory {
