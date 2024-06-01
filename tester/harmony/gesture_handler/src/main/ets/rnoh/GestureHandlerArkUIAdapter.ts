@@ -95,10 +95,11 @@ export class GestureHandlerArkUIAdapter {
 
     const eventType = this.mapTouchTypeToEventType(
       changedTouch.type,
-      this.activePointerIds.size,
       this.isInBounds({ x: xAbsolute, y: yAbsolute }),
+      changedTouch.id,
       this.pointersIdInBounds.has(changedTouch.id),
     );
+    this.logger.cloneWithPrefix("adaptTouchEvent").debug({ eventType, activePointersCount: this.activePointerIds.size })
     this.updateIsInBoundsByPointerId(
       changedTouch.type,
       changedTouch.id,
@@ -151,7 +152,7 @@ export class GestureHandlerArkUIAdapter {
     const x = point.x;
     const y = point.y;
     const rect = this.view.getBoundingRect();
-    this.logger.cloneWithPrefix("isInBounds").debug({rect})
+    this.logger.cloneWithPrefix("isInBounds").debug({ rect })
     const result =
       x >= rect.x &&
         x <= rect.x + rect.width &&
@@ -188,16 +189,25 @@ export class GestureHandlerArkUIAdapter {
 
   private mapTouchTypeToEventType(
     touchType: TouchType,
-    activePointersCounter: number,
     isCurrentlyInBounds: boolean,
+    pointerId: number,
     wasInBounds: boolean,
   ): EventType {
+    /**
+     * If user manages to drag finger out of GestureHandlerRootView,
+     * we don't receive UP event.
+     */
+    let activePointersCount = this.activePointerIds.size
+    if (this.activePointerIds.has(pointerId)) {
+      activePointersCount--;
+    }
+
     switch (touchType) {
       case TouchType.Down:
-        if (activePointersCounter > 0) return EventType.ADDITIONAL_POINTER_DOWN;
+        if (activePointersCount > 0) return EventType.ADDITIONAL_POINTER_DOWN;
         else return EventType.DOWN;
       case TouchType.Up:
-        if (activePointersCounter > 1) return EventType.ADDITIONAL_POINTER_UP;
+        if (activePointersCount > 1) return EventType.ADDITIONAL_POINTER_UP;
         else return EventType.UP;
       case TouchType.Move:
         if (isCurrentlyInBounds) {
