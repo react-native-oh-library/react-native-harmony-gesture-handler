@@ -4,8 +4,7 @@
       {
         name: 'default',
         signingConfig: 'default',
-        compileSdkVersion: '4.1.0(11)',
-        compatibleSdkVersion: '4.1.0(11)',
+        compatibleSdkVersion: '5.0.0(12)',
         runtimeOS: 'HarmonyOS',
       },
     ],
@@ -18,6 +17,7 @@
       },
     ],
     "signingConfigs": [
+        // provide your own configs here
     ]
   },
   modules: [
