@@ -1,4 +1,4 @@
-import { TurboModule, TurboModuleContext, Tag } from "@rnoh/react-native-openharmony/ts";
+import { UITurboModule, UITurboModuleContext, Tag } from "@rnoh/react-native-openharmony/ts";
 import { TM } from "@rnoh/react-native-openharmony/generated/ts"
 import { GestureHandlerRegistry, State, OutgoingEventDispatcher, RNGHLogger, InteractionManager } from '../core';
 import { GestureHandlerFactory } from "../gesture-handlers"
@@ -19,7 +19,7 @@ export enum ActionType {
 }
 
 
-export class RNGestureHandlerModule extends TurboModule implements TM.RNGestureHandlerModule.Spec {
+export class RNGestureHandlerModule extends UITurboModule implements TM.RNGestureHandlerModule.Spec {
   static NAME = "RNGestureHandlerModule"
 
   private gestureHandlerRegistry: GestureHandlerRegistry
@@ -29,7 +29,7 @@ export class RNGestureHandlerModule extends TurboModule implements TM.RNGestureH
   private touchHandlerByRootTag = new Map<Tag, RNGHRootTouchHandlerCAPI>()
   private interactionManager: InteractionManager
 
-  constructor(ctx: TurboModuleContext) {
+  constructor(ctx: UITurboModuleContext) {
     super(ctx)
     const debug = false
     this.logger = debug ? new StandardRNGHLogger(ctx.logger, "RNGH") : new FakeRNGHLogger()
