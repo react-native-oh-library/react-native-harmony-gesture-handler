@@ -52,7 +52,7 @@
     "typescript": "4.5.5"
   },
   "files": [
-    "harmony",
+    "./harmony/*",
     "src",
     "lib",
     "DrawerLayout/",
