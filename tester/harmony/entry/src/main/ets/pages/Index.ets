@@ -29,10 +29,6 @@ struct Index {
     Column() {
       if (this.rnohCoreContext) {
         RNOHErrorDialog({ ctx: this.rnohCoreContext });
-        Stack()
-          .width("100%")
-          .height(256)
-          .backgroundColor("gray")
         RNApp({
           appKey: "app_name",
           rnInstanceConfig: {
