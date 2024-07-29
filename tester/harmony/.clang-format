@@ -59,4 +59,5 @@ BraceWrapping:
     BeforeCatch: false
     BeforeElse: false
 ReflowComments: true
+AlignTrailingComments: false
 MaxEmptyLinesToKeep: 2
