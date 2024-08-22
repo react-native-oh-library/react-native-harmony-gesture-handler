@@ -16,6 +16,8 @@ class RNGHEventEmitRequestHandler : public EventEmitRequestHandler {
     }
     if (ctx.eventName == "onGestureHandlerEvent") {
       eventEmitter->dispatchEvent(ctx.eventName, ArkJS(ctx.env).getDynamic(ctx.payload));
+    } else if (ctx.eventName == "onGestureHandlerStateChange") {
+      eventEmitter->dispatchEvent("onGestureHandlerStateChange", ArkJS(ctx.env).getDynamic(ctx.payload));
     }
   }
 };
