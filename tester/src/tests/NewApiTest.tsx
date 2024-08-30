@@ -1,5 +1,5 @@
 import {TestCase, TestSuite} from '@rnoh/testerino';
-import React from 'react';
+import React, {useRef} from 'react';
 import {useState} from 'react';
 import {
   View,
@@ -312,6 +312,9 @@ export function NewApiTest() {
             expect(state).to.be.true;
           }}
         />
+        <TestCase itShould="pan blue rectangle (checks if transform::translate is supported)">
+          <PanGestureExample />
+        </TestCase>
         <TestCase
           itShould="not trigger onPress from RN after panning"
           initialState={{hasPanningEnded: false, hasRNTriggeredOnPress: false}}
@@ -545,6 +548,52 @@ function Example(props: {
     </View>
   );
 }
+
+const PanGestureExample: React.FC = () => {
+  const translationX = useRef(new Animated.Value(0)).current;
+  const translationY = useRef(new Animated.Value(0)).current;
+  const initialTranslationX = useRef(0);
+  const initialTranslationY = useRef(0);
+
+  const panGesture = Gesture.Pan()
+    .onStart(event => {
+      initialTranslationX.current = (translationX as any).__getValue();
+      initialTranslationY.current = (translationY as any).__getValue();
+    })
+    .onUpdate(event => {
+      translationX.setValue(initialTranslationX.current + event.translationX);
+      translationY.setValue(initialTranslationY.current + event.translationY);
+    })
+    .onEnd(event => {
+      translationX.setValue(initialTranslationX.current + event.translationX);
+      translationY.setValue(initialTranslationY.current + event.translationY);
+    });
+
+  return (
+    <View style={{backgroundColor: 'black'}}>
+      <GestureDetector gesture={panGesture}>
+        <Animated.View
+          style={[
+            {
+              width: 128,
+              height: 128,
+              backgroundColor: PALETTE.DARK_BLUE,
+              alignSelf: 'center',
+              justifyContent: 'center',
+              transform: [
+                {translateX: translationX},
+                {translateY: translationY},
+              ],
+            },
+          ]}>
+          <Text style={{color: 'white', fontSize: 12, textAlign: 'center'}}>
+            DRAG ME AROUND
+          </Text>
+        </Animated.View>
+      </GestureDetector>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   testCaseContainer: {
