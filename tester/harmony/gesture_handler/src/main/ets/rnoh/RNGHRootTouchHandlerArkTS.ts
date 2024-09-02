@@ -83,11 +83,15 @@ export class RNGHRootTouchHandlerArkTS {
         }
       }
 
-      // send touch to gesture handlers
-      for (const viewTag of this.activeViewTags) {
-        const adapter = this.adapterByViewTag.get(viewTag);
-        if (adapter) {
-          adapter.handleTouch(e);
+      // send touch to gesture handlers, prioritize handling touch events for child components
+      if (this.activeViewTags.size > 0) {
+        const tags = Array.from(this.activeViewTags);
+        for (let i = tags.length - 1; i >= 0; i--) {
+          const tag = tags[i];
+          const adapter = this.adapterByViewTag.get(tag);
+          if (adapter) {
+            adapter.handleTouch(e);
+          }
         }
       }
     }
