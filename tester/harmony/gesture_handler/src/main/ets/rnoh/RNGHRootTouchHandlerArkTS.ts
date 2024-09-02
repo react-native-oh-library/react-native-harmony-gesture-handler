@@ -16,7 +16,7 @@ export interface ViewFinder {
 export class RNGHRootTouchHandlerArkTS {
   private adapterByViewTag: Map<number, GestureHandlerArkUIAdapter> = new Map(); // TODO: remove adapter when view is removed
   /**
-   * A view is ACTIVE in a window defined by two POINTER_DOWN events
+   * A view is ACTIVE, if it recently received POINTER_DOWN event
    */
   private activeViewTags = new Set<number>();
   private viewFinder: ViewFinder;
@@ -76,7 +76,7 @@ export class RNGHRootTouchHandlerArkTS {
           // attach handler (there might be multiple handlers per view)
           this.adapterByViewTag.get(view.getTag())!.attachGestureHandler(handler) // TODO: detachGestureHandler
 
-          // register active view tags
+          // register active view tag
           if (e.type === TouchType.Down) {
             this.activeViewTags.add(view.getTag());
           }
