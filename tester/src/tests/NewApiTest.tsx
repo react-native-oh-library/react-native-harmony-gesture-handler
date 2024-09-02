@@ -315,6 +315,9 @@ export function NewApiTest() {
         <TestCase itShould="pan blue rectangle (checks if transform::translate is supported)">
           <PanGestureExample />
         </TestCase>
+        <TestCase itShould="tap the inner rectangle to show 'inner'; tap the outer rectangle to show 'outer'">
+          <OverLapExample />
+        </TestCase>
         <TestCase
           itShould="not trigger onPress from RN after panning"
           initialState={{hasPanningEnded: false, hasRNTriggeredOnPress: false}}
@@ -591,6 +594,34 @@ const PanGestureExample: React.FC = () => {
           </Text>
         </Animated.View>
       </GestureDetector>
+    </View>
+  );
+};
+
+const OverLapExample: React.FC = () => {
+  const [tapRange, setTapRange] = useState('')
+
+  const outer = Gesture.Tap().onStart(() => {
+    setTapRange('Outer!')
+  });
+
+  const inner = Gesture.Tap().onStart(() => {
+    setTapRange('Inner!')
+  });
+
+  return (
+    <View style={{backgroundColor: 'black'}}>
+      <GestureDetector gesture={outer}>
+        <View style={[{width: 180, height: 180, backgroundColor: PALETTE.DARK_BLUE}]}>
+          <Text>Outer View</Text>
+          <GestureDetector gesture={inner}>
+            <View style={[{width: 100, height: 100, backgroundColor: 'pink'}]} >
+            <Text>Inner View</Text>
+            </View>
+          </GestureDetector>
+        </View>
+      </GestureDetector>
+      <Text style={{color: 'white'}}>Tap area: {tapRange}</Text>
     </View>
   );
 };
