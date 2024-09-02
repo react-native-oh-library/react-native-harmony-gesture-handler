@@ -18,7 +18,7 @@
     "react-native": "0.72.5",
     "react-native-gesture-handler": "2.14.1",
     "react-native-harmony": "file:rnoh_package/react-native-harmony/rnoh-react-native-harmony-0.72.28.tgz",
-    "react-native-harmony-gesture-handler": "file:../react-native-harmony-gesture-handler/react-native-oh-tpl-react-native-gesture-handler-2.14.9.tgz"
+    "react-native-harmony-gesture-handler": "file:../react-native-harmony-gesture-handler/react-native-oh-tpl-react-native-gesture-handler-2.14.10.tgz"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
