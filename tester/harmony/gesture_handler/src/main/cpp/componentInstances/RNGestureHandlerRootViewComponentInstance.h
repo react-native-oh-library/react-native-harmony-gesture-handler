@@ -153,15 +153,18 @@ private:
       LOG(WARNING) << "Surface is nullptr";
     }
     for (auto &touchTarget : touchTargets) {
+      auto frame = touchTarget->getLayoutMetrics().frame;
+      auto transform = touchTarget->getTransform();
+      auto transformedFrame = frame * transform;
       touchableViews.push_back({
         .tag = touchTarget->getTouchTargetTag(),
-        .x = touchTarget->getLayoutMetrics().frame.origin.x + offsetX,
-        .y = touchTarget->getLayoutMetrics().frame.origin.y + offsetY,
-        .width = touchTarget->getLayoutMetrics().frame.size.width,
-        .height = touchTarget->getLayoutMetrics().frame.size.height,
+        .width = transformedFrame.size.width,
+        .height = transformedFrame.size.height,
+        .x = transformedFrame.origin.x + offsetX,
+        .y = transformedFrame.origin.y + offsetY,
       });
-      offsetX += touchTarget->getLayoutMetrics().frame.origin.x;
-      offsetY += touchTarget->getLayoutMetrics().frame.origin.y;
+      offsetX += transformedFrame.origin.x;
+      offsetY += transformedFrame.origin.y;
       offsetX -= touchTarget->getCurrentOffset().x;
       offsetY -= touchTarget->getCurrentOffset().y;
     }
