@@ -9,7 +9,7 @@
     },
     "redirectInternalImports": true
   },
-  "version": "2.14.10",
+  "version": "2.14.11",
   "description": "",
   "react-native": "src/index.ts",
   "main": "lib/commonjs/index.js",
