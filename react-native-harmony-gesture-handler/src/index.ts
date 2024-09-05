@@ -58,11 +58,11 @@ export type {
 } from 'react-native-gesture-handler/src/handlers/FlingGestureHandler';
 export { TapGestureHandler } from 'react-native-gesture-handler/src/handlers/TapGestureHandler';
 // export { ForceTouchGestureHandler } from './handlers/ForceTouchGestureHandler';
-// export { LongPressGestureHandler } from './handlers/LongPressGestureHandler';
+export { LongPressGestureHandler } from 'react-native-gesture-handler/src/handlers/LongPressGestureHandler';
 export { PanGestureHandler } from 'react-native-gesture-handler/src/handlers/PanGestureHandler';
-// export { PinchGestureHandler } from './handlers/PinchGestureHandler';
-// export { RotationGestureHandler } from './handlers/RotationGestureHandler';
-// export { FlingGestureHandler } from './handlers/FlingGestureHandler';
+export { PinchGestureHandler } from 'react-native-gesture-handler/src/handlers/PinchGestureHandler';
+export { RotationGestureHandler } from 'react-native-gesture-handler/src/handlers/RotationGestureHandler';
+export { FlingGestureHandler } from 'react-native-gesture-handler/src/handlers/FlingGestureHandler';
 export { default as createNativeWrapper } from 'react-native-gesture-handler/src/handlers/createNativeWrapper';
 export type {
   NativeViewGestureHandlerPayload,
@@ -86,7 +86,7 @@ export type {
   ExclusiveGestureType as ExclusiveGesture,
 } from 'react-native-gesture-handler/src/handlers/gestures/gestureComposition';
 export type { GestureStateManagerType as GestureStateManager } from 'react-native-gesture-handler/src/handlers/gestures/gestureStateManager';
-// export { NativeViewGestureHandler } from './handlers/NativeViewGestureHandler';
+export { NativeViewGestureHandler } from 'react-native-gesture-handler/src/handlers/NativeViewGestureHandler';
 export type {
   RawButtonProps,
   BaseButtonProps,

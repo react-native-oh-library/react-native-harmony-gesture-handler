@@ -2,8 +2,14 @@ import {TestCase, TestSuite} from '@rnoh/testerino';
 import {forwardRef, useRef, useState} from 'react';
 import {Animated, ScrollView, StyleSheet, Text, View} from 'react-native';
 import {
+  Directions,
+  FlingGestureHandler,
+  LongPressGestureHandler,
+  NativeViewGestureHandler,
   PanGestureHandler,
   PanGestureHandlerEventPayload,
+  PinchGestureHandler,
+  RotationGestureHandler,
   State,
   TapGestureHandler,
 } from 'react-native-gesture-handler';
@@ -21,6 +27,11 @@ export function OldApiTest() {
       />
       <TappingTest />
       <PanningTest />
+      <LongPressTest />
+      <PinchTest />
+      <RotationTest />
+      <FlingTest />
+      <NativeViewTest />
       <TestCase itShould="keep updating displayed gesture event object when dragging circle (Animated.event + onGestureEvent)">
         <IssueWithAnimatedEvent />
       </TestCase>
@@ -428,6 +439,155 @@ function StateKeeper<T>(props: {
   const [value, setValue] = useState<T>();
 
   return <>{props.renderContent(value, setValue)}</>;
+}
+
+function LongPressTest() {
+  return (
+    <TestSuite name="Long Press">
+      <TestCase
+        itShould="change color on long press"
+        initialState={{ hasLongPressed: false, backgroundColor: PALETTE.DARK_BLUE }}
+        arrange={({ setState, state }) => {
+          return (
+            <View style={styles.testCaseContainer}>
+              <LongPressGestureHandler
+                onActivated={() => {
+                  setState({
+                    hasLongPressed: true,
+                    backgroundColor: PALETTE.LIGHT_GREEN,
+                  });
+                }}>
+                <Rect
+                  backgroundColor={state.backgroundColor}
+                  label="LONG PRESS ME"
+                />
+              </LongPressGestureHandler>
+            </View>
+          );
+        }}
+        assert={({ expect, state }) => {
+          expect(state.hasLongPressed).to.be.true;
+        }}
+      />
+    </TestSuite>
+  );
+}
+
+function PinchTest() {
+  return (
+    <TestSuite name="Pinch">
+      <TestCase
+        itShould="change scale on pinch"
+        initialState={{ scale: 1 }}
+        arrange={({ setState, state }) => {
+          return (
+            <View style={styles.testCaseContainer}>
+              <PinchGestureHandler
+                onGestureEvent={({ nativeEvent }) => {
+                  setState({
+                    scale: nativeEvent.scale
+                  });
+                }}>
+                <Animated.View style={{
+                  transform: [{ scale: state.scale }]
+                }}>
+                  <Rect backgroundColor={PALETTE.DARK_BLUE} label="PINCH ME" />
+                </Animated.View>
+              </PinchGestureHandler>
+            </View>
+          );
+        }}
+        assert={({ expect, state }) => {
+          expect(state.scale).to.not.equal(1);
+        }}
+      />
+    </TestSuite>
+  );
+}
+
+function RotationTest() {
+  return (
+    <TestSuite name="Rotation">
+      <TestCase
+        itShould="change rotation on rotation gesture"
+        initialState={{ rotation: 0 }}
+        arrange={({ setState, state }) => {
+          return (
+            <View style={styles.testCaseContainer}>
+              <RotationGestureHandler
+                onGestureEvent={({ nativeEvent }) => {
+                  setState({
+                    rotation: nativeEvent.rotation
+                  });
+                }}>
+                <Animated.View style={{
+                  transform: [{ rotate: `${state.rotation}rad` }]
+                }}>
+                  <Rect backgroundColor={PALETTE.DARK_BLUE} label="ROTATE ME" />
+                </Animated.View>
+              </RotationGestureHandler>
+            </View>
+          );
+        }}
+        assert={({ expect, state }) => {
+          expect(state.rotation).to.not.equal(0);
+        }}
+      />
+    </TestSuite>
+  );
+}
+
+function FlingTest() {
+  return (
+    <TestSuite name="Fling">
+      <TestCase
+        itShould="move rectangle on fling"
+        initialState={{ hasFlinged: false }}
+        arrange={({ setState }) => {
+          return (
+            <View style={styles.testCaseContainer}>
+              <FlingGestureHandler
+                direction={Directions.RIGHT}
+                onActivated={() => {
+                  setState({ hasFlinged: true });
+                }}>
+                <Rect backgroundColor={PALETTE.DARK_BLUE} label="FLING ME RIGHT" />
+              </FlingGestureHandler>
+            </View>
+          );
+        }}
+        assert={({ expect, state }) => {
+          expect(state.hasFlinged).to.be.true;
+        }}
+      />
+    </TestSuite>
+  );
+}
+
+function NativeViewTest() {
+  return (
+    <TestSuite name="Native View">
+      <TestCase
+        itShould="handle native view gestures"
+        initialState={{ gestureHandled: false }}
+        arrange={({ setState }) => {
+          return (
+            <View style={styles.testCaseContainer}>
+              <NativeViewGestureHandler
+                onGestureEvent={() => {
+                  setState({ gestureHandled: true });
+                }}>
+                <Rect backgroundColor={PALETTE.DARK_BLUE} label="TOUCH ME" />
+              </NativeViewGestureHandler>
+            </View>
+          );
+        }}
+        assert={({ expect, state }) => {
+          expect(state.gestureHandled).to.be.true;
+        }}
+      />
+    </TestSuite>
+  );
 }
 
 const styles = StyleSheet.create({
