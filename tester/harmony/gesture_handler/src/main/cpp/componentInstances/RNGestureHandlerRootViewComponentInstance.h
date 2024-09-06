@@ -5,6 +5,7 @@
 #import "RNOH/arkui/NativeNodeApi.h"
 #import "RNOH/RNInstanceCAPI.h"
 #import "generated/RNGestureHandlerRootViewComponentDescriptor.h"
+#import "RNGestureHandlerButtonComponentInstance.h"
 
 namespace rnoh {
 class RNGestureHandlerRootViewComponentInstance
@@ -48,6 +49,7 @@ private:
     facebook::react::Float height;
     facebook::react::Float x;
     facebook::react::Float y;
+    bool buttonRole;
   };
 
 public:
@@ -153,6 +155,7 @@ private:
       LOG(WARNING) << "Surface is nullptr";
     }
     for (auto &touchTarget : touchTargets) {
+      auto buttonRole = dynamic_cast<RNGestureHandlerButtonComponentInstance*>(touchTarget.get()) != nullptr;           
       auto frame = touchTarget->getLayoutMetrics().frame;
       auto transform = touchTarget->getTransform();
       auto transformedFrame = frame * transform;
@@ -162,6 +165,7 @@ private:
         .height = transformedFrame.size.height,
         .x = transformedFrame.origin.x + offsetX,
         .y = transformedFrame.origin.y + offsetY,
+        .buttonRole = buttonRole,
       });
       offsetX += transformedFrame.origin.x;
       offsetY += transformedFrame.origin.y;
@@ -181,6 +185,7 @@ private:
       d_touchableView["y"] = touchableView.y;
       d_touchableView["width"] = touchableView.width;
       d_touchableView["height"] = touchableView.height;
+      d_touchableView["buttonRole"] = touchableView.buttonRole;
       d_touchableViews.push_back(d_touchableView);
     }
     return d_touchableViews;

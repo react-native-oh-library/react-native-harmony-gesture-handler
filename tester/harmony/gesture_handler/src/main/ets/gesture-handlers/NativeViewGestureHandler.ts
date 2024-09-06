@@ -29,7 +29,9 @@ export class NativeViewGestureHandler extends GestureHandler {
     if (this.currentState !== State.UNDETERMINED)
       return;
     this.begin();
-    this.activate();
+    if(this.view.hasButtonRole()) {
+      this.activate();
+    }
   }
 
   public onAdditionalPointerAdd(e: IncomingEvent) {
@@ -44,9 +46,9 @@ export class NativeViewGestureHandler extends GestureHandler {
     const distSq = dx * dx + dy * dy;
 
     if (distSq >= this.minDistSq) {
-      if (this.currentState === State.ACTIVE) {
+      if (this.view.hasButtonRole() && this.currentState === State.ACTIVE) {
         this.cancel();
-      } else if (this.currentState === State.BEGAN) {
+      } else if (!this.view.hasButtonRole() && this.currentState === State.BEGAN) {
         this.activate();
       }
     }
