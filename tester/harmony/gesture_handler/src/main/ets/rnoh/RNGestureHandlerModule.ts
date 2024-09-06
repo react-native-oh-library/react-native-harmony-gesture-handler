@@ -82,6 +82,7 @@ export class RNGestureHandlerModule extends TurboModule implements TM.RNGestureH
           return
         }
         view.updateBoundingBox(touchableView)
+        view.setButtonRole(touchableView.buttonRole)
       } else {
         this.viewRegistry.save(new ViewCAPI(touchableView))
       }
@@ -135,7 +136,8 @@ export class RNGestureHandlerModule extends TurboModule implements TM.RNGestureH
         x: 0,
         y: 0,
         width: 0,
-        height: 0
+        height: 0,
+        buttonRole: false
       })
       viewRegistry.save(view)
     }

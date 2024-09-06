@@ -18,7 +18,7 @@ import {
   gestureHandlerRootHOC,
 } from 'react-native-gesture-handler';
 import DrawerLayout from 'react-native-gesture-handler/DrawerLayout';
-import {NewApiTest, OldApiTest, SharedAPITest} from './src';
+import {NewApiTest, OldApiTest, SharedAPITest, ComponentsTest} from './src';
 
 type RootViewMode = 'Component' | 'HOC';
 
@@ -37,6 +37,7 @@ function App({}): JSX.Element | null {
               <NewApiTest />
               <OldApiTest />
               <SharedAPITest />
+              <ComponentsTest />
             </Tester>
           </GestureHandlerRootView>
         ) : (
@@ -116,6 +117,7 @@ function Tests() {
               <NewApiTest />
               <OldApiTest />
               <SharedAPITest />
+              <ComponentsTest />
             </ScrollView>
           </DrawerLayout>
         )}
@@ -124,6 +126,7 @@ function Tests() {
             <NewApiTest />
             <OldApiTest />
             <SharedAPITest />
+            <ComponentsTest />
           </ScrollView>
         )}
       </Tester>

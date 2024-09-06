@@ -16,4 +16,6 @@ export interface View {
   }): boolean
 
   getBoundingRect(): BoundingBox
+
+  hasButtonRole(): boolean
 }

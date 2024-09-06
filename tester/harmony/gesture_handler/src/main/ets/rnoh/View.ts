@@ -13,15 +13,18 @@ export type RawTouchableView = {
    */
   y: number,
   width: number,
-  height: number
+  height: number,
+  buttonRole: boolean,
 }
 
 export class ViewCAPI implements View {
   private tag: number
+  private buttonRole: boolean
   private boundingBox: BoundingBox
 
-  constructor({ tag, ...boundingBox }: RawTouchableView) {
+  constructor({ tag, buttonRole, ...boundingBox }: RawTouchableView) {
     this.tag = tag
+    this.buttonRole = buttonRole
     this.boundingBox = boundingBox
   }
 
@@ -48,6 +51,14 @@ export class ViewCAPI implements View {
 
   updateBoundingBox(boundingBox: BoundingBox) {
     this.boundingBox = boundingBox
+  }
+
+  setButtonRole(buttonRole: boolean) {
+    this.buttonRole = buttonRole
+  }
+
+  hasButtonRole(): boolean {
+    return this.buttonRole
   }
 }
 
@@ -115,5 +126,9 @@ export class ViewArkTS implements View {
       x: scrollViewState.contentOffsetX,
       y: scrollViewState.contentOffsetY,
     });
+  }
+
+  public hasButtonRole(): boolean {
+    return false;
   }
 }
