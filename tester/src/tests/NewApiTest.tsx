@@ -16,6 +16,7 @@ import {
   TouchableWithoutFeedback,
   ScrollView,
   Directions,
+  TapGestureHandlerEventPayload,
 } from 'react-native-gesture-handler';
 import {PALETTE} from '../constants';
 
@@ -63,6 +64,38 @@ export function NewApiTest() {
           }}
           assert={({expect, state}) => {
             expect((state as any).__getValue()).to.be.greaterThan(Math.PI / 4);
+          }}
+        />
+      </TestSuite>
+      <TestSuite name="Gesture.Tap callback data">
+        <TestCase<TapGestureHandlerEventPayload | undefined>
+          itShould="Pass when Tap's start method callback parameter is normal"
+          initialState={undefined}
+          arrange={({setState, reset}) => {
+            let txt = 'show callback data after tap';
+            return (
+              <>
+                <Example
+                  createGesture={(_, setLabel) => {
+                    return Gesture.Tap().onStart(data => {
+                      setLabel(`${txt}: ${JSON.stringify(data)}`);
+                      setState(data);
+                    });
+                  }}
+                  size={150}
+                  label={txt}
+                />
+              </>
+            );
+          }}
+          assert={({expect, state}) => {
+            expect(state).to.be.not.undefined;
+            if (state) {
+              expect(typeof state.absoluteX === 'number').to.be.true;
+              expect(typeof state.absoluteY === 'number').to.be.true;
+              expect(typeof state.x === 'number').to.be.true;
+              expect(typeof state.y === 'number').to.be.true;
+            }
           }}
         />
       </TestSuite>
@@ -505,15 +538,17 @@ function Example(props: {
   label: string;
   createGesture: (
     setColor: React.Dispatch<React.SetStateAction<string>>,
+    setLabel: React.Dispatch<React.SetStateAction<string>>,
   ) => React.ComponentProps<typeof GestureDetector>['gesture'];
   rightHitSlop?: number;
   size?: number;
   onReset?: (setColor: React.Dispatch<React.SetStateAction<string>>) => void;
 }) {
   const [backgroundColor, setBackgroundColor] = useState(PALETTE.DARK_BLUE);
+  const [showLabel, setShowLabel] = useState(props.label);
 
   const gesture = React.useMemo(() => {
-    return props.createGesture(setBackgroundColor);
+    return props.createGesture(setBackgroundColor, setShowLabel);
   }, []);
 
   return (
@@ -538,7 +573,7 @@ function Example(props: {
             justifyContent: 'center',
           }}>
           <Text style={{color: 'white', fontSize: 12, textAlign: 'center'}}>
-            {props.label}
+            {showLabel}
           </Text>
         </View>
       </GestureDetector>
