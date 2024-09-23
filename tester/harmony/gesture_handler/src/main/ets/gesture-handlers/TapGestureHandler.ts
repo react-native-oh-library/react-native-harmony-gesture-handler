@@ -51,9 +51,18 @@ export class TapGestureHandler extends GestureHandler {
     this.lastX = this.tracker.getLastAvgX();
     this.lastY = this.tracker.getLastAvgY();
 
-    this.tracker.removeFromTracker(event.pointerId);
-
     this.updateState(event);
+    this.tracker.removeFromTracker(event.pointerId);
+  }
+
+  protected transformNativeEvent() {
+    const rect = this.view.getBoundingRect();
+    return {
+      x: this.tracker.getLastAvgX() - rect.x,
+      y: this.tracker.getLastAvgY() - rect.y,
+      absoluteX: this.tracker.getLastAvgX(),
+      absoluteY: this.tracker.getLastAvgY(),
+    };
   }
 
   onAdditionalPointerRemove(event: IncomingEvent): void {
