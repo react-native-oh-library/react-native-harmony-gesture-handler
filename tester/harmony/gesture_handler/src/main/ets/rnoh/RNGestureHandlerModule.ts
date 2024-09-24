@@ -1,8 +1,8 @@
 import { TurboModule, TurboModuleContext, Tag } from "@rnoh/react-native-openharmony/ts";
 import { TM } from "@rnoh/react-native-openharmony/generated/ts"
-import { GestureHandlerRegistry, State, OutgoingEventDispatcher, RNGHLogger, InteractionManager } from '../core';
+import { GestureHandlerRegistry, State, OutgoingEventDispatcher, RNGHLogger, InteractionManager, ViewRegistry } from '../core';
 import { GestureHandlerFactory } from "../gesture-handlers"
-import { ViewRegistry, ViewRegistryArkTS, ViewRegistryCAPI } from './ViewRegistry';
+import { ViewRegistryArkTS, ViewRegistryCAPI } from './ViewRegistry';
 import { StandardRNGHLogger, FakeRNGHLogger } from './Logger';
 import { JSEventDispatcher, AnimatedEventDispatcher, ReanimatedEventDispatcher } from './OutgoingEventDispatchers'
 import { RNOHScrollLockerArkTS, RNOHScrollLockerCAPI } from "./RNOHScrollLocker"
@@ -34,7 +34,7 @@ export class RNGestureHandlerModule extends TurboModule implements TM.RNGestureH
     const debug = false
     this.logger = debug ? new StandardRNGHLogger(ctx.logger, "RNGH") : new FakeRNGHLogger()
     this.interactionManager = new InteractionManager(this.logger)
-    this.gestureHandlerRegistry = new GestureHandlerRegistry(this.logger)
+    this.gestureHandlerRegistry = new GestureHandlerRegistry(this.viewRegistry, this.logger)
 
     if (this.ctx.rnInstance.getArchitecture() === "C_API") {
       this.ctx.rnInstance.cppEventEmitter.subscribe("RNGH::TOUCH_EVENT", (e: any) => {
@@ -173,7 +173,8 @@ export class RNGestureHandlerModule extends TurboModule implements TM.RNGestureH
   }
 
   public dropGestureHandler(handlerTag: number) {
-    this.warn("dropGestureHandler is not implemented")
+    this.interactionManager.dropRelationsForHandlerWithTag(handlerTag)
+    this.gestureHandlerRegistry.removeGestureHandlerByHandlerTag(handlerTag)
   }
 
   public handleSetJSResponder(tag: number, blockNativeResponder: boolean) {
@@ -185,7 +186,7 @@ export class RNGestureHandlerModule extends TurboModule implements TM.RNGestureH
   }
 
   public flushOperations() {
-    this.warn("flushOperations is not implemented")
+    // no-op
   }
 
   // -------------------------------------------------------------------------------------------------------------------
