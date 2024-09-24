@@ -1,12 +1,6 @@
 import { DescriptorRegistry, Tag, } from '@rnoh/react-native-openharmony/ts';
 import { ViewArkTS } from './View';
-import { View } from '../core';
-import type { ViewFinder } from "./RNGHRootTouchHandlerArkTS"
-
-export interface ViewRegistry extends ViewFinder {
-  getViewByTag(viewTag: Tag)
-  save(view: View)
-}
+import { View, ViewRegistry } from '../core';
 
 export class ViewRegistryArkTS implements ViewRegistry {
   constructor(
@@ -25,6 +19,10 @@ export class ViewRegistryArkTS implements ViewRegistry {
      * C-API architecture is going to replace ArkTS anyway, so there's no point of doing this properly since this class
      * will be removed in the future.
      */
+  }
+
+  deleteByTag(viewTag: Tag) {
+    // No-op, ArkTS is going to be deprecated at some point in the future.
   }
 
   private createView(tag: Tag): ViewArkTS {
@@ -75,6 +73,10 @@ export class ViewRegistryCAPI implements ViewRegistry {
 
   save(view: View) {
     this.viewByTag.set(view.getTag(), view)
+  }
+
+  deleteByTag(viewTag: Tag) {
+    this.viewByTag.delete(viewTag)
   }
 
   getViewByTag(viewTag: Tag) {
