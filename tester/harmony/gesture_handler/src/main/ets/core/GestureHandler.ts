@@ -579,8 +579,14 @@ export abstract class GestureHandler<TGestureConfig extends GestureConfig = Gest
     };
   }
 
-  protected transformNativeEvent() {
-    return {};
+  protected transformNativeEvent(): Record<string, unknown> {
+    const rect = this.view.getBoundingRect();
+    return {
+      x: this.tracker.getLastAvgX() - rect.x,
+      y: this.tracker.getLastAvgY() - rect.y,
+      absoluteX: this.tracker.getLastAvgX(),
+      absoluteY: this.tracker.getLastAvgY(),
+    };
   }
 
   setAwaiting(isAwaiting: boolean): void {

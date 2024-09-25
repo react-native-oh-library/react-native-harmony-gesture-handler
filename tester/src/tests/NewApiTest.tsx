@@ -16,6 +16,12 @@ import {
   TouchableWithoutFeedback,
   ScrollView,
   Directions,
+  TapGestureHandlerEventPayload,
+  RotationGestureHandlerEventPayload,
+  PanGestureHandlerEventPayload,
+  FlingGestureHandlerEventPayload,
+  PinchGestureHandlerEventPayload,
+  LongPressGestureHandlerEventPayload,
 } from 'react-native-gesture-handler';
 import {PALETTE} from '../constants';
 
@@ -370,6 +376,188 @@ export function NewApiTest() {
           }}
         />
       </TestSuite>
+      
+      <TestSuite name="Gesture callback data">
+        <TestCase<TapGestureHandlerEventPayload | undefined>
+          itShould="Tap"
+          initialState={undefined}
+          arrange={({setState, reset}) => {
+            return (
+              <>
+                <Example
+                  createGesture={(_, setLabel) => {
+                    return Gesture.Tap().onStart(data => {
+                      setLabel(`callback data: ${JSON.stringify(data)}`);
+                      setState(data);
+                    });
+                  }}
+                  size={{width: 300, height: 120}}
+                  label='show callback data after tap'
+                />
+              </>
+            );
+          }}
+          assert={({expect, state}) => {
+            expect(state).to.be.not.undefined;
+            if (state) {
+              expect(typeof state.absoluteX === 'number').to.be.true;
+              expect(typeof state.absoluteY === 'number').to.be.true;
+              expect(typeof state.x === 'number').to.be.true;
+              expect(typeof state.y === 'number').to.be.true;
+            }
+          }}
+        />
+        <TestCase<FlingGestureHandlerEventPayload | undefined>
+          itShould="Fling"
+          initialState={undefined}
+          arrange={({setState, reset}) => {
+            return (
+              <>
+                <Example
+                  createGesture={(_, setLabel) => {
+                    return Gesture.Fling().onStart(data => {
+                      setLabel(`callback data: ${JSON.stringify(data)}`);
+                      setState(data);
+                    });
+                  }}
+                  size={{width: 300, height: 120}}
+                  label='show callback data after Fling'
+                />
+              </>
+            );
+          }}
+          assert={({expect, state}) => {
+            expect(state).to.be.not.undefined;
+            if (state) {
+              expect(typeof state.absoluteX === 'number').to.be.true;
+              expect(typeof state.absoluteY === 'number').to.be.true;
+              expect(typeof state.x === 'number').to.be.true;
+              expect(typeof state.y === 'number').to.be.true;
+            }
+          }}
+        />
+        <TestCase<PinchGestureHandlerEventPayload | undefined>
+          itShould="Pinch"
+          initialState={undefined}
+          arrange={({setState, reset}) => {
+            return (
+              <>
+                <Example
+                  createGesture={(_, setLabel) => {
+                    return Gesture.Pinch().onStart(data => {
+                      setLabel(`callback data: ${JSON.stringify(data)}`);
+                      setState(data);
+                    });
+                  }}
+                  size={{width: 300, height: 120}}
+                  label='show callback data after Pinch'
+                />
+              </>
+            );
+          }}
+          assert={({expect, state}) => {
+            expect(state).to.be.not.undefined;
+            if (state) {
+              expect(typeof state.scale === 'number').to.be.true;
+              expect(typeof state.velocity === 'number').to.be.true;
+              expect(typeof state.focalX === 'number').to.be.true;
+              expect(typeof state.focalY === 'number').to.be.true;
+            }
+          }}
+        />
+        <TestCase<LongPressGestureHandlerEventPayload | undefined>
+          itShould="LongPress"
+          initialState={undefined}
+          arrange={({setState, reset}) => {
+            return (
+              <>
+                <Example
+                  createGesture={(_, setLabel) => {
+                    return Gesture.LongPress().onStart(data => {
+                      setLabel(`callback data: ${JSON.stringify(data)}`);
+                      setState(data);
+                    });
+                  }}
+                  size={{width: 300, height: 120}}
+                  label='show callback data after LongPress'
+                />
+              </>
+            );
+          }}
+          assert={({expect, state}) => {
+            expect(state).to.be.not.undefined;
+            if (state) {
+              expect(typeof state.absoluteX === 'number').to.be.true;
+              expect(typeof state.absoluteY === 'number').to.be.true;
+              expect(typeof state.x === 'number').to.be.true;
+              expect(typeof state.y === 'number').to.be.true;
+              expect(typeof state.duration === 'number').to.be.true;
+            }
+          }}
+        />
+        <TestCase<RotationGestureHandlerEventPayload | undefined>
+          itShould="Rotation"
+          initialState={undefined}
+          arrange={({setState, reset}) => {
+            return (
+              <>
+                <Example
+                  createGesture={(_, setLabel) => {
+                    return Gesture.Rotation().onStart(data => {
+                      setLabel(`callback data: ${JSON.stringify(data)}`);
+                      setState(data);
+                    });
+                  }}
+                  size={{width: 300, height: 120}}
+                  label='show callback data after Rotation'
+                />
+              </>
+            );
+          }}
+          assert={({expect, state}) => {
+            expect(state).to.be.not.undefined;
+            if (state) {
+              expect(typeof state.rotation === 'number').to.be.true;
+              expect(typeof state.velocity === 'number').to.be.true;
+              expect(typeof state.anchorX === 'number').to.be.true;
+              expect(typeof state.anchorY === 'number').to.be.true;
+            }
+          }}
+        />
+        <TestCase<PanGestureHandlerEventPayload | undefined>
+          itShould="Pan"
+          initialState={undefined}
+          arrange={({setState, reset}) => {
+            return (
+              <>
+                <Example
+                  createGesture={(_, setLabel) => {
+                    return Gesture.Pan().onStart(data => {
+                      setLabel(`callback data: ${JSON.stringify(data)}`);
+                      setState(data);
+                    });
+                  }}
+                  size={{width: 300, height: 120}}
+                  label='show callback data after tap'
+                />
+              </>
+            );
+          }}
+          assert={({expect, state}) => {
+            expect(state).to.be.not.undefined;
+            if (state) {
+              expect(typeof state.absoluteX === 'number').to.be.true;
+              expect(typeof state.absoluteY === 'number').to.be.true;
+              expect(typeof state.x === 'number').to.be.true;
+              expect(typeof state.y === 'number').to.be.true;
+              expect(typeof state.velocityX === 'number').to.be.true;
+              expect(typeof state.velocityY === 'number').to.be.true;
+              expect(typeof state.translationX === 'number').to.be.true;
+              expect(typeof state.translationY === 'number').to.be.true;
+            }
+          }}
+        />
+      </TestSuite>
       <TestCase
         itShould="toggle color on PINCH"
         initialState={false}
@@ -511,17 +699,20 @@ function Example(props: {
   label: string;
   createGesture: (
     setColor: React.Dispatch<React.SetStateAction<string>>,
+    setLabel: React.Dispatch<React.SetStateAction<string>>,
   ) => React.ComponentProps<typeof GestureDetector>['gesture'];
   rightHitSlop?: number;
-  size?: number;
+  size?: number | {width: number, height: number};
   onReset?: (setColor: React.Dispatch<React.SetStateAction<string>>) => void;
 }) {
   const [backgroundColor, setBackgroundColor] = useState(PALETTE.DARK_BLUE);
+  const [showLabel, setShowLabel] = useState(props.label);
 
   const gesture = React.useMemo(() => {
-    return props.createGesture(setBackgroundColor);
+    return props.createGesture(setBackgroundColor, setShowLabel);
   }, []);
 
+  const {size = 128} = props;
   return (
     <View style={styles.testCaseContainer}>
       {props.onReset && (
@@ -537,14 +728,14 @@ function Example(props: {
       <GestureDetector gesture={gesture}>
         <View
           style={{
-            width: props.size ?? 128,
-            height: props.size ?? 128,
+            width: typeof size === 'number' ? size : size?.width ?? 128,
+            height: typeof size === 'number' ? size : size?.height ?? 128,
             alignSelf: 'center',
             backgroundColor,
             justifyContent: 'center',
           }}>
           <Text style={{color: 'white', fontSize: 12, textAlign: 'center'}}>
-            {props.label}
+            {showLabel}
           </Text>
         </View>
       </GestureDetector>
@@ -599,24 +790,27 @@ const PanGestureExample: React.FC = () => {
 };
 
 const OverLapExample: React.FC = () => {
-  const [tapRange, setTapRange] = useState('')
+  const [tapRange, setTapRange] = useState('');
 
   const outer = Gesture.Tap().onStart(() => {
-    setTapRange('Outer!')
+    setTapRange('Outer!');
   });
 
   const inner = Gesture.Tap().onStart(() => {
-    setTapRange('Inner!')
+    setTapRange('Inner!');
   });
 
   return (
     <View style={{backgroundColor: 'black'}}>
       <GestureDetector gesture={outer}>
-        <View style={[{width: 180, height: 180, backgroundColor: PALETTE.DARK_BLUE}]}>
+        <View
+          style={[
+            {width: 180, height: 180, backgroundColor: PALETTE.DARK_BLUE},
+          ]}>
           <Text>Outer View</Text>
           <GestureDetector gesture={inner}>
-            <View style={[{width: 100, height: 100, backgroundColor: 'pink'}]} >
-            <Text>Inner View</Text>
+            <View style={[{width: 100, height: 100, backgroundColor: 'pink'}]}>
+              <Text>Inner View</Text>
             </View>
           </GestureDetector>
         </View>
