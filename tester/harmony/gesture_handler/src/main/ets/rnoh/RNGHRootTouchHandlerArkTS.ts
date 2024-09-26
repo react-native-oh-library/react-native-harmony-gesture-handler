@@ -1,17 +1,7 @@
 import { Tag } from '@rnoh/react-native-openharmony/ts';
 import { GestureHandlerArkUIAdapter } from './GestureHandlerArkUIAdapter';
-import { RNGHLogger, GestureHandlerRegistry, View } from '../core';
+import { RNGHLogger, GestureHandlerRegistry, View, ViewFinder } from '../core';
 import { TouchEvent, TouchType } from './types';
-
-export interface ViewFinder {
-  getTouchableViewsAt(
-    pointRelativeToRoot: {
-      x: number,
-      y: number
-    },
-    rootTag: Tag
-  ): View[]
-}
 
 export class RNGHRootTouchHandlerArkTS {
   private adapterByViewTag: Map<number, GestureHandlerArkUIAdapter> = new Map(); // TODO: remove adapter when view is removed
