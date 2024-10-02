@@ -71,6 +71,11 @@ export class LongPressGestureHandler extends GestureHandler {
     this.checkDistanceFail(event);
   }
 
+  public onPointerOutOfBounds(e: IncomingEvent): void {
+    this.tracker.track(e);
+    super.onPointerOutOfBounds(e);
+  }
+
   public onPointerUp(event: IncomingEvent): void {
     super.onPointerUp(event);
     this.tracker.removeFromTracker(event.pointerId);
