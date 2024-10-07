@@ -2,9 +2,9 @@
 #include "RNOH/Package.h"
 
 namespace rnoh {
-    class GestureHandlerPackage : public Package {
+    class RnohReactNativeHarmonyGestureHandlerPackage : public Package {
     public:
-        GestureHandlerPackage(Package::Context ctx) : Package(ctx) {}
+        RnohReactNativeHarmonyGestureHandlerPackage(Package::Context ctx) : Package(ctx) {}
 
         EventEmitRequestHandlers createEventEmitRequestHandlers();
 

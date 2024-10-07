@@ -1,5 +1,5 @@
 #pragma once
-#include "GestureHandlerPackage.h"
+#include "RnohReactNativeHarmonyGestureHandlerPackage.h"
 #include "RNOH/RNInstanceCAPI.h"
 #include "componentInstances/RNGestureHandlerButtonComponentInstance.h"
 #include "componentInstances/RNGestureHandlerRootViewComponentInstance.h"
@@ -37,13 +37,13 @@ public:
 };
 
 
-EventEmitRequestHandlers GestureHandlerPackage::createEventEmitRequestHandlers() {
+EventEmitRequestHandlers RnohReactNativeHarmonyGestureHandlerPackage::createEventEmitRequestHandlers() {
   return {
     std::make_shared<RNGHEventEmitRequestHandler>(),
   };
 }
 
-ComponentInstanceFactoryDelegate::Shared GestureHandlerPackage::createComponentInstanceFactoryDelegate() {
+ComponentInstanceFactoryDelegate::Shared RnohReactNativeHarmonyGestureHandlerPackage::createComponentInstanceFactoryDelegate() {
   return std::make_shared<RNOHCorePackageComponentInstanceFactoryDelegate>();
 }
 
@@ -110,6 +110,6 @@ public:
   };
 };
 
-std::vector<ArkTSMessageHandler::Shared> GestureHandlerPackage::createArkTSMessageHandlers() {
+std::vector<ArkTSMessageHandler::Shared> RnohReactNativeHarmonyGestureHandlerPackage::createArkTSMessageHandlers() {
   return {std::make_shared<ScrollLockerArkTSMessageHandler>()};
 }
