@@ -26,7 +26,7 @@
   "peerDependencies": {
     "react": "*",
     "react-native": "*",
-    "react-native-harmony": "npm:@rnoh/react-native-harmony@^0.72.33",
+    "react-native-harmony": "npm:@rnoh/react-native-harmony@^0.72.39",
     "react-native-gesture-handler": "2.14.1"
   },
   "keywords": [],
