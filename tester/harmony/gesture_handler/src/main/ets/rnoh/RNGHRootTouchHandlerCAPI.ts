@@ -1,6 +1,6 @@
 import { RNGHRootTouchHandlerArkTS } from './RNGHRootTouchHandlerArkTS';
 import { TouchEvent as TouchEventArkTS, TouchType, TouchObject } from './types';
-import { RNGHLogger, View } from '../core';
+import { RNGHLogger, View, Multiset } from '../core';
 import { RawTouchableView } from "./View"
 
 type RawTouchPoint = {
@@ -30,6 +30,11 @@ const areRawTouchPointsEqual = (a: RawTouchPoint, b: RawTouchPoint) =>
 
 export class RNGHRootTouchHandlerCAPI {
   private logger: RNGHLogger;
+  // This multiset keeps track of touchable views that were detected
+  // at the beginning of the gesture to ensure they aren't overridden
+  // during move touch events, which could prevent the gesture handler
+  // from updating its state correctly.
+  private touchableViewsMultiset: Multiset<View> = new Multiset();
 
   constructor(
     logger: RNGHLogger,
@@ -39,9 +44,14 @@ export class RNGHRootTouchHandlerCAPI {
   }
 
   handleTouch(rawTouchEvent: RawTouchEvent, touchableViews: View[]) {
-    this.touchHandlerArkTS.handleTouch(
-      touchEventArkTSFromRawTouchEvent(rawTouchEvent), touchableViews
-    );
+    const touchEvent = touchEventArkTSFromRawTouchEvent(rawTouchEvent);
+    if (touchEvent.type === TouchType.Down) {
+      touchableViews.forEach(view => this.touchableViewsMultiset.add(view));
+    } 
+    this.touchHandlerArkTS.handleTouch(touchEvent, this.touchableViewsMultiset.getElements());
+    if (touchEvent.type === TouchType.Up || touchEvent.type === TouchType.Cancel) {
+      touchableViews.forEach(view => this.touchableViewsMultiset.remove(view));
+    }
   }
 
   cancelTouches() {

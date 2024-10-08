@@ -13,6 +13,13 @@ class RNGestureHandlerRootViewComponentInstance
       public TouchEventHandler {
   using Point = facebook::react::Point;
 
+  enum class ActionType {
+    Cancel,
+    Down,
+    Move,
+    Up
+  };
+
   /**
    * This function is borrowed from TouchEventDispatcher
    */
@@ -93,23 +100,21 @@ public:
     }
 
     folly::dynamic payload = folly::dynamic::object;
-    payload["action"] = OH_ArkUI_UIInputEvent_GetAction(e);
     folly::dynamic touchPoints = folly::dynamic::array();
-    auto activeWindowX = OH_ArkUI_PointerEvent_GetWindowX(e);
-    auto activeWindowY = OH_ArkUI_PointerEvent_GetWindowY(e);
+    std::vector<TouchableView> touchableViews;
 
-    // point relative to top left corner of this component
-    auto componentX = OH_ArkUI_PointerEvent_GetX(e);
-    auto componentY = OH_ArkUI_PointerEvent_GetY(e);
-    auto touchableViews = this->findTouchableViews(componentX, componentY);
+    auto action = OH_ArkUI_UIInputEvent_GetAction(e);
+    auto actionType = static_cast<ActionType>(action);    
 
-    std::stringstream touchableViewTags;
-    for (auto touchableView : touchableViews) {
-      touchableViewTags << touchableView.tag << ";";
+    if (actionType != ActionType::Move) {
+      // point relative to top left corner of this component
+      auto componentX = OH_ArkUI_PointerEvent_GetX(e);
+      auto componentY = OH_ArkUI_PointerEvent_GetY(e);
+      touchableViews = this->findTouchableViews(componentX, componentY);
     }
 
-    payload["touchableViews"] = this->dynamicFromTouchableViews(touchableViews);
-
+    auto activeWindowX = OH_ArkUI_PointerEvent_GetWindowX(e);
+    auto activeWindowY = OH_ArkUI_PointerEvent_GetWindowY(e);
     int32_t pointerCount = OH_ArkUI_PointerEvent_GetPointerCount(e);
     int activePointerIdx = 0;
     for (int i = 0; i < pointerCount; i++) {
@@ -123,7 +128,9 @@ public:
     payload["touchPoints"] = touchPoints;
     payload["sourceType"] = OH_ArkUI_UIInputEvent_GetSourceType(e);
     payload["timestamp"] = OH_ArkUI_UIInputEvent_GetEventTime(e);
+    payload["touchableViews"] = this->dynamicFromTouchableViews(touchableViews);
     payload["rootTag"] = m_tag;
+    payload["action"] = action;
     if (rnInstance) {
       rnInstance->postMessageToArkTS("RNGH::TOUCH_EVENT", payload);
     }
