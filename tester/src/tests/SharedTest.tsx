@@ -9,10 +9,12 @@ import {
   DrawerLayout,
   PureNativeButton,
   RectButton,
+  LongPressGestureHandler,
 } from 'react-native-gesture-handler';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import {StyleSheet, Text, View, Platform} from 'react-native';
 import {PALETTE} from '../constants';
+import {useState} from 'react';
 
 const RNGHView = createNativeWrapper(View, {
   disallowInterruption: true,
@@ -211,9 +213,48 @@ export function SharedAPITest() {
           expect(state).to.be.true;
         }}
       />
+      <TestCase itShould="emit gesture event when shouldCancelWhenOutside is set to false and pointer is outside LongPressGestureHandler">
+        <LongPressGestureHandlerShouldCancelWhenOutsideExample />
+      </TestCase>
     </TestSuite>
   );
 }
+
+const LongPressGestureHandlerShouldCancelWhenOutsideExample = () => {
+  const [state, setState] = useState({x: 0, y: 0});
+  return (
+    <View>
+      <Text>
+        x: {state.x}, y: {state.y}
+      </Text>
+      <LongPressGestureHandler
+        maxDist={10000}
+        shouldCancelWhenOutside={false}
+        onGestureEvent={e => {
+          setState({
+            x: e.nativeEvent.x,
+            y: e.nativeEvent.y,
+          });
+        }}>
+        <View
+          style={{
+            width: 150,
+            height: 128,
+            backgroundColor: PALETTE.DARK_BLUE,
+            justifyContent: 'center',
+          }}>
+          <Text
+            style={{
+              color: 'white',
+              textAlign: 'center',
+            }}>
+            LONG PRESS AND MOVE POINTER OUTSIDE ME
+          </Text>
+        </View>
+      </LongPressGestureHandler>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   testCaseContainer: {
