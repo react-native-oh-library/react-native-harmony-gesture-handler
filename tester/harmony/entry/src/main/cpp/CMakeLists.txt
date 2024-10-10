@@ -17,7 +17,7 @@ add_library(rnoh_app SHARED
     "${RNOH_CPP_DIR}/RNOHAppNapiBridge.cpp"
 )
 target_link_libraries(rnoh_app PUBLIC rnoh)
-target_link_libraries(rnoh_app PUBLIC rnoh__rnoh__react_native_harmony_gesture_handler) # <=
+target_link_libraries(rnoh_app PUBLIC rnoh_gesture_handler) # <=
 
 
 
