@@ -7,7 +7,11 @@
         "./src/specs"
       ]
     },
-    "redirectInternalImports": true
+    "redirectInternalImports": true,
+    "autolinking": {
+      "cmakeLibraryTargetName": "rnoh_gesture_handler",
+      "ohPackageName": "@rnoh/react-native-openharmony-gesture-handler"
+    }
   },
   "repository": {
     "type": "git",
