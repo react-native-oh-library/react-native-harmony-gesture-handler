@@ -2,20 +2,20 @@
 #include "RNOH/Package.h"
 
 namespace rnoh {
-    class RnohReactNativeHarmonyGestureHandlerPackage : public Package {
-    public:
-        RnohReactNativeHarmonyGestureHandlerPackage(Package::Context ctx) : Package(ctx) {}
+class RnohReactNativeHarmonyGestureHandlerPackage : public Package {
+public:
+    RnohReactNativeHarmonyGestureHandlerPackage(Package::Context ctx) : Package(ctx) {}
     
-        std::unique_ptr<TurboModuleFactoryDelegate> createTurboModuleFactoryDelegate() override;
+    std::unique_ptr<TurboModuleFactoryDelegate> createTurboModuleFactoryDelegate() override;
     
-        std::vector<facebook::react::ComponentDescriptorProvider> createComponentDescriptorProviders() override;
+    std::vector<facebook::react::ComponentDescriptorProvider> createComponentDescriptorProviders() override;
 
-        ComponentJSIBinderByString createComponentJSIBinderByName() override;
+    ComponentJSIBinderByString createComponentJSIBinderByName() override;
     
-        EventEmitRequestHandlers createEventEmitRequestHandlers();
+    EventEmitRequestHandlers createEventEmitRequestHandlers();
 
-        ComponentInstanceFactoryDelegate::Shared createComponentInstanceFactoryDelegate();
+    ComponentInstanceFactoryDelegate::Shared createComponentInstanceFactoryDelegate();
 
-        std::vector<ArkTSMessageHandler::Shared> createArkTSMessageHandlers() override;
-    };
+    std::vector<ArkTSMessageHandler::Shared> createArkTSMessageHandlers() override;
+};
 } // namespace rnoh
