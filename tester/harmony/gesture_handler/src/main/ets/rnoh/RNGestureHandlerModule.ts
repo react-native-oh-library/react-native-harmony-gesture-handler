@@ -29,10 +29,9 @@ export class RNGestureHandlerModule extends TurboModule implements TM.RNGestureH
   private touchHandlerByRootTag = new Map<Tag, RNGHRootTouchHandlerCAPI>()
   private interactionManager: InteractionManager
 
-  constructor(ctx: TurboModuleContext) {
+  constructor(ctx: TurboModuleContext, isDevModeEnabled: boolean = false) {
     super(ctx)
-    const debug = false
-    this.logger = debug ? new StandardRNGHLogger(ctx.logger, "RNGH") : new FakeRNGHLogger()
+    this.logger = isDevModeEnabled ? new StandardRNGHLogger(ctx.logger, "RNGH") : new FakeRNGHLogger()
     this.interactionManager = new InteractionManager(this.logger)
     this.gestureHandlerRegistry = new GestureHandlerRegistry(this.viewRegistry, this.logger)
 
