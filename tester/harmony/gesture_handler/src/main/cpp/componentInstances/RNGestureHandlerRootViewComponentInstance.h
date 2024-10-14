@@ -21,6 +21,7 @@ class RNGestureHandlerRootViewComponentInstance
             : UIInputEventHandler(rootView->getLocalRootArkUINode()), m_rootView(rootView) {}
 
         void onTouchEvent(ArkUI_UIInputEvent *e) override {
+            facebook::react::SystraceSection s("RNGH::RNGestureHandlerRootViewComponentInstance::onTouchEvent");
             auto ancestor = m_rootView->getParent().lock();
             while (ancestor != nullptr) {
                 auto ancestorRNGHRootView =
@@ -93,6 +94,7 @@ class RNGestureHandlerRootViewComponentInstance
      * This function is borrowed from TouchEventDispatcher
      */
     static TouchTarget::Shared findTargetForTouchPoint(Point const &point, TouchTarget::Shared const &target) {
+        facebook::react::SystraceSection s("RNGH::findTargetForTouchPoint");
         bool canHandleTouch =
             target->canHandleTouch() && target->containsPoint(point) && (target->getTouchEventEmitter() != nullptr);
         bool canChildrenHandleTouch = target->canChildrenHandleTouch() && target->containsPointInBoundingBox(point);
@@ -147,6 +149,7 @@ public:
 
 private:
     std::vector<TouchableView> findTouchableViews(float componentX, float componentY) {
+        facebook::react::SystraceSection s("RNGH::RNGestureHandlerRootViewComponentInstance::findTouchableViews");
         auto touchTarget = findTargetForTouchPoint({.x = componentX, .y = componentY}, this->shared_from_this());
         std::vector<TouchTarget::Shared> touchTargets{};
         auto tmp = touchTarget;
@@ -226,6 +229,7 @@ private:
     Surface::Weak m_surface;
 
     Surface::Weak getSurface() {
+        facebook::react::SystraceSection s("RNGH::RNGestureHandlerRootViewComponentInstance::getSurface");
         if (m_surface.lock() != nullptr) {
             return m_surface;
         }

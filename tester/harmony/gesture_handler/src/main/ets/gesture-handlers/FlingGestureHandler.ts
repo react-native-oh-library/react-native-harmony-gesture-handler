@@ -28,7 +28,15 @@ const DIAGONAL_DEVIATION_COSINE = coneToDeviation(90 - DEFAULT_ALIGNMENT_CONE);
 
 export class FlingGestureHandler extends GestureHandler {
   constructor(deps: GestureHandlerDependencies) {
-    super({ ...deps, logger: deps.logger.cloneWithPrefix("FlingGestureHandler") })
+    super({ ...deps, logger: deps.logger.cloneAndJoinPrefix("FlingGestureHandler") })
+  }
+
+  override getName(): string {
+    return "FlingGestureHandler"
+  }
+
+  override isGestureContinuous(): boolean {
+    return true
   }
 
   getDefaultConfig() {
@@ -65,7 +73,7 @@ export class FlingGestureHandler extends GestureHandler {
   }
 
   private tryEndFling(): boolean {
-    const logger = this.logger.cloneWithPrefix("tryEndFling")
+    const logger = this.logger.cloneAndJoinPrefix("tryEndFling")
     const velocityVector = this.tracker.getVelocity(this.keyPointer);
 
     const getAlignment = (
@@ -154,7 +162,7 @@ export class FlingGestureHandler extends GestureHandler {
   }
 
   private pointerMoveAction(event: IncomingEvent): void {
-    this.logger.cloneWithPrefix("pointerMoveAction").info(JSON.stringify(event))
+    this.logger.cloneAndJoinPrefix("pointerMoveAction").info(JSON.stringify(event))
     this.tracker.track(event);
 
     if (this.currentState !== State.BEGAN) {
@@ -187,7 +195,7 @@ export class FlingGestureHandler extends GestureHandler {
   }
 
   private onUp(event: IncomingEvent): void {
-    const logger = this.logger.cloneWithPrefix("onUp")
+    const logger = this.logger.cloneAndJoinPrefix("onUp")
     logger.info("start")
     if (this.currentState === State.BEGAN) {
       this.endFling();

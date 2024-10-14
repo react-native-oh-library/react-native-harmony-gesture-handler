@@ -107,10 +107,14 @@ export abstract class GestureHandler<TGestureConfig extends GestureConfig = Gest
     this.orchestrator = deps.orchestrator
     this.tracker = deps.tracker
     this.interactionManager = deps.interactionManager
-    this.logger = deps.logger
+    this.logger = deps.logger.cloneAndJoinPrefix("GestureHandler")
     this.scrollLocker = deps.scrollLocker
     this.rnGestureResponder = deps.rnGestureResponder
   }
+
+  public abstract getName(): string;
+
+  public abstract isGestureContinuous(): boolean;
 
   public setEventDispatcher(eventDispatcher: OutgoingEventDispatcher) {
     // TurboModule provides info about kind of event dispatcher when attaching GH to a view, not when GH is created.
@@ -119,7 +123,7 @@ export abstract class GestureHandler<TGestureConfig extends GestureConfig = Gest
   }
 
   public onPointerDown(e: IncomingEvent) {
-    this.logger.info("onPointerDown")
+    const stopTracing = this.logger.cloneAndJoinPrefix("onPointerDown").startTracing()
     this.orchestrator.registerHandlerIfNotPresent(this);
     this.pointerType = e.pointerType;
     if (this.pointerType === PointerType.TOUCH) {
@@ -128,6 +132,7 @@ export abstract class GestureHandler<TGestureConfig extends GestureConfig = Gest
     if (this.config.needsPointerData) {
       this.sendTouchEvent(e);
     }
+    stopTracing()
   }
 
   protected sendTouchEvent(e: IncomingEvent) {
@@ -137,7 +142,7 @@ export abstract class GestureHandler<TGestureConfig extends GestureConfig = Gest
 
 
     const touchEvent: GestureTouchEvent | undefined =
-    this.transformToTouchEvent(e);
+      this.transformToTouchEvent(e);
 
     if (touchEvent) {
       this.eventDispatcher.onGestureHandlerEvent(touchEvent)
@@ -238,35 +243,47 @@ export abstract class GestureHandler<TGestureConfig extends GestureConfig = Gest
   }
 
   public onPointerUp(e: IncomingEvent): void {
-    this.logger.info("onPointerUp")
-    if (this.config.needsPointerData) this.sendTouchEvent(e)
+    const stopTracing = this.logger.cloneAndJoinPrefix("onPointerUp").startTracing()
+    if (this.config.needsPointerData) {
+      this.sendTouchEvent(e)
+    }
+    stopTracing()
   }
 
   public onAdditionalPointerAdd(e: IncomingEvent): void {
-    this.logger.info("onAdditionalPointerAdd")
-    if (this.config.needsPointerData) this.sendTouchEvent(e)
+    const stopTracing = this.logger.cloneAndJoinPrefix("onAdditionalPointerAdd").startTracing()
+    if (this.config.needsPointerData) {
+      this.sendTouchEvent(e)
+    }
+    stopTracing()
   }
 
   public onAdditionalPointerRemove(e: IncomingEvent): void {
-    this.logger.info("onAdditionalPointerRemove")
-    if (this.config.needsPointerData) this.sendTouchEvent(e)
+    const stopTracing = this.logger.cloneAndJoinPrefix("onAdditionalPointerRemove").startTracing()
+    if (this.config.needsPointerData) {
+      this.sendTouchEvent(e)
+    }
+    stopTracing()
   }
 
   public onPointerMove(e: IncomingEvent): void {
-    this.logger.info("onPointerMove")
+    const stopTracing = this.logger.cloneAndJoinPrefix("onPointerMove").startTracing()
     this.tryToSendMoveEvent(false);
     if (this.config.needsPointerData) {
       this.sendTouchEvent(e);
     }
+    stopTracing()
   }
 
   private tryToSendMoveEvent(out: boolean): void {
-    this.logger.info(`tryToSendMoveEvent ${JSON.stringify({
+    const logger = this.logger.cloneAndJoinPrefix(`tryToSendMoveEvent`)
+    const stopTracing = logger.startTracing()
+    logger.debug({
       out,
       enabled: this.config.enabled,
       isActivated: this.isActivated,
       shouldCancelWhenOutside: this.shouldCancelWhenOutside
-    })}`)
+    })
     if (
       this.config.enabled &&
       this.isActivated &&
@@ -274,17 +291,19 @@ export abstract class GestureHandler<TGestureConfig extends GestureConfig = Gest
     ) {
       this.sendEvent({ newState: this.currentState, oldState: this.currentState });
     }
+    stopTracing()
   }
 
   public onPointerEnter(e: IncomingEvent): void {
-    this.logger.info("onPointerEnter")
+    const stopTracing = this.logger.cloneAndJoinPrefix("onPointerEnter").startTracing()
     if (this.config.needsPointerData) {
       this.sendTouchEvent(e)
     }
+    stopTracing()
   }
 
   public onPointerOut(e: IncomingEvent): void {
-    this.logger.info("onPointerOut")
+    const stopTracing = this.logger.cloneAndJoinPrefix("onPointerOut").startTracing()
     if (this.shouldCancelWhenOutside) {
       switch (this.currentState) {
         case State.ACTIVE:
@@ -294,33 +313,38 @@ export abstract class GestureHandler<TGestureConfig extends GestureConfig = Gest
           this.fail();
           break;
       }
+      stopTracing()
       return;
     }
     if (this.config.needsPointerData) {
       this.sendTouchEvent(e);
     }
+    stopTracing()
   }
 
   public onPointerCancel(e: IncomingEvent): void {
-    this.logger.info("onPointerCancel")
+    const stopTracing = this.logger.cloneAndJoinPrefix("onPointerCancel").startTracing()
     if (this.config.needsPointerData) {
       this.sendTouchEvent(e);
     }
     this.cancel();
     this.reset();
+    stopTracing()
   }
 
   public onPointerOutOfBounds(e: IncomingEvent): void {
-    this.logger.info("onPointerOutOfBounds")
+    const stopTracing = this.logger.cloneAndJoinPrefix("onPointerOutOfBounds").startTracing()
     this.tryToSendMoveEvent(true);
     if (this.config.needsPointerData) {
       this.sendTouchEvent(e);
     }
+    stopTracing()
   }
 
   public onViewAttached(view: View) {
-    this.logger.info("onViewAttached")
+    const stopTracing = this.logger.cloneAndJoinPrefix("onViewAttached").startTracing()
     this.view = view
+    stopTracing()
   }
 
   public getTag(): number {
@@ -336,11 +360,15 @@ export abstract class GestureHandler<TGestureConfig extends GestureConfig = Gest
   }
 
   public begin(): void {
-    this.logger.info("begin")
-    if (!this.isWithinHitSlop()) return;
+    const stopTracing = this.logger.cloneAndJoinPrefix("begin").startTracing()
+    if (!this.isWithinHitSlop()) {
+      stopTracing()
+      return;
+    }
     if (this.currentState === State.UNDETERMINED) {
       this.moveToState(State.BEGAN);
     }
+    stopTracing()
   }
 
   private isWithinHitSlop(): boolean {
@@ -413,15 +441,20 @@ export abstract class GestureHandler<TGestureConfig extends GestureConfig = Gest
   }
 
   public activate(): void {
-    this.logger.info("activate")
-    if (!this.config.manualActivation || this.currentState === State.UNDETERMINED || this.currentState === State.BEGAN) {
+    const stopTracing = this.logger.cloneAndJoinPrefix("activate").startTracing()
+    if (!this.config.manualActivation || this.currentState === State.UNDETERMINED ||
+      this.currentState === State.BEGAN) {
       this.moveToState(State.ACTIVE)
     }
+    stopTracing()
   }
 
   protected moveToState(state: State) {
-    this.logger.info(`moveToState ${getStateName(state)}`)
-    if (state === this.currentState) return;
+    const stopTracing = this.logger.cloneAndJoinPrefix(`moveToState ${getStateName(state)}`).startTracing()
+    if (state === this.currentState) {
+      stopTracing()
+      return;
+    }
     const oldState = this.currentState
     this.currentState = state;
     if (this.tracker.getTrackedPointersCount() > 0 && this.config.needsPointerData && this.isFinished()) {
@@ -433,6 +466,7 @@ export abstract class GestureHandler<TGestureConfig extends GestureConfig = Gest
     if (!this.isEnabled() && this.isFinished()) {
       this.currentState = State.UNDETERMINED;
     }
+    stopTracing()
   }
 
   private isFinished() {
@@ -522,7 +556,7 @@ export abstract class GestureHandler<TGestureConfig extends GestureConfig = Gest
   }
 
   public cancel(): void {
-    this.logger.info(`cancel`)
+    const stopTracing = this.logger.cloneAndJoinPrefix(`cancel`).startTracing()
     if (
       this.currentState === State.ACTIVE ||
         this.currentState === State.UNDETERMINED ||
@@ -531,6 +565,7 @@ export abstract class GestureHandler<TGestureConfig extends GestureConfig = Gest
       this.onCancel();
       this.moveToState(State.CANCELLED);
     }
+    stopTracing()
   }
 
   protected onCancel(): void {
@@ -546,11 +581,14 @@ export abstract class GestureHandler<TGestureConfig extends GestureConfig = Gest
     return this.currentState
   }
 
-  public sendEvent({newState, oldState}: {
+  public sendEvent({ newState, oldState }: {
     oldState: State,
     newState: State
   }): void {
-    const logger = this.logger.cloneWithPrefix(`sendEvent(newState=${getStateName(newState)}, oldState=${getStateName(oldState)})`)
+    const logger =
+      this.logger.cloneAndJoinPrefix(`sendEvent`)
+    const stopTracing = logger.startTracing()
+    logger.debug({ tag: this.getTag(), newState, oldState })
     const stateChangeEvent = this.createStateChangeEvent(newState, oldState);
     if (this.lastSentState !== newState) {
       this.lastSentState = newState;
@@ -562,6 +600,7 @@ export abstract class GestureHandler<TGestureConfig extends GestureConfig = Gest
       logger.debug("calling onGestureHandlerEvent")
       this.eventDispatcher.onGestureHandlerEvent(stateChangeEvent);
     }
+    stopTracing()
   }
 
   private createStateChangeEvent(newState: State, oldState: State): GestureStateChangeEvent {
@@ -594,19 +633,21 @@ export abstract class GestureHandler<TGestureConfig extends GestureConfig = Gest
   }
 
   shouldWaitForHandlerFailure(handler: GestureHandler): boolean {
-    if (handler === this)
+    if (handler === this) {
       return false;
+    }
     return this.interactionManager.shouldWaitForHandlerFailure(this, handler);
   }
 
   shouldRequireToWaitForFailure(handler: GestureHandler): boolean {
-    if (handler === this)
+    if (handler === this) {
       return false;
+    }
     return this.interactionManager.shouldRequireHandlerToWaitForFailure(this, handler);
   }
 
   shouldWaitFor(otherHandler: GestureHandler): boolean {
-    const logger = this.logger.cloneWithPrefix(`shouldWaitFor(${otherHandler.getTag()})`)
+    const logger = this.logger.cloneAndJoinPrefix(`shouldWaitFor(${otherHandler.getTag()})`)
     const result = (
       this !== otherHandler &&
         (this.shouldWaitForHandlerFailure(otherHandler) ||
@@ -617,7 +658,7 @@ export abstract class GestureHandler<TGestureConfig extends GestureConfig = Gest
   }
 
   reset(): void {
-    this.logger.info("reset")
+    const stopTracing = this.logger.cloneAndJoinPrefix("reset").startTracing()
     this.tracker.resetTracker();
     this.onReset();
     this.resetProgress();
@@ -625,6 +666,7 @@ export abstract class GestureHandler<TGestureConfig extends GestureConfig = Gest
     // manager.resetManager()
     // );
     this.currentState = State.UNDETERMINED;
+    stopTracing()
   }
 
   isAwaiting(): boolean {
@@ -644,7 +686,7 @@ export abstract class GestureHandler<TGestureConfig extends GestureConfig = Gest
   }
 
   fail(): void {
-    this.logger.info('fail')
+    const stopTracing = this.logger.cloneAndJoinPrefix('fail').startTracing()
     if (
       this.currentState === State.ACTIVE ||
         this.currentState === State.BEGAN
@@ -652,11 +694,13 @@ export abstract class GestureHandler<TGestureConfig extends GestureConfig = Gest
       this.moveToState(State.FAILED);
     }
     this.resetProgress();
+    stopTracing()
   }
 
   shouldBeCancelledByOther(otherHandler: GestureHandler): boolean {
-    if (otherHandler === this)
+    if (otherHandler === this) {
       return false;
+    }
     return this.interactionManager.shouldHandlerBeCancelledBy(this, otherHandler);
   }
 
@@ -665,11 +709,15 @@ export abstract class GestureHandler<TGestureConfig extends GestureConfig = Gest
   }
 
   shouldRecognizeSimultaneously(otherHandler: GestureHandler): boolean {
-    this.logger.cloneWithPrefix(`shouldRecognizeSimultaneously(${otherHandler.getTag()})`).debug("")
+    const stopTracing =
+      this.logger.cloneAndJoinPrefix(`shouldRecognizeSimultaneously(${otherHandler.getTag()})`).startTracing()
     if (otherHandler === this) {
+      stopTracing
       return true;
     }
-    return this.interactionManager.shouldRecognizeSimultaneously(this, otherHandler);
+    const result = this.interactionManager.shouldRecognizeSimultaneously(this, otherHandler);
+    stopTracing()
+    return result;
   }
 
   public getPointerType(): PointerType {
@@ -681,10 +729,11 @@ export abstract class GestureHandler<TGestureConfig extends GestureConfig = Gest
   }
 
   public end() {
-    this.logger.info("end")
+    const stopTracing = this.logger.cloneAndJoinPrefix("end").startTracing()
     if (this.currentState === State.BEGAN || this.currentState === State.ACTIVE) {
       this.moveToState(State.END);
     }
     this.resetProgress();
+    stopTracing()
   }
 }

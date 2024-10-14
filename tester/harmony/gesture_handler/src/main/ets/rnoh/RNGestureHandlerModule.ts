@@ -1,9 +1,16 @@
 import { UITurboModule, UITurboModuleContext, Tag } from "@rnoh/react-native-openharmony/ts";
 import { TM } from "@rnoh/react-native-openharmony/generated/ts"
-import { GestureHandlerRegistry, State, OutgoingEventDispatcher, RNGHLogger, InteractionManager, ViewRegistry } from '../core';
+import {
+  GestureHandlerRegistry,
+  State,
+  OutgoingEventDispatcher,
+  RNGHLogger,
+  InteractionManager,
+  ViewRegistry
+} from '../core';
 import { GestureHandlerFactory } from "../gesture-handlers"
 import { ViewRegistryArkTS, ViewRegistryCAPI } from './ViewRegistry';
-import { StandardRNGHLogger, FakeRNGHLogger } from './Logger';
+import { DevelopmentRNGHLogger, ProductionRNGHLogger } from './Logger';
 import { JSEventDispatcher, AnimatedEventDispatcher, ReanimatedEventDispatcher } from './OutgoingEventDispatchers'
 import { RNOHScrollLockerArkTS, RNOHScrollLockerCAPI } from "./RNOHScrollLocker"
 import { RNGHRootTouchHandlerCAPI, RawTouchEvent } from "./RNGHRootTouchHandlerCAPI"
@@ -26,15 +33,20 @@ export class RNGestureHandlerModule extends UITurboModule implements TM.RNGestur
   private gestureHandlerFactory: GestureHandlerFactory | undefined = undefined
   private viewRegistry: ViewRegistry | undefined = undefined
   private logger: RNGHLogger
+  private cleanLogger: RNGHLogger
   private touchHandlerByRootTag = new Map<Tag, RNGHRootTouchHandlerCAPI>()
   private interactionManager: InteractionManager
 
   constructor(ctx: UITurboModuleContext, isDevModeEnabled: boolean = false) {
     super(ctx)
-    this.logger = isDevModeEnabled ? new StandardRNGHLogger(ctx.logger, "RNGH") : new FakeRNGHLogger()
-    this.interactionManager = new InteractionManager(this.logger)
-    this.gestureHandlerRegistry = new GestureHandlerRegistry(this.viewRegistry, this.logger)
-
+    this.cleanLogger =
+      isDevModeEnabled && ctx.isDebugModeEnabled ? new DevelopmentRNGHLogger(ctx.logger, "RNGH") :
+        new ProductionRNGHLogger(ctx.logger, "RNGH")
+    this.logger = this.cleanLogger.cloneAndJoinPrefix("RNGestureHandlerModule")
+    const logger = this.logger.cloneAndJoinPrefix("constructor")
+    const stopTracing = logger.startTracing()
+    this.interactionManager = new InteractionManager(this.cleanLogger)
+    this.gestureHandlerRegistry = new GestureHandlerRegistry(this.viewRegistry, this.cleanLogger)
     if (this.ctx.rnInstance.getArchitecture() === "C_API") {
       this.ctx.rnInstance.cppEventEmitter.subscribe("RNGH::TOUCH_EVENT", (e: any) => {
         this.onTouch(e)
@@ -47,6 +59,7 @@ export class RNGestureHandlerModule extends UITurboModule implements TM.RNGestur
         touchHandler?.cancelTouches()
       })
     }
+    stopTracing()
   }
 
   /**
@@ -54,7 +67,10 @@ export class RNGestureHandlerModule extends UITurboModule implements TM.RNGestur
    * Called from C++.
    */
   private onGHRootCreated(rootTag: Tag) {
-    this.touchHandlerByRootTag.set(rootTag, new RNGHRootTouchHandlerCAPI(this.logger, new RNGHRootTouchHandlerArkTS(rootTag, this.viewRegistry, this.gestureHandlerRegistry, this.logger)));
+    const stopTracing = this.logger.cloneAndJoinPrefix("onGHRootCreated").startTracing()
+    this.touchHandlerByRootTag.set(rootTag, new RNGHRootTouchHandlerCAPI(this.logger,
+      new RNGHRootTouchHandlerArkTS(rootTag, this.viewRegistry, this.gestureHandlerRegistry, this.logger)));
+    stopTracing()
   }
 
   /**
@@ -62,41 +78,53 @@ export class RNGestureHandlerModule extends UITurboModule implements TM.RNGestur
    * Called from C++.
    */
   private onTouch(e: RawTouchEvent & { rootTag: Tag }) {
-    const logger = this.logger.cloneWithPrefix("onTouch")
-    if (!(this.viewRegistry instanceof ViewRegistryCAPI)) {
-      logger.error("Expected ViewRegistryCAPI")
-      return;
-    }
-    const touchHandler = this.touchHandlerByRootTag.get(e.rootTag)
-    if (!touchHandler) {
-      logger.error(`Couldn't find touch handler for gesture root tag: ${e.rootTag}`)
-      return;
-    }
-    // update view registry
-    e.touchableViews.forEach(touchableView => {
-      const view = this.viewRegistry.getViewByTag(touchableView.tag)
-      if (view) {
-        if (!(view instanceof ViewCAPI)) {
-          logger.error(`Expected ViewCAPI`)
-          return
-        }
-        view.updateBoundingBox(touchableView)
-        view.setButtonRole(touchableView.buttonRole)
-      } else {
-        this.viewRegistry.save(new ViewCAPI(touchableView))
+    const logger = this.logger.cloneAndJoinPrefix("onTouch")
+    const stopTracing = logger.startTracing();
+    (() => {
+      if (!(this.viewRegistry instanceof ViewRegistryCAPI)) {
+        logger.error("Expected ViewRegistryCAPI")
+        return;
       }
-    })
-    // relay touch
-    touchHandler.handleTouch(e, e.touchableViews.map(({tag}) => this.viewRegistry.getViewByTag(tag)));
+      const touchHandler = this.touchHandlerByRootTag.get(e.rootTag)
+      if (!touchHandler) {
+        logger.error(`Couldn't find a touch handler for a gesture root tag: ${e.rootTag}`)
+        return;
+      }
+      // update view registry
+      e.touchableViews.forEach(touchableView => {
+        const view = this.viewRegistry.getViewByTag(touchableView.tag)
+        if (view) {
+          if (!(view instanceof ViewCAPI)) {
+            logger.error(`Expected ViewCAPI`)
+            return
+          }
+          view.updateBoundingBox(touchableView)
+          view.setButtonRole(touchableView.buttonRole)
+        } else {
+          this.viewRegistry.save(new ViewCAPI(touchableView))
+        }
+      })
+      // relay touch
+      touchHandler.handleTouch(e, e.touchableViews.map(({ tag }) => this.viewRegistry.getViewByTag(tag)));
+    })()
+    stopTracing()
   }
 
   // -------------------------------------------------------------------------------------------------------------------
 
   public install() {
-    this.viewRegistry = this.ctx.rnInstance.getArchitecture() === "ARK_TS" ? new ViewRegistryArkTS(this.ctx.descriptorRegistry) : new ViewRegistryCAPI()
-    const scrollLocker = this.ctx.rnInstance.getArchitecture() === "ARK_TS" ? new RNOHScrollLockerArkTS(this.ctx.rnInstance) : new RNOHScrollLockerCAPI(this.ctx.rnInstance, this.logger);
-    const rnGestureResponder =  this.ctx.rnInstance.getArchitecture() === "ARK_TS" ? new FakeRNGestureResponder() : new RNOHGestureResponder(this.ctx.rnInstance)
-    this.gestureHandlerFactory = new GestureHandlerFactory(this.logger, scrollLocker, this.interactionManager, rnGestureResponder)
+    const stopTracing = this.ctx.logger.clone("install").startTracing()
+    this.viewRegistry =
+      this.ctx.rnInstance.getArchitecture() === "ARK_TS" ? new ViewRegistryArkTS(this.ctx.descriptorRegistry) :
+        new ViewRegistryCAPI()
+    const scrollLocker =
+      this.ctx.rnInstance.getArchitecture() === "ARK_TS" ? new RNOHScrollLockerArkTS(this.ctx.rnInstance) :
+        new RNOHScrollLockerCAPI(this.ctx.rnInstance, this.cleanLogger);
+    const rnGestureResponder = this.ctx.rnInstance.getArchitecture() === "ARK_TS" ? new FakeRNGestureResponder() :
+      new RNOHGestureResponder(this.ctx.rnInstance)
+    this.gestureHandlerFactory =
+      new GestureHandlerFactory(this.cleanLogger, scrollLocker, this.interactionManager, rnGestureResponder)
+    stopTracing()
     return true
   }
 
@@ -105,16 +133,20 @@ export class RNGestureHandlerModule extends UITurboModule implements TM.RNGestur
     handlerTag: number,
     config: Readonly<Record<string, unknown>>
   ) {
-    const logger = this.logger.cloneWithPrefix("createGestureHandler")
-    if (!this.gestureHandlerFactory) {
-      this.ctx.logger.error("Trying to create a gesture handler before creating gesture handler factory")
-      return
-    }
-    logger.debug({ handlerName, handlerTag, config })
-    const gestureHandler = this.gestureHandlerFactory.create(handlerName, handlerTag)
-    this.gestureHandlerRegistry.addGestureHandler(gestureHandler)
-    this.interactionManager.configureInteractions(gestureHandler, config);
-    gestureHandler.updateGestureConfig(config)
+    const logger = this.logger.cloneAndJoinPrefix("createGestureHandler")
+    const stopTracing = logger.startTracing();
+    (() => {
+      if (!this.gestureHandlerFactory) {
+        logger.error("Trying to create a gesture handler before creating gesture handler factory")
+        return
+      }
+      logger.debug({ handlerName, handlerTag, config })
+      const gestureHandler = this.gestureHandlerFactory.create(handlerName, handlerTag)
+      this.gestureHandlerRegistry.addGestureHandler(gestureHandler)
+      this.interactionManager.configureInteractions(gestureHandler, config);
+      gestureHandler.updateGestureConfig(config)
+    })()
+    stopTracing()
   }
 
   public attachGestureHandler(
@@ -122,43 +154,55 @@ export class RNGestureHandlerModule extends UITurboModule implements TM.RNGestur
     viewTag: number,
     actionType: ActionType
   ) {
-    const eventDispatcher = this.createEventDispatcher(actionType, viewTag)
-    if (!eventDispatcher) {
-      this.ctx.logger.error("RNGH: Couldn't create EventDispatcher")
-      return
-    }
-    const viewRegistry = this.viewRegistry
-    let view = this.viewRegistry.getViewByTag(viewTag)
-    if (!view && viewRegistry instanceof ViewRegistryCAPI) {
-      view = new ViewCAPI({
-        tag: viewTag,
-        x: 0,
-        y: 0,
-        width: 0,
-        height: 0,
-        buttonRole: false
+    const logger = this.logger.cloneAndJoinPrefix("attachGestureHandler")
+    const stopTracing = logger.startTracing();
+    (() => {
+      const eventDispatcher = this.createEventDispatcher(actionType, viewTag)
+      if (!eventDispatcher) {
+        logger.error("RNGH: Couldn't create EventDispatcher")
+        return
+      }
+      const viewRegistry = this.viewRegistry
+      let view = this.viewRegistry.getViewByTag(viewTag)
+      if (!view && viewRegistry instanceof ViewRegistryCAPI) {
+        view = new ViewCAPI({
+          tag: viewTag,
+          x: 0,
+          y: 0,
+          width: 0,
+          height: 0,
+          buttonRole: false
+        })
+        viewRegistry.save(view)
+      }
+      if (!view) {
+        logger.error("Expected view")
+        return;
+      }
+      this.gestureHandlerRegistry.bindGestureHandlerWithView(handlerTag, view)
+      this.gestureHandlerRegistry.getGestureHandlersByViewTag(view.getTag()).forEach((handler) => {
+        if (handler.isGestureContinuous() && eventDispatcher instanceof JSEventDispatcher) {
+          logger.warn(`Using JSEventDispatcher for a continuous gesture (${handler.getName()}). Gesture-driven animations may not be smooth. Consider using Animated.event.`)
+        }
       })
-      viewRegistry.save(view)
-    }
-    if (!view) {
-      this.ctx.logger.error("Expected view")
-      return;
-    }
-    this.gestureHandlerRegistry.bindGestureHandlerWithView(handlerTag, view)
-    this.gestureHandlerRegistry
-      .getGestureHandlerByHandlerTag(handlerTag)
-      .setEventDispatcher(eventDispatcher)
+      this.gestureHandlerRegistry
+        .getGestureHandlerByHandlerTag(handlerTag)
+        .setEventDispatcher(eventDispatcher)
+    })()
+    stopTracing()
   }
 
   private createEventDispatcher(actionType: ActionType, viewTag: number): OutgoingEventDispatcher | null {
     switch (actionType) {
       case ActionType.REANIMATED_WORKLET:
-        return new ReanimatedEventDispatcher(this.ctx.rnInstance, this.logger.cloneWithPrefix('ReanimatedEventDispatcher'), viewTag)
+        return new ReanimatedEventDispatcher(this.ctx.rnInstance,
+          this.cleanLogger, viewTag)
       case ActionType.NATIVE_ANIMATED_EVENT:
-        return new AnimatedEventDispatcher(this.ctx.rnInstance, this.logger.cloneWithPrefix('AnimatedEventDispatcher'), viewTag)
+        return new AnimatedEventDispatcher(this.ctx.rnInstance,
+          this.cleanLogger, viewTag)
       case ActionType.JS_FUNCTION_OLD_API:
       case ActionType.JS_FUNCTION_NEW_API:
-        return new JSEventDispatcher(this.ctx.rnInstance, this.logger.cloneWithPrefix('JSEventDispatcher'));
+        return new JSEventDispatcher(this.ctx.rnInstance, this.cleanLogger);
     }
   }
 
@@ -166,22 +210,26 @@ export class RNGestureHandlerModule extends UITurboModule implements TM.RNGestur
     handlerTag: number,
     newConfig: Readonly<Record<string, unknown>>
   ) {
+    const stopTracing = this.logger.cloneAndJoinPrefix("updateGestureHandler").startTracing()
     const gestureHandler = this.gestureHandlerRegistry.getGestureHandlerByHandlerTag(handlerTag)
     this.interactionManager.configureInteractions(gestureHandler, newConfig);
     gestureHandler.updateGestureConfig(newConfig)
+    stopTracing()
   }
 
   public dropGestureHandler(handlerTag: number) {
+    const stopTracing = this.logger.cloneAndJoinPrefix("dropGestureHandler").startTracing()
     this.interactionManager.dropRelationsForHandlerWithTag(handlerTag)
     this.gestureHandlerRegistry.removeGestureHandlerByHandlerTag(handlerTag)
+    stopTracing()
   }
 
   public handleSetJSResponder(tag: number, blockNativeResponder: boolean) {
-    this.warn("handleSetJSResponder is not implemented")
+    this.logger.cloneAndJoinPrefix("handleSetJSResponder").warn("not implemented")
   }
 
   public handleClearJSResponder() {
-    this.warn("handleClearJSResponder is not implemented")
+    this.logger.cloneAndJoinPrefix("handleClearJSResponder").warn("not implemented")
   }
 
   public flushOperations() {
@@ -189,9 +237,6 @@ export class RNGestureHandlerModule extends UITurboModule implements TM.RNGestur
   }
 
   // -------------------------------------------------------------------------------------------------------------------
-  protected warn(message: string) {
-    this.ctx.logger.warn("RNGH: " + message)
-  }
 
   public getGestureHandlerRegistry() {
     return this.gestureHandlerRegistry
@@ -203,7 +248,7 @@ export class RNGestureHandlerModule extends UITurboModule implements TM.RNGestur
 
   public getViewRegistry() {
     if (!this.viewRegistry) {
-      this.logger.info("Tried to get viewRegistry before it was initialized")
+      this.logger.error("Tried to get viewRegistry before it was initialized")
       throw new Error("Tried to get viewRegistry before it was initialized")
     }
     return this.viewRegistry

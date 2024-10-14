@@ -9,11 +9,15 @@ export class GestureHandlerOrchestrator {
   private handlersToCancel: GestureHandler[] = []
   private activationIndex: number = 0
 
-  constructor(private logger: RNGHLogger) {
+  private logger: RNGHLogger
+
+  constructor(logger: RNGHLogger) {
+    this.logger = logger.cloneAndJoinPrefix("GestureHandlerOrchestrator")
   }
 
   public onHandlerStateChange(handler: GestureHandler, newState: State, oldState: State, sendIfDisabled?: boolean) {
-    const logger = this.logger.cloneWithPrefix(`onHandlerStateChange(handler=${handler.getTag()}, newState=${getStateName(newState)}, oldState=${getStateName(oldState)})`)
+    const logger =
+      this.logger.cloneAndJoinPrefix(`onHandlerStateChange(handler=${handler.getTag()}, newState=${getStateName(newState)}, oldState=${getStateName(oldState)})`)
     logger.debug("start")
 
     if (!handler.isEnabled() && !sendIfDisabled) {
@@ -73,7 +77,7 @@ export class GestureHandlerOrchestrator {
   }
 
   private tryActivate(handler: GestureHandler): void {
-    const logger = this.logger.cloneWithPrefix(`tryActivate(${handler.getTag()})`)
+    const logger = this.logger.cloneAndJoinPrefix(`tryActivate(${handler.getTag()})`)
     logger.debug({
       gestureHandlers: this.gestureHandlers.map(gh => gh.getTag()),
       awaitingHandlers: Array.from(this.awaitingHandlers).map(gh => gh.getTag()),
@@ -123,7 +127,7 @@ export class GestureHandlerOrchestrator {
   }
 
   private hasOtherHandlerToWaitFor(handler: GestureHandler): boolean {
-    const logger = this.logger.cloneWithPrefix(`hasOtherHandlerToWaitFor(handler=${handler.getTag()})`)
+    const logger = this.logger.cloneAndJoinPrefix(`hasOtherHandlerToWaitFor(handler=${handler.getTag()})`)
     for (const otherHandler of this.gestureHandlers) {
       if (otherHandler === handler) {
         return false
@@ -138,7 +142,7 @@ export class GestureHandlerOrchestrator {
   }
 
   private addAwaitingHandler(handler: GestureHandler) {
-    const logger = this.logger.cloneWithPrefix(`addAwaitingHandler(handlerTag=${handler.getTag()})`)
+    const logger = this.logger.cloneAndJoinPrefix(`addAwaitingHandler(handlerTag=${handler.getTag()})`)
     logger.debug({ awaitingHandlers: this.awaitingHandlers })
     if (!this.awaitingHandlers.has(handler)) {
       this.awaitingHandlers.add(handler)
@@ -156,11 +160,12 @@ export class GestureHandlerOrchestrator {
     return true
   }
 
-  private shouldHandlerBeCancelledByOtherHandler({handler, otherHandler}: {
+  private shouldHandlerBeCancelledByOtherHandler({ handler, otherHandler }: {
     handler: GestureHandler,
     otherHandler: GestureHandler
   }): boolean {
-    const logger = this.logger.cloneWithPrefix(`shouldHandlerBeCancelledByOtherHandler(${handler.getTag()}, ${otherHandler.getTag()})`)
+    const logger =
+      this.logger.cloneAndJoinPrefix(`shouldHandlerBeCancelledByOtherHandler(${handler.getTag()}, ${otherHandler.getTag()})`)
     if (this.canRunSimultaneously(handler, otherHandler)) {
       logger.debug("false")
       return false;
@@ -176,7 +181,7 @@ export class GestureHandlerOrchestrator {
   }
 
   private canRunSimultaneously(handlerA: GestureHandler, handlerB: GestureHandler) {
-    const logger = this.logger.cloneWithPrefix("canRunSimultaneously")
+    const logger = this.logger.cloneAndJoinPrefix("canRunSimultaneously")
     const result = handlerA === handlerB
       || handlerA.shouldRecognizeSimultaneously(handlerB)
       || handlerB.shouldRecognizeSimultaneously(handlerA)
@@ -275,7 +280,7 @@ export class GestureHandlerOrchestrator {
   }
 
   private cleanupAwaitingHandlers(handler: GestureHandler): void {
-    const logger = this.logger.cloneWithPrefix(`cleanupAwaitingHandlers(handler=${handler.getTag()})`)
+    const logger = this.logger.cloneAndJoinPrefix(`cleanupAwaitingHandlers(handler=${handler.getTag()})`)
     logger.debug({ awaitingHandlers: this.awaitingHandlers })
     for (const awaitingHandler of this.awaitingHandlers) {
       if (
@@ -297,7 +302,9 @@ export class GestureHandlerOrchestrator {
 
   public registerHandlerIfNotPresent(handler: GestureHandler) {
     this.logger.info(`registerHandlerIfNotPresent(${handler.getTag()})`)
-    if (this.gestureHandlers.includes(handler)) return;
+    if (this.gestureHandlers.includes(handler)) {
+      return;
+    }
     this.gestureHandlers.push(handler);
     handler.setActive(false);
     handler.setAwaiting(false);
@@ -315,7 +322,9 @@ export class GestureHandlerOrchestrator {
   public cancelMouseAndPenGestures(currentHandler: GestureHandler): void {
     this.logger.info("cancelMouseAndPenGestures")
     this.gestureHandlers.forEach((handler: GestureHandler) => {
-      if (handler.getPointerType() !== PointerType.MOUSE && handler.getPointerType() !== PointerType.PEN) return;
+      if (handler.getPointerType() !== PointerType.MOUSE && handler.getPointerType() !== PointerType.PEN) {
+        return;
+      }
 
       if (handler !== currentHandler) {
         handler.cancel();

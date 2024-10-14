@@ -12,7 +12,15 @@ export class RotationGestureHandler extends GestureHandler {
   private unlockScrolls: (() => void) | undefined
 
   constructor(deps: GestureHandlerDependencies) {
-    super({ ...deps, logger: deps.logger.cloneWithPrefix("RotationGestureHandler") })
+    super({ ...deps, logger: deps.logger.cloneAndJoinPrefix("RotationGestureHandler") })
+  }
+
+  public override getName(): string {
+    return "RotationGestureHandler"
+  }
+
+  public override isGestureContinuous(): boolean {
+    return true
   }
 
   private rotationGestureListener: RotationGestureListener = {
