@@ -11,6 +11,5 @@ export * from "./PointerTracker"
 export * from "./RNGHError"
 export * from "./State"
 export * from "./GestureHandlerRegistry"
-export * from "./ViewFinder"
 export * from "./ViewRegistry"
 export * from './Multiset'
