@@ -18,7 +18,7 @@
     "react-native": "0.72.5",
     "react-native-gesture-handler": "2.14.1",
     "react-native-harmony": "npm:@rnoh/react-native-harmony@^0.72.39",
-    "react-native-harmony-gesture-handler": "file:../react-native-harmony-gesture-handler/rnoh-react-native-harmony-gesture-handler-2.14.13.tgz"
+    "react-native-harmony-gesture-handler": "file:../react-native-harmony-gesture-handler/rnoh-react-native-harmony-gesture-handler-2.14.14.tgz"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
@@ -44,7 +44,7 @@
     "preset": "react-native"
   },
   "overrides": {
-    "@rnoh/react-native-harmony-cli": "^0.0.23",
+    "@rnoh/react-native-harmony-cli": "^0.0.30",
     "@react-native/codegen": "0.74.0"
   }
 }
