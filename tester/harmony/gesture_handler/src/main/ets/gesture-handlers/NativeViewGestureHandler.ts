@@ -11,7 +11,15 @@ export class NativeViewGestureHandler extends GestureHandler {
   }
 
   constructor(deps: GestureHandlerDependencies) {
-    super({ ...deps, logger: deps.logger.cloneWithPrefix("NativeViewGestureHandler") })
+    super({ ...deps, logger: deps.logger.cloneAndJoinPrefix("NativeViewGestureHandler") })
+  }
+
+  public override getName(): string {
+    return "NativeViewGestureHandler"
+  }
+
+  public override isGestureContinuous(): boolean {
+    return false
   }
 
   public getDefaultConfig() {
@@ -26,10 +34,11 @@ export class NativeViewGestureHandler extends GestureHandler {
 
   protected onNewPointer() {
     this.startPos = this.tracker.getLastAvgPos();
-    if (this.currentState !== State.UNDETERMINED)
+    if (this.currentState !== State.UNDETERMINED) {
       return;
+    }
     this.begin();
-    if(this.view.hasButtonRole()) {
+    if (this.view.hasButtonRole()) {
       this.activate();
     }
   }
@@ -42,7 +51,7 @@ export class NativeViewGestureHandler extends GestureHandler {
 
   public onPointerMove(e: IncomingEvent): void {
     this.tracker.track(e);
-    const {x: dx, y: dy} = this.startPos.clone().subtract(this.tracker.getLastAvgPos()).value
+    const { x: dx, y: dy } = this.startPos.clone().subtract(this.tracker.getLastAvgPos()).value
     const distSq = dx * dx + dy * dy;
 
     if (distSq >= this.minDistSq) {

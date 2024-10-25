@@ -19,7 +19,7 @@ export class GestureHandlerArkUIAdapter {
   private logger: RNGHLogger;
 
   constructor(view: View, logger: RNGHLogger) {
-    this.logger = logger.cloneWithPrefix(`ArkUIAdapter(viewTag: ${view.getTag()})`)
+    this.logger = logger.cloneAndJoinPrefix(`ArkUIAdapter(viewTag: ${view.getTag()})`)
     this.view = view;
   }
 
@@ -99,7 +99,7 @@ export class GestureHandlerArkUIAdapter {
       changedTouch.id,
       this.pointersIdInBounds.has(changedTouch.id),
     );
-    this.logger.cloneWithPrefix("adaptTouchEvent").debug({ eventType, activePointersCount: this.activePointerIds.size })
+    this.logger.cloneAndJoinPrefix("adaptTouchEvent").debug({ eventType, activePointersCount: this.activePointerIds.size })
     this.updateIsInBoundsByPointerId(
       changedTouch.type,
       changedTouch.id,
@@ -152,7 +152,7 @@ export class GestureHandlerArkUIAdapter {
     const x = point.x;
     const y = point.y;
     const rect = this.view.getBoundingRect();
-    this.logger.cloneWithPrefix("isInBounds").debug({ rect })
+    this.logger.cloneAndJoinPrefix("isInBounds").debug({ rect })
     const result =
       x >= rect.x &&
         x <= rect.x + rect.width &&

@@ -14,7 +14,7 @@ export class RNOHScrollLockerCAPI implements ScrollLocker {
   private logger: RNGHLogger
 
   constructor(private rnInstance: RNInstance, logger: RNGHLogger) {
-    this.logger = logger.cloneWithPrefix("RNOHScrollLockerCAPI")
+    this.logger = logger.cloneAndJoinPrefix("RNOHScrollLockerCAPI")
   }
 
   lockScrollContainingViewTag(viewTag: number) {

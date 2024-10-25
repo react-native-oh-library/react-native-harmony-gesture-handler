@@ -10,6 +10,7 @@
 #include "RNGestureHandlerButtonJSIBinder.h"
 #include "RNGestureHandlerRootViewJSIBinder.h"
 #include <glog/logging.h>
+#include <react/renderer/debug/SystraceSection.h>
 
 using namespace rnoh;
 using namespace facebook;
@@ -27,6 +28,7 @@ public:
 
 class RNGHEventEmitRequestHandler : public EventEmitRequestHandler {
     void handleEvent(EventEmitRequestHandler::Context const &ctx) override {
+        facebook::react::SystraceSection s("RNGH::RNGHEventEmitRequestHandler::handleEvent");
         auto eventEmitter = ctx.shadowViewRegistry->getEventEmitter<facebook::react::ViewEventEmitter>(ctx.tag);
         if (eventEmitter == nullptr) {
             return;
@@ -85,6 +87,7 @@ RnohReactNativeHarmonyGestureHandlerPackage::createComponentInstanceFactoryDeleg
 class ScrollLockerArkTSMessageHandler : public ArkTSMessageHandler {
 public:
     void handleArkTSMessage(const Context &ctx) override {
+        facebook::react::SystraceSection s("RNGH::ScrollLockerArkTSMessageHandler::handleArkTSMessage");
         if (ctx.messageName == "RNGH::SET_NATIVE_RESPONDERS_BLOCK") {
             auto targetComponentInstanceTag = ctx.messagePayload["targetTag"].asDouble();
             auto shouldBlock = ctx.messagePayload["shouldBlock"].asBool();

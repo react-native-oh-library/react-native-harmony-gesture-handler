@@ -9,7 +9,7 @@ export class InteractionManager {
   private logger: RNGHLogger
 
   constructor(logger: RNGHLogger) {
-    this.logger = logger.cloneWithPrefix("InteractionManager")
+    this.logger = logger.cloneAndJoinPrefix("InteractionManager")
   }
 
   public configureInteractions(handler: GestureHandler, config: Config) {
@@ -60,7 +60,7 @@ export class InteractionManager {
     handler: GestureHandler,
     otherHandler: GestureHandler
   ): boolean {
-    const logger = this.logger.cloneWithPrefix(`shouldWaitForHandlerFailure(${handler.getTag()}, ${otherHandler.getTag()})`)
+    const logger = this.logger.cloneAndJoinPrefix(`shouldWaitForHandlerFailure(${handler.getTag()}, ${otherHandler.getTag()})`)
     const waitFor = this.waitForRelations.get(
       handler.getTag()
     );
@@ -85,7 +85,7 @@ export class InteractionManager {
     handler: GestureHandler,
     otherHandler: GestureHandler
   ): boolean {
-    const logger = this.logger.cloneWithPrefix(`shouldRecognizeSimultaneously(${handler.getTag()}, ${otherHandler.getTag()})`)
+    const logger = this.logger.cloneAndJoinPrefix(`shouldRecognizeSimultaneously(${handler.getTag()}, ${otherHandler.getTag()})`)
     const simultaneousHandlers: number[] | undefined =
       this.simultaneousRelations.get(handler.getTag());
     if (!simultaneousHandlers) {
@@ -122,7 +122,7 @@ export class InteractionManager {
     handler: GestureHandler,
     otherHandler: GestureHandler
   ): boolean {
-    const logger = this.logger.cloneWithPrefix(`shouldHandlerBeCancelledBy(handler=${handler.getTag()}, otherHandler=${otherHandler.getTag()})`)
+    const logger = this.logger.cloneAndJoinPrefix(`shouldHandlerBeCancelledBy(handler=${handler.getTag()}, otherHandler=${otherHandler.getTag()})`)
     // We check constructor name instead of using `instanceof` in order do avoid circular dependencies
     // const isNativeHandler =
     //   otherHandler.constructor.name === 'NativeViewGestureHandler';

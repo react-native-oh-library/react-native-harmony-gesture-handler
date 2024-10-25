@@ -2,7 +2,15 @@ import { GestureHandler, GestureHandlerDependencies, IncomingEvent } from '../co
 
 export class ManualGestureHandler extends GestureHandler {
   constructor(deps: GestureHandlerDependencies) {
-    super({...deps, logger: deps.logger.cloneWithPrefix("ManualGestureHandler")})
+    super({...deps, logger: deps.logger.cloneAndJoinPrefix("ManualGestureHandler")})
+  }
+
+  public override getName(): string {
+    return "ManualGestureHandler"
+  }
+
+  public override isGestureContinuous(): boolean {
+    return false
   }
 
   public getDefaultConfig() {

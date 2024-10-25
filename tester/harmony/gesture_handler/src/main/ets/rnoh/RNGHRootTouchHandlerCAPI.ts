@@ -40,7 +40,7 @@ export class RNGHRootTouchHandlerCAPI {
     logger: RNGHLogger,
     private touchHandlerArkTS: RNGHRootTouchHandlerArkTS,
   ) {
-    this.logger = logger.cloneWithPrefix('RNGHRootTouchHandlerCAPI');
+    this.logger = logger.cloneAndJoinPrefix('RNGHRootTouchHandlerCAPI');
   }
 
   handleTouch(rawTouchEvent: RawTouchEvent, touchableViews: View[]) {

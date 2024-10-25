@@ -2,7 +2,11 @@
   "name": "@react-native-oh-tpl/react-native-gesture-handler",
   "harmony": {
     "alias": "react-native-gesture-handler",
-    "redirectInternalImports": true
+    "redirectInternalImports": true,
+    "autolinking": {
+      "cmakeLibraryTargetName": "rnoh_gesture_handler",
+      "ohPackageName": "@rnoh/react-native-openharmony-gesture-handler"
+    }
   },
   "repository": {
     "type": "git",

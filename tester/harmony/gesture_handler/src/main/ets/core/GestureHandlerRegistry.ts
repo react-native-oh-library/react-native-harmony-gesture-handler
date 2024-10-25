@@ -10,7 +10,7 @@ export class GestureHandlerRegistry {
   private logger: RNGHLogger
 
   constructor(viewRegistry: ViewRegistry | undefined, logger: RNGHLogger) {
-    this.logger = logger.cloneWithPrefix("GestureHandlerRegistry")
+    this.logger = logger.cloneAndJoinPrefix("GestureHandlerRegistry")
     this.viewRegistry = viewRegistry
   }
 
@@ -19,7 +19,7 @@ export class GestureHandlerRegistry {
   }
 
   public bindGestureHandlerWithView(gestureHandlerTag: number, view: View) {
-    this.logger.cloneWithPrefix("bindGestureHandlerWithView").debug({gestureHandlerTag, viewTag: view.getTag()})
+    this.logger.cloneAndJoinPrefix("bindGestureHandlerWithView").debug({gestureHandlerTag, viewTag: view.getTag()})
     const viewTag = view.getTag()
     if (!this.gestureHandlersByViewTag.has(viewTag))
       this.gestureHandlersByViewTag.set(viewTag, new Set())

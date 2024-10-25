@@ -9,7 +9,7 @@ set(WITH_HITRACE_REACT_MARKER ON)
 
 file(GLOB GENERATED_CPP_FILES "./generated/*.cpp")
 add_subdirectory("${RNOH_CPP_DIR}" ./rn)
-add_subdirectory("${OH_MODULES_DIR}/@rnoh/react-native-openharmony-gesture-handler/src/main/cpp" ./rnoh__rnoh__react_native_harmony_gesture_handler) # <=
+add_subdirectory("${OH_MODULES_DIR}/@rnoh/react-native-openharmony-gesture-handler/src/main/cpp" ./gesturehandler) # <=
 
 add_library(rnoh_app SHARED
     ${GENERATED_CPP_FILES}

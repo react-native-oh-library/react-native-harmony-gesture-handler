@@ -22,19 +22,21 @@ export class GestureHandlerFactory {
   private orchestrator: GestureHandlerOrchestrator
   private logger: RNGHLogger
 
-  constructor(private cleanLogger: RNGHLogger, private scrollLocker: ScrollLocker, private interactionManager: InteractionManager, private rnGestureResponder: RNGestureResponder) {
-    this.logger = cleanLogger.cloneWithPrefix("Factory")
-    this.orchestrator = new GestureHandlerOrchestrator(cleanLogger.cloneWithPrefix("Orchestrator"))
+  constructor(private cleanLogger: RNGHLogger, private scrollLocker: ScrollLocker,
+    private interactionManager: InteractionManager, private rnGestureResponder: RNGestureResponder) {
+    this.logger = cleanLogger.cloneAndJoinPrefix("GestureHandlerFactory")
+    this.orchestrator = new GestureHandlerOrchestrator(cleanLogger)
   }
 
   create(handlerName: string, handlerTag: number): GestureHandler {
-    this.logger.info(`create ${handlerName} with handlerTag: ${handlerTag}`)
+    this.logger.cloneAndJoinPrefix(`create`).debug(`(handlerName=${handlerName}, handlerTag=${handlerTag})`);
+
     const deps: GestureHandlerDependencies = {
       tracker: new PointerTracker(),
       orchestrator: this.orchestrator,
       handlerTag,
       interactionManager: this.interactionManager,
-      logger: this.cleanLogger.cloneWithPrefix("GestureHandler"),
+      logger: this.cleanLogger,
       scrollLocker: this.scrollLocker,
       rnGestureResponder: this.rnGestureResponder,
     }
@@ -60,5 +62,6 @@ export class GestureHandlerFactory {
         this.logger.info(msg)
         throw new RNGHError(msg)
     }
+
   }
 }
