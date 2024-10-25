@@ -17,7 +17,15 @@ export class TapGestureHandler extends GestureHandler {
   private delayTimeout: number | undefined;
 
   constructor(deps: GestureHandlerDependencies) {
-    super({...deps, logger: deps.logger.cloneWithPrefix(`TapGestureHandler${deps.handlerTag}`)})
+    super({ ...deps, logger: deps.logger.cloneAndJoinPrefix(`TapGestureHandler${deps.handlerTag}`) })
+  }
+
+  public override getName(): string {
+    return "TapGestureHandler"
+  }
+
+  public override isGestureContinuous(): boolean {
+    return false
   }
 
   onPointerDown(event) {
@@ -101,7 +109,9 @@ export class TapGestureHandler extends GestureHandler {
   }
 
   private trySettingPosition(event: IncomingEvent): void {
-    if (this.currentState !== State.UNDETERMINED) return;
+    if (this.currentState !== State.UNDETERMINED) {
+      return;
+    }
     this.offsetX = 0;
     this.offsetY = 0;
     this.startX = event.x;
@@ -109,7 +119,7 @@ export class TapGestureHandler extends GestureHandler {
   }
 
   private updateState(event: IncomingEvent): void {
-    const logger = this.logger.cloneWithPrefix("updateState")
+    const logger = this.logger.cloneAndJoinPrefix("updateState")
     if (this.maxNumberOfPointersSoFar < this.tracker.getTrackedPointersCount()) {
       this.maxNumberOfPointersSoFar = this.tracker.getTrackedPointersCount()
     }
@@ -175,13 +185,13 @@ export class TapGestureHandler extends GestureHandler {
   }
 
   private endTap() {
-    const logger = this.logger.cloneWithPrefix("endTap")
+    const logger = this.logger.cloneAndJoinPrefix("endTap")
     this.clearTimeouts();
     if (
       ++this.numberOfTapsSoFar === (this.config.numberOfTaps ?? DEFAULT_NUMBER_OF_TAPS) &&
         this.maxNumberOfPointersSoFar >= (this.config.minNumberOfPointers ?? 0)
     ) {
-      logger.info(JSON.stringify({numberOfTapsSoFar: this.numberOfTapsSoFar}))
+      logger.info(JSON.stringify({ numberOfTapsSoFar: this.numberOfTapsSoFar }))
       this.activate();
     } else {
       this.delayTimeout = setTimeout(() => this.fail(), this.config.maxDelayMs ?? DEFAULT_MAX_DELAY_MS);

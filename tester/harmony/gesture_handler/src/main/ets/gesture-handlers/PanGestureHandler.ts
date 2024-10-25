@@ -21,24 +21,35 @@ export class PanGestureHandler extends GestureHandler<PanGestureHandlerConfig> {
   private velocity = new Vector2D();
   private activationTimeout = 0;
 
+  public override getName(): string {
+    return "PanGestureHandler"
+  }
+
+  public override isGestureContinuous(): boolean {
+    return true
+  }
+
   private get failOffsetXStart() {
     if (this.config.failOffsetXStart === undefined
-      && this.config.failOffsetXEnd === undefined)
+      && this.config.failOffsetXEnd === undefined) {
       return undefined
+    }
     return this.config.failOffsetXStart ?? Number.MIN_SAFE_INTEGER
   }
 
   private get failOffsetXEnd() {
     if (this.config.failOffsetXStart === undefined
-      && this.config.failOffsetXEnd === undefined)
+      && this.config.failOffsetXEnd === undefined) {
       return undefined
+    }
     return this.config.failOffsetXEnd ?? Number.MAX_SAFE_INTEGER
   }
 
   private get failOffsetYStart() {
     if (this.config.failOffsetYStart === undefined
-      && this.config.failOffsetYEnd === undefined)
+      && this.config.failOffsetYEnd === undefined) {
       return undefined
+    }
     return this.config.failOffsetYStart ?? Number.MIN_SAFE_INTEGER
   }
 
@@ -48,29 +59,33 @@ export class PanGestureHandler extends GestureHandler<PanGestureHandlerConfig> {
 
   private get activeOffsetXStart() {
     if (this.config.activeOffsetXStart === undefined
-      && this.config.activeOffsetXEnd === undefined)
+      && this.config.activeOffsetXEnd === undefined) {
       return undefined
+    }
     return this.config.activeOffsetXStart ?? Number.MIN_SAFE_INTEGER
   }
 
   private get activeOffsetXEnd() {
     if (this.config.activeOffsetXStart === undefined
-      && this.config.activeOffsetXEnd === undefined)
+      && this.config.activeOffsetXEnd === undefined) {
       return undefined
+    }
     return this.config.activeOffsetXEnd ?? Number.MAX_SAFE_INTEGER
   }
 
   private get activeOffsetYStart() {
     if (this.config.activeOffsetYStart === undefined
-      && this.config.activeOffsetYEnd === undefined)
+      && this.config.activeOffsetYEnd === undefined) {
       return undefined
+    }
     return this.config.activeOffsetYStart ?? Number.MIN_SAFE_INTEGER
   }
 
   private get activeOffsetYEnd() {
     if (this.config.activeOffsetYStart === undefined
-      && this.config.activeOffsetYEnd === undefined)
+      && this.config.activeOffsetYEnd === undefined) {
       return undefined
+    }
     return this.config.activeOffsetYEnd ?? Number.MAX_SAFE_INTEGER
   }
 
@@ -92,7 +107,7 @@ export class PanGestureHandler extends GestureHandler<PanGestureHandlerConfig> {
   private unlockRNGestureResponder: (() => void) | undefined
 
   public constructor(deps: GestureHandlerDependencies) {
-    super({ ...deps, logger: deps.logger.cloneWithPrefix("PanGestureHandler") })
+    super({ ...deps, logger: deps.logger.cloneAndJoinPrefix("PanGestureHandler") })
   }
 
   public onPointerDown(e) {
@@ -115,7 +130,7 @@ export class PanGestureHandler extends GestureHandler<PanGestureHandlerConfig> {
   }
 
   private shouldFail(): boolean {
-    const {x: dx, y: dy} = this.getTranslation().value;
+    const { x: dx, y: dy } = this.getTranslation().value;
     const distanceSq = dx * dx + dy * dy;
     if (this.activateAfterLongPress > 0 && distanceSq > DEFAULT_MIN_DIST_SQ) {
       this.clearActivationTimeout();
@@ -138,7 +153,7 @@ export class PanGestureHandler extends GestureHandler<PanGestureHandlerConfig> {
   }
 
   private shouldActivate(): boolean {
-    const {x: dx, y: dy} = this.getTranslation().value;
+    const { x: dx, y: dy } = this.getTranslation().value;
     if (this.activeOffsetXStart !== Number.MAX_SAFE_INTEGER && dx < this.activeOffsetXStart
     ) {
       return true;
@@ -156,7 +171,7 @@ export class PanGestureHandler extends GestureHandler<PanGestureHandlerConfig> {
     if (this.minDistSq !== Number.MAX_SAFE_INTEGER && distanceSq >= this.minDistSq) {
       return true;
     }
-    const {x: vx, y: vy} = this.velocity
+    const { x: vx, y: vy } = this.velocity
     if (
       this.minVelocityX !== Number.MAX_SAFE_INTEGER &&
         ((this.minVelocityX < 0 && vx <= this.minVelocityX) ||
@@ -183,7 +198,11 @@ export class PanGestureHandler extends GestureHandler<PanGestureHandlerConfig> {
   }
 
   private tryBegin(e: IncomingEvent): void {
-    this.logger.cloneWithPrefix("tryBegin").debug({currentState: getStateName(this.currentState), trackedPointersCount: this.tracker.getTrackedPointersCount(), minPointers: this.minPointers})
+    this.logger.cloneAndJoinPrefix("tryBegin").debug({
+      currentState: getStateName(this.currentState),
+      trackedPointersCount: this.tracker.getTrackedPointersCount(),
+      minPointers: this.minPointers
+    })
     if (
       (this.currentState === State.UNDETERMINED) &&
         this.tracker.getTrackedPointersCount() >= this.minPointers

@@ -18,7 +18,15 @@ export class LongPressGestureHandler extends GestureHandler {
   private activationTimeout: number | undefined;
 
   constructor(deps: GestureHandlerDependencies) {
-    super({...deps, logger: deps.logger.cloneWithPrefix("LongPressGestureHandler")})
+    super({ ...deps, logger: deps.logger.cloneAndJoinPrefix("LongPressGestureHandler") })
+  }
+
+  override getName(): string {
+    return "LongPressGestureHandler"
+  }
+
+  public override isGestureContinuous(): boolean {
+    return false
   }
 
   public getDefaultConfig() {
@@ -43,7 +51,6 @@ export class LongPressGestureHandler extends GestureHandler {
       this.maxDistSq = this.config.maxDist * this.config.maxDist;
     }
   }
-
 
 
   protected resetConfig(): void {

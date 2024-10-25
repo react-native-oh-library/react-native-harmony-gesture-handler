@@ -10,7 +10,7 @@
     "redirectInternalImports": true,
     "autolinking": {
       "cmakeLibraryTargetName": "rnoh_gesture_handler",
-      "ohPackageName": "@rnoh/react-native-openharmony-gesture-handler"
+      "ohPackageName": "@react-native-oh-tpl/react-native-gesture-handler"
     }
   },
   "repository": {
