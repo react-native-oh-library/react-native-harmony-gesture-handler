@@ -1,21 +1,9 @@
-# React Native Harmony Gesture Handler
+# @react-native-oh-tpl/react-native-gesture-handler
+This project is based on  [react-native-gesture-handler](https://github.com/software-mansion/react-native-gesture-handler)
+## Documentation
+[中文](https://gitee.com/react-native-oh-library/usage-docs/blob/master/zh-cn/react-native-gesture-handler.md)
 
-## Running the `tester` app
+[English](https://gitee.com/react-native-oh-library/usage-docs/blob/master/en/react-native-gesture-handler.md)
 
-### Installing dependencies and preparing development environment
-
-1. Go to `/tester`
-2. Run `npm run i`
-3. Open `tester/harmony` in DevEco Studio
-
-### Generate signing config
-
-1. Open `File -> Project Structure -> Signing Configs`
-2. Log in to your Huawei developer account and proceed with provided instructions
-
-### Running the app
-
-1. Go to `/tester`
-2. Run `npm run start`
-3. Open `tester/harmony` in DevEco Studio
-4. Build and run `entry` module
+## License
+This library is licensed under [The MIT License (MIT)](https://github.com/react-native-oh-library/react-native-harmony-gesture-handler/blob/sig/LICENSE).
