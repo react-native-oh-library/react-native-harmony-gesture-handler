@@ -1,5 +1,5 @@
 #pragma once
-#include "GestureHandlerPackage.h"
+#include "RnohReactNativeHarmonyGestureHandlerPackage.h"
 #include "RNOH/RNInstanceCAPI.h"
 #include "componentInstances/RNGestureHandlerButtonComponentInstance.h"
 #include "componentInstances/RNGestureHandlerRootViewComponentInstance.h"
@@ -26,31 +26,31 @@ public:
 
 
 class RNGHEventEmitRequestHandler : public EventEmitRequestHandler {
-    void handleEvent(EventEmitRequestHandler::Context const &ctx) override {
-        auto eventEmitter = ctx.shadowViewRegistry->getEventEmitter<facebook::react::ViewEventEmitter>(ctx.tag);
-        if (eventEmitter == nullptr) {
-            return;
-        }
-        if (ctx.eventName == "onGestureHandlerEvent") {
-            eventEmitter->dispatchUniqueEvent(ctx.eventName, ArkJS(ctx.env).getDynamic(ctx.payload));
-        } else if (ctx.eventName == "onGestureHandlerStateChange") {
-            eventEmitter->dispatchEvent("onGestureHandlerStateChange", ArkJS(ctx.env).getDynamic(ctx.payload));
-        }
+  void handleEvent(EventEmitRequestHandler::Context const &ctx) override {
+    auto eventEmitter = ctx.shadowViewRegistry->getEventEmitter<facebook::react::ViewEventEmitter>(ctx.tag);
+    if (eventEmitter == nullptr) {
+      return;
     }
+    if (ctx.eventName == "onGestureHandlerEvent") {
+      eventEmitter->dispatchUniqueEvent(ctx.eventName, ArkJS(ctx.env).getDynamic(ctx.payload));
+    } else if (ctx.eventName == "onGestureHandlerStateChange") {
+      eventEmitter->dispatchEvent("onGestureHandlerStateChange", ArkJS(ctx.env).getDynamic(ctx.payload));
+    }
+  }
 };
 
 class RNOHCorePackageComponentInstanceFactoryDelegate : public ComponentInstanceFactoryDelegate {
 public:
-    using ComponentInstanceFactoryDelegate::ComponentInstanceFactoryDelegate;
+  using ComponentInstanceFactoryDelegate::ComponentInstanceFactoryDelegate;
 
-    ComponentInstance::Shared create(ComponentInstance::Context ctx) override {
-        if (ctx.componentName == "RNGestureHandlerButton") {
-            return std::make_shared<RNGestureHandlerButtonComponentInstance>(ctx);
-        } else if (ctx.componentName == "RNGestureHandlerRootView") {
-            return std::make_shared<RNGestureHandlerRootViewComponentInstance>(ctx);
-        }
-        return nullptr;
+  ComponentInstance::Shared create(ComponentInstance::Context ctx) override {
+    if (ctx.componentName == "RNGestureHandlerButton") {
+      return std::make_shared<RNGestureHandlerButtonComponentInstance>(ctx);
+    } else if (ctx.componentName == "RNGestureHandlerRootView") {
+      return std::make_shared<RNGestureHandlerRootViewComponentInstance>(ctx);
     }
+    return nullptr;
+  }
 };
 
 std::unique_ptr<TurboModuleFactoryDelegate> GestureHandlerPackage::createTurboModuleFactoryDelegate() {
@@ -71,14 +71,14 @@ ComponentJSIBinderByString GestureHandlerPackage::createComponentJSIBinderByName
     };
 };
 
-EventEmitRequestHandlers GestureHandlerPackage::createEventEmitRequestHandlers() {
-    return {
-        std::make_shared<RNGHEventEmitRequestHandler>(),
-    };
+EventEmitRequestHandlers RnohReactNativeHarmonyGestureHandlerPackage::createEventEmitRequestHandlers() {
+  return {
+    std::make_shared<RNGHEventEmitRequestHandler>(),
+  };
 }
 
-ComponentInstanceFactoryDelegate::Shared GestureHandlerPackage::createComponentInstanceFactoryDelegate() {
-    return std::make_shared<RNOHCorePackageComponentInstanceFactoryDelegate>();
+ComponentInstanceFactoryDelegate::Shared RnohReactNativeHarmonyGestureHandlerPackage::createComponentInstanceFactoryDelegate() {
+  return std::make_shared<RNOHCorePackageComponentInstanceFactoryDelegate>();
 }
 
 class ScrollLockerArkTSMessageHandler : public ArkTSMessageHandler {
@@ -144,6 +144,6 @@ public:
   };
 };
 
-std::vector<ArkTSMessageHandler::Shared> GestureHandlerPackage::createArkTSMessageHandlers() {
-    return {std::make_shared<ScrollLockerArkTSMessageHandler>()};
+std::vector<ArkTSMessageHandler::Shared> RnohReactNativeHarmonyGestureHandlerPackage::createArkTSMessageHandlers() {
+  return {std::make_shared<ScrollLockerArkTSMessageHandler>()};
 }
