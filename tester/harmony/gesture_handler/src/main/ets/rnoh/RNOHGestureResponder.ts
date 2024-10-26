@@ -1,16 +1,7 @@
 import { RNInstance } from "@rnoh/react-native-openharmony/ts"
 import { RNGestureResponder } from "../core"
 
-export class FakeRNGestureResponder {
-  lock() {
-    // Cancelling RN events isn't supported in ArkTS architecture.
-    return () => {}
-  }
-}
 
-/**
- * Used in C-API architecture.
- */
 export class RNOHGestureResponder implements RNGestureResponder {
   constructor(private rnInstance: RNInstance) {
   }

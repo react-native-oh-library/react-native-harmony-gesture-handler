@@ -9,14 +9,13 @@ import {
   ViewRegistry
 } from '../core';
 import { GestureHandlerFactory } from "../gesture-handlers"
-import { ViewRegistryArkTS, ViewRegistryCAPI } from './ViewRegistry';
+import { RNGHViewRegistry } from './RNGHViewRegistry';
 import { DevelopmentRNGHLogger, ProductionRNGHLogger } from './Logger';
 import { JSEventDispatcher, AnimatedEventDispatcher, ReanimatedEventDispatcher } from './OutgoingEventDispatchers'
-import { RNOHScrollLockerArkTS, RNOHScrollLockerCAPI } from "./RNOHScrollLocker"
-import { RNGHRootTouchHandlerCAPI, RawTouchEvent } from "./RNGHRootTouchHandlerCAPI"
-import { RNGHRootTouchHandlerArkTS } from './RNGHRootTouchHandlerArkTS';
-import { ViewCAPI } from "./View"
-import { FakeRNGestureResponder, RNOHGestureResponder } from "./RNOHGestureResponder"
+import { RNOHScrollLockerCAPI } from "./RNOHScrollLocker"
+import { RNGHRootViewController, RawTouchEvent } from "./RNGHRootViewController"
+import { RNGHView } from "./RNGHView"
+import { RNOHGestureResponder } from "./RNOHGestureResponder"
 
 export enum ActionType {
   REANIMATED_WORKLET = 1,
@@ -27,14 +26,14 @@ export enum ActionType {
 
 
 export class RNGestureHandlerModule extends UITurboModule implements TM.RNGestureHandlerModule.Spec {
-  static NAME = "RNGestureHandlerModule"
+  static readonly NAME = "RNGestureHandlerModule"
 
   private gestureHandlerRegistry: GestureHandlerRegistry
   private gestureHandlerFactory: GestureHandlerFactory | undefined = undefined
   private viewRegistry: ViewRegistry | undefined = undefined
   private logger: RNGHLogger
   private cleanLogger: RNGHLogger
-  private touchHandlerByRootTag = new Map<Tag, RNGHRootTouchHandlerCAPI>()
+  private rootViewControllerByRootTag = new Map<Tag, RNGHRootViewController>()
   private interactionManager: InteractionManager
 
   constructor(ctx: UITurboModuleContext, isDevModeEnabled: boolean = false) {
@@ -55,7 +54,7 @@ export class RNGestureHandlerModule extends UITurboModule implements TM.RNGestur
         this.onGHRootCreated(rootTag)
       })
       this.ctx.rnInstance.cppEventEmitter.subscribe("RNGH::CANCEL_TOUCHES", (rootTag: any) => {
-        const touchHandler = this.touchHandlerByRootTag.get(rootTag)
+        const touchHandler = this.rootViewControllerByRootTag.get(rootTag)
         touchHandler?.cancelTouches()
       })
     }
@@ -63,49 +62,45 @@ export class RNGestureHandlerModule extends UITurboModule implements TM.RNGestur
   }
 
   /**
-   * @architecture: C-API
    * Called from C++.
    */
   private onGHRootCreated(rootTag: Tag) {
     const stopTracing = this.logger.cloneAndJoinPrefix("onGHRootCreated").startTracing()
-    this.touchHandlerByRootTag.set(rootTag, new RNGHRootTouchHandlerCAPI(this.logger,
-      new RNGHRootTouchHandlerArkTS(rootTag, this.viewRegistry, this.gestureHandlerRegistry, this.logger)));
+    this.rootViewControllerByRootTag.set(rootTag, new RNGHRootViewController(this.logger, this.gestureHandlerRegistry));
     stopTracing()
   }
 
   /**
-   * @architecture: C-API
    * Called from C++.
    */
   private onTouch(e: RawTouchEvent & { rootTag: Tag }) {
     const logger = this.logger.cloneAndJoinPrefix("onTouch")
     const stopTracing = logger.startTracing();
     (() => {
-      if (!(this.viewRegistry instanceof ViewRegistryCAPI)) {
+      if (!(this.viewRegistry instanceof RNGHViewRegistry)) {
         logger.error("Expected ViewRegistryCAPI")
         return;
       }
-      const touchHandler = this.touchHandlerByRootTag.get(e.rootTag)
-      if (!touchHandler) {
-        logger.error(`Couldn't find a touch handler for a gesture root tag: ${e.rootTag}`)
+      const rootViewController = this.rootViewControllerByRootTag.get(e.rootTag)
+      if (!rootViewController) {
+        logger.error(`Couldn't find a rootViewController for a gesture root tag: ${e.rootTag}`)
         return;
       }
       // update view registry
       e.touchableViews.forEach(touchableView => {
         const view = this.viewRegistry.getViewByTag(touchableView.tag)
         if (view) {
-          if (!(view instanceof ViewCAPI)) {
+          if (!(view instanceof RNGHView)) {
             logger.error(`Expected ViewCAPI`)
             return
           }
           view.updateBoundingBox(touchableView)
           view.setButtonRole(touchableView.buttonRole)
         } else {
-          this.viewRegistry.save(new ViewCAPI(touchableView))
+          this.viewRegistry.save(new RNGHView(touchableView))
         }
       })
-      // relay touch
-      touchHandler.handleTouch(e, e.touchableViews.map(({ tag }) => this.viewRegistry.getViewByTag(tag)));
+      rootViewController.handleTouch(e, e.touchableViews.map(({ tag }) => this.viewRegistry.getViewByTag(tag)));
     })()
     stopTracing()
   }
@@ -114,14 +109,9 @@ export class RNGestureHandlerModule extends UITurboModule implements TM.RNGestur
 
   public install() {
     const stopTracing = this.ctx.logger.clone("install").startTracing()
-    this.viewRegistry =
-      this.ctx.rnInstance.getArchitecture() === "ARK_TS" ? new ViewRegistryArkTS(this.ctx.descriptorRegistry) :
-        new ViewRegistryCAPI()
-    const scrollLocker =
-      this.ctx.rnInstance.getArchitecture() === "ARK_TS" ? new RNOHScrollLockerArkTS(this.ctx.rnInstance) :
-        new RNOHScrollLockerCAPI(this.ctx.rnInstance, this.cleanLogger);
-    const rnGestureResponder = this.ctx.rnInstance.getArchitecture() === "ARK_TS" ? new FakeRNGestureResponder() :
-      new RNOHGestureResponder(this.ctx.rnInstance)
+    this.viewRegistry = new RNGHViewRegistry()
+    const scrollLocker = new RNOHScrollLockerCAPI(this.ctx.rnInstance, this.cleanLogger);
+    const rnGestureResponder = new RNOHGestureResponder(this.ctx.rnInstance)
     this.gestureHandlerFactory =
       new GestureHandlerFactory(this.cleanLogger, scrollLocker, this.interactionManager, rnGestureResponder)
     stopTracing()
@@ -164,8 +154,8 @@ export class RNGestureHandlerModule extends UITurboModule implements TM.RNGestur
       }
       const viewRegistry = this.viewRegistry
       let view = this.viewRegistry.getViewByTag(viewTag)
-      if (!view && viewRegistry instanceof ViewRegistryCAPI) {
-        view = new ViewCAPI({
+      if (!view && viewRegistry instanceof RNGHViewRegistry) {
+        view = new RNGHView({
           tag: viewTag,
           x: 0,
           y: 0,
