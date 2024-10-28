@@ -165,16 +165,9 @@ export class RNGHViewController {
   }
 
   private isInBounds(point: Point): boolean {
-    const x = point.x;
-    const y = point.y;
     const rect = this.view.getBoundingRect();
     this.logger.cloneAndJoinPrefix("isInBounds").debug({ rect })
-    const result =
-      x >= rect.x &&
-        x <= rect.x + rect.width &&
-        y >= rect.y &&
-        y <= rect.y + rect.height;
-    return result;
+    return this.view.isPositionInBounds(point);
   }
 
   private updateActivePointers(touchType: TouchType, pointerId: number): void {
