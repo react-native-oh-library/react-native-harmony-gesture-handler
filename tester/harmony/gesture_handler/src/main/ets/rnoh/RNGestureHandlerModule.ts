@@ -1,4 +1,4 @@
-import { UITurboModule, UITurboModuleContext, Tag } from "@rnoh/react-native-openharmony/ts";
+import { TurboModule, TurboModuleContext, Tag } from "@rnoh/react-native-openharmony/ts";
 import { TM } from "@rnoh/react-native-openharmony/generated/ts"
 import {
   GestureHandlerRegistry,
@@ -25,7 +25,7 @@ export enum ActionType {
 }
 
 
-export class RNGestureHandlerModule extends UITurboModule implements TM.RNGestureHandlerModule.Spec {
+export class RNGestureHandlerModule extends TurboModule implements TM.RNGestureHandlerModule.Spec {
   static readonly NAME = "RNGestureHandlerModule"
 
   private gestureHandlerRegistry: GestureHandlerRegistry
@@ -36,7 +36,7 @@ export class RNGestureHandlerModule extends UITurboModule implements TM.RNGestur
   private rootViewControllerByRootTag = new Map<Tag, RNGHRootViewController>()
   private interactionManager: InteractionManager
 
-  constructor(ctx: UITurboModuleContext, isDevModeEnabled: boolean = false) {
+  constructor(ctx: TurboModuleContext, isDevModeEnabled: boolean = false) {
     super(ctx)
     this.cleanLogger =
       isDevModeEnabled && ctx.isDebugModeEnabled ? new DevelopmentRNGHLogger(ctx.logger, "RNGH") :

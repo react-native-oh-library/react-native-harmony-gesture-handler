@@ -1,6 +1,6 @@
 import { TouchEvent as TouchEventArkTS, TouchType, TouchObject } from './types';
 import { RNGHLogger, View, Multiset, GestureHandlerRegistry } from '../core';
-import { RawTouchableView } from "./RNGHView"
+import { RawTouchableView, RNGHView } from "./RNGHView"
 import { RNGHViewController } from './RNGHViewController';
 
 type RawTouchPoint = {
@@ -59,8 +59,9 @@ export class RNGHRootViewController {
     if (e.type === TouchType.Down) {
       this.activeViewTags.clear();
     }
-    const views = touchableViews
-    for (const view of views) {
+    const views = touchableViews as RNGHView[]
+    for (let i = 0; i < views.length; i++) {
+      const view = views[i];
       for (const handler of this.gestureHandlerRegistry.getGestureHandlersByViewTag(
         view.getTag(),
       )) {
@@ -85,6 +86,19 @@ export class RNGHRootViewController {
         // register active view tag
         if (e.type === TouchType.Down) {
           this.activeViewTags.add(view.getTag());
+        }
+      }
+
+      // If the pointer is inside the view but it overflows its parent, handlers attached to the parent
+      // might not have been called correctly (wrong bounding box). Extending the parent bounding box 
+      // with the child bounding box ensures that the parent handlers are called correctly.
+      // This approach is slightly different from Android RNGH implementation (extracting parent gesture handlers), 
+      // however, the outcome is the same.
+      for (let j = i; j > 1; j--) {
+        const currentView = views[j];
+        const parentView = views[j-1];
+        if (parentView.intersectsWith(currentView)) {
+          parentView.attachChildrenBoundingRects(currentView);
         }
       }
     }
