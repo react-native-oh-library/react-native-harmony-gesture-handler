@@ -1,5 +1,5 @@
 import { RNPackage, RNPackageContext } from "@rnoh/react-native-openharmony";
-import type { UITurboModule, UITurboModuleContext } from "@rnoh/react-native-openharmony/ts";
+import type { TurboModule, TurboModuleContext } from "@rnoh/react-native-openharmony/ts";
 import { RNGestureHandlerModule } from './rnoh/RNGestureHandlerModule';
 
 export default class RnohReactNativeHarmonyGestureHandlerPackage extends RNPackage {
@@ -10,8 +10,8 @@ export default class RnohReactNativeHarmonyGestureHandlerPackage extends RNPacka
     this.isRNGHDevModeEnabled = isRNGHDevModeEnabled
   }
 
-  getUITurboModuleFactoryByNameMap(): Map<string, (ctx: UITurboModuleContext) => UITurboModule | null> {
+  getUITurboModuleFactoryByNameMap(): Map<string, (ctx: TurboModuleContext) => TurboModule | null> {
     return new Map().set(RNGestureHandlerModule.NAME,
-      (ctx: UITurboModuleContext) => new RNGestureHandlerModule(ctx, this.isRNGHDevModeEnabled))
+      (ctx: TurboModuleContext) => new RNGestureHandlerModule(ctx, this.isRNGHDevModeEnabled))
   }
 }

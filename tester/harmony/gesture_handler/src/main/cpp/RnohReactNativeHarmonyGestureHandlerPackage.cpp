@@ -55,18 +55,18 @@ public:
     }
 };
 
-std::unique_ptr<TurboModuleFactoryDelegate> GestureHandlerPackage::createTurboModuleFactoryDelegate() {
+std::unique_ptr<TurboModuleFactoryDelegate> RnohReactNativeHarmonyGestureHandlerPackage::createTurboModuleFactoryDelegate() {
     return std::make_unique<GestureHandlerTurboModuleFactoryDelegate>();
 }
 
-std::vector<react::ComponentDescriptorProvider> GestureHandlerPackage::createComponentDescriptorProviders() {
+std::vector<react::ComponentDescriptorProvider> RnohReactNativeHarmonyGestureHandlerPackage::createComponentDescriptorProviders() {
     return {
         react::concreteComponentDescriptorProvider<react::RNGestureHandlerRootViewComponentDescriptor>(),
         react::concreteComponentDescriptorProvider<react::RNGestureHandlerButtonComponentDescriptor>(),
     };
 }
 
-ComponentJSIBinderByString GestureHandlerPackage::createComponentJSIBinderByName() {
+ComponentJSIBinderByString RnohReactNativeHarmonyGestureHandlerPackage::createComponentJSIBinderByName() {
     return {
         {"RNGestureHandlerButton", std::make_shared<RNGestureHandlerButtonJSIBinder>()},
         {"RNGestureHandlerRootView", std::make_shared<RNGestureHandlerRootViewJSIBinder>()},

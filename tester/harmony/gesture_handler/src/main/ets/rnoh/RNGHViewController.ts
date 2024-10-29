@@ -11,15 +11,16 @@ import {
 } from '../core';
 import { TouchEvent, TouchType, TouchObject } from './types';
 
-export class GestureHandlerArkUIAdapter {
+
+export class RNGHViewController {
   private activePointerIds = new Set<number>();
-  private pointersIdInBounds = new Set<number>();
+  private pointerIdsInBounds = new Set<number>();
   private gestureHandlers = new Set<GestureHandler>();
   private view: View;
   private logger: RNGHLogger;
 
   constructor(view: View, logger: RNGHLogger) {
-    this.logger = logger.cloneAndJoinPrefix(`ArkUIAdapter(viewTag: ${view.getTag()})`)
+    this.logger = logger.cloneAndJoinPrefix(`RNGHViewTouchHandler`)
     this.view = view;
   }
 
@@ -28,19 +29,23 @@ export class GestureHandlerArkUIAdapter {
   }
 
   handleTouch(e: TouchEvent) {
+    const logger = this.logger.cloneAndJoinPrefix("handleTouch")
     for (const changedTouch of e.changedTouches) {
-      if (this.shouldSkipTouch(changedTouch)) continue;
-      const wasInBounds = this.pointersIdInBounds.has(changedTouch.id);
+      if (this.shouldSkipTouch(changedTouch)) {
+        continue;
+      }
+      const wasInBounds = this.pointerIdsInBounds.has(changedTouch.id);
       const isInBounds = this.isInBounds({
         x: changedTouch.windowX,
         y: changedTouch.windowY,
       });
-      this.logger.info(
-        `handleTouch: ${JSON.stringify({
+      logger.debug(
+        {
+          viewTag: this.view.getTag(),
           type: changedTouch.type,
           wasInBounds,
           isInBounds,
-        })}`,
+        },
       );
       const adaptedEvent = this.adaptTouchEvent(e, changedTouch);
       this.gestureHandlers.forEach(gh => {
@@ -58,9 +63,11 @@ export class GestureHandlerArkUIAdapter {
             gh.onAdditionalPointerRemove(adaptedEvent);
             break;
           case EventType.MOVE:
-            if (!wasInBounds && !isInBounds)
+            if (!wasInBounds && !isInBounds) {
               gh.onPointerOutOfBounds(adaptedEvent);
-            else gh.onPointerMove(adaptedEvent);
+            } else {
+              gh.onPointerMove(adaptedEvent);
+            }
             break;
           case EventType.ENTER:
             gh.onPointerEnter(adaptedEvent);
@@ -97,9 +104,10 @@ export class GestureHandlerArkUIAdapter {
       changedTouch.type,
       this.isInBounds({ x: xAbsolute, y: yAbsolute }),
       changedTouch.id,
-      this.pointersIdInBounds.has(changedTouch.id),
+      this.pointerIdsInBounds.has(changedTouch.id),
     );
-    this.logger.cloneAndJoinPrefix("adaptTouchEvent").debug({ eventType, activePointersCount: this.activePointerIds.size })
+    this.logger.cloneAndJoinPrefix("adaptTouchEvent")
+      .debug({ eventType, activePointersCount: this.activePointerIds.size })
     this.updateIsInBoundsByPointerId(
       changedTouch.type,
       changedTouch.id,
@@ -133,17 +141,25 @@ export class GestureHandlerArkUIAdapter {
   ) {
     switch (touchType) {
       case TouchType.Down:
-        if (this.isInBounds({ x, y })) this.pointersIdInBounds.add(pointerId);
+        if (this.isInBounds({ x, y })) {
+          this.pointerIdsInBounds.add(pointerId);
+        }
         break;
       case TouchType.Move:
-        if (this.isInBounds({ x, y })) this.pointersIdInBounds.add(pointerId);
-        else this.pointersIdInBounds.delete(pointerId);
+        if (this.isInBounds({
+          x,
+          y
+        })) {
+          this.pointerIdsInBounds.add(pointerId);
+        } else {
+          this.pointerIdsInBounds.delete(pointerId);
+        }
         break;
       case TouchType.Up:
-        this.pointersIdInBounds.delete(pointerId);
+        this.pointerIdsInBounds.delete(pointerId);
         break;
       case TouchType.Cancel:
-        this.pointersIdInBounds.delete(pointerId);
+        this.pointerIdsInBounds.delete(pointerId);
         break;
     }
   }
@@ -204,11 +220,17 @@ export class GestureHandlerArkUIAdapter {
 
     switch (touchType) {
       case TouchType.Down:
-        if (activePointersCount > 0) return EventType.ADDITIONAL_POINTER_DOWN;
-        else return EventType.DOWN;
+        if (activePointersCount > 0) {
+          return EventType.ADDITIONAL_POINTER_DOWN;
+        } else {
+          return EventType.DOWN;
+        }
       case TouchType.Up:
-        if (activePointersCount > 1) return EventType.ADDITIONAL_POINTER_UP;
-        else return EventType.UP;
+        if (activePointersCount > 1) {
+          return EventType.ADDITIONAL_POINTER_UP;
+        } else {
+          return EventType.UP;
+        }
       case TouchType.Move:
         if (isCurrentlyInBounds) {
           return wasInBounds ? EventType.MOVE : EventType.ENTER;

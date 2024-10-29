@@ -1,7 +1,6 @@
 import { Tag, View } from "./View"
-import { ViewFinder } from "./ViewFinder"
 
-export interface ViewRegistry extends ViewFinder {
+export interface ViewRegistry {
   getViewByTag(viewTag: Tag): View | undefined
   save(view: View): void
   deleteByTag(viewTag: Tag): void
