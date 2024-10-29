@@ -10,9 +10,10 @@ import {
   PureNativeButton,
   RectButton,
   LongPressGestureHandler,
+  TapGestureHandler,
 } from 'react-native-gesture-handler';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
-import {StyleSheet, Text, View, Platform} from 'react-native';
+import {StyleSheet, Text, View, Platform, Animated} from 'react-native';
 import {PALETTE} from '../constants';
 import {useState} from 'react';
 
@@ -216,6 +217,36 @@ export function SharedAPITest() {
       <TestCase itShould="emit gesture event when shouldCancelWhenOutside is set to false and pointer is outside LongPressGestureHandler">
         <LongPressGestureHandlerShouldCancelWhenOutsideExample />
       </TestCase>
+      <TestCase
+        itShould="pass when blue square is pressed"
+        initialState={false}
+        arrange={({setState}) => {
+          return (
+            <TapGestureHandler onBegan={() => setState(true)}>
+              <Animated.View
+                key="progress-indicator"
+                style={{
+                    left: 0,
+                    width: 150,
+                    height: 150,
+                    backgroundColor: 'green',
+                }}>
+                <Animated.View
+                  style={{
+                    height: 100,
+                    width: 100,
+                    backgroundColor: 'blue',
+                    marginLeft: 140,
+                  }}
+                />
+              </Animated.View>
+            </TapGestureHandler>
+          );
+        }}
+        assert={({expect, state}) => {
+          expect(state).to.be.true;
+        }}
+      />
     </TestSuite>
   );
 }
