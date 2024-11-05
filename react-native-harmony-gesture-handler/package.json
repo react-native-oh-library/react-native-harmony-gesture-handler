@@ -48,7 +48,7 @@
     "@types/react": "^18.2.18",
     "metro-react-native-babel-preset": "^0.64.0",
     "react": "^18.2.0",
-    "react-native": "^0.72.0",
+    "react-native": "^0.75.4",
     "react-native-builder-bob": "^0.21.3",
     "react-native-harmony": "file:../packages/react-native-oh-react-native-harmony-0.77.8.tgz",
     "typescript": "5.0.4"
