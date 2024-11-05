@@ -47,6 +47,7 @@ export function NewApiTest() {
                     width: 128,
                     height: 128,
                     margin: 32,
+                    padding: 8,
                     alignSelf: 'center',
                     backgroundColor: PALETTE.DARK_BLUE,
                     justifyContent: 'center',
@@ -60,7 +61,7 @@ export function NewApiTest() {
                     ],
                   }}>
                   <Text
-                    style={{textAlign: 'center', color: 'white', padding: 8}}>
+                    style={{textAlign: 'center', color: 'white'}}>
                     ROTATE ME 45 DEG CLOCKWISE
                   </Text>
                 </Animated.View>

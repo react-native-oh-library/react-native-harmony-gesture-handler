@@ -105,12 +105,7 @@ function TappingTest() {
                       justifyContent: 'center',
                     }}>
                     <Text
-                      style={[
-                        styles.rectLabel,
-                        {
-                          padding: 8,
-                        },
-                      ]}>
+                      style={styles.rectLabel}>
                       TO FAIL: TOUCH, MOVE FINGER MORE THAN 100 PX, RELEASE
                       FINGER
                     </Text>

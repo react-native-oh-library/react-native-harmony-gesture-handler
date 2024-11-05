@@ -6,33 +6,32 @@ import {
   UIManager,
   DeviceEventEmitter,
   EmitterSubscription,
+  findNodeHandle, // RNGH: patch
 } from 'react-native';
-// @ts-ignore - it isn't typed by TS & don't have definitelyTyped types
-import deepEqual from 'lodash/isEqual';
-import RNGestureHandlerModule from '../RNGestureHandlerModule'; // RNGH: patch
-import type RNGestureHandlerModuleWeb from 'react-native-gesture-handler/src/RNGestureHandlerModule.web';
+import { customDirectEventTypes } from 'react-native-gesture-handler/src/handlers/customDirectEventTypes';
+import RNGestureHandlerModule from '../RNGestureHandlerModule';
 import { State } from 'react-native-gesture-handler/src/State';
-import {
-  handlerIDToTag,
-  getNextHandlerTag,
-  registerOldGestureHandler,
-} from 'react-native-gesture-handler/src/handlers/handlersRegistry';
+import { handlerIDToTag, registerOldGestureHandler } from 'react-native-gesture-handler/src/handlers/handlersRegistry';
+import { getNextHandlerTag } from 'react-native-gesture-handler/src/handlers/getNextHandlerTag';
 
 import {
   BaseGestureHandlerProps,
-  filterConfig,
   GestureEvent,
   HandlerStateChangeEvent,
-  findNodeHandle,
-  scheduleFlushOperations,
-} from "react-native-gesture-handler/src/handlers/gestureHandlerCommon";
+} from 'react-native-gesture-handler/src/handlers/gestureHandlerCommon';
+import { filterConfig, scheduleFlushOperations } from 'react-native-gesture-handler/src/handlers/utils';
 import { ValueOf } from 'react-native-gesture-handler/src/typeUtils';
-import { isFabric, isJestEnv, tagMessage } from 'react-native-gesture-handler/src/utils';
+import { deepEqual, isFabric, isJestEnv, tagMessage } from 'react-native-gesture-handler/src/utils';
 import { ActionType } from 'react-native-gesture-handler/src/ActionType';
 import { PressabilityDebugView } from 'react-native-gesture-handler/src/handlers/PressabilityDebugView';
 import GestureHandlerRootViewContext from 'react-native-gesture-handler/src/GestureHandlerRootViewContext';
+import { ghQueueMicrotask } from 'react-native-gesture-handler/src/ghQueueMicrotask';
 
 const UIManagerAny = UIManager as any;
+
+customDirectEventTypes.topGestureHandlerEvent = {
+  registrationName: 'onGestureHandlerEvent',
+};
 
 const customGHEventsConfigFabricAndroid = {
   topOnGestureHandlerEvent: { registrationName: 'onGestureHandlerEvent' },
@@ -85,10 +84,10 @@ if (UIManagerConstants) {
 // Wrap JS responder calls and notify gesture handler manager
 const {
   setJSResponder: oldSetJSResponder = () => {
-    //no operation
+    // no-op
   },
   clearJSResponder: oldClearJSResponder = () => {
-    //no operation
+    // no-op
   },
 } = UIManagerAny;
 UIManagerAny.setJSResponder = (tag: number, blockNativeResponder: boolean) => {
@@ -149,6 +148,14 @@ type InternalEventHandlers = {
   onGestureHandlerEvent?: (event: any) => void;
   onGestureHandlerStateChange?: (event: any) => void;
 };
+
+type AttachGestureHandlerWeb = (
+  handlerTag: number,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  newView: any,
+  _actionType: ActionType,
+  propsRef: React.RefObject<unknown>
+) => void;
 
 const UNRESOLVED_REFS_RETRY_LIMIT = 1;
 
@@ -216,7 +223,7 @@ export default function createHandler<
         // queueMicrotask. This makes it so update() function gets called after all
         // react components are mounted and we expect the missing ref object to
         // be resolved by then.
-        queueMicrotask(() => {
+        ghQueueMicrotask(() => {
           this.update(UNRESOLVED_REFS_RETRY_LIMIT);
         });
       }
@@ -314,9 +321,9 @@ export default function createHandler<
       this.viewTag = newViewTag;
 
       if (Platform.OS === 'web') {
-        // typecast due to dynamic resolution, attachGestureHandler should have web version signature in this branch
+        // Typecast due to dynamic resolution, attachGestureHandler should have web version signature in this branch
         (
-          RNGestureHandlerModule.attachGestureHandler as typeof RNGestureHandlerModuleWeb.attachGestureHandler
+          RNGestureHandlerModule.attachGestureHandler as AttachGestureHandlerWeb
         )(
           this.handlerTag,
           newViewTag,
@@ -330,18 +337,22 @@ export default function createHandler<
         });
 
         const actionType = (() => {
-          if (
-            (this.props?.onGestureEvent &&
-              'current' in this.props.onGestureEvent) ||
-            (this.props?.onHandlerStateChange &&
-              'current' in this.props.onHandlerStateChange)
-          ) {
+          const onGestureEvent = this.props?.onGestureEvent;
+          const isGestureHandlerWorklet =
+            onGestureEvent &&
+            ('current' in onGestureEvent ||
+              'workletEventHandler' in onGestureEvent);
+          const onHandlerStateChange = this.props?.onHandlerStateChange;
+          const isStateChangeHandlerWorklet =
+            onHandlerStateChange &&
+            ('current' in onHandlerStateChange ||
+              'workletEventHandler' in onHandlerStateChange);
+          const isReanimatedHandler =
+            isGestureHandlerWorklet || isStateChangeHandlerWorklet;
+          if (isReanimatedHandler) {
             // Reanimated worklet
             return ActionType.REANIMATED_WORKLET;
-          } else if (
-            this.props?.onGestureEvent &&
-            '__isNative' in this.props.onGestureEvent
-          ) {
+          } else if (onGestureEvent && '__isNative' in onGestureEvent) {
             // Animated.event with useNativeDriver: true
             return ActionType.NATIVE_ANIMATED_EVENT;
           } else {
@@ -380,7 +391,7 @@ export default function createHandler<
       // `ref={refObject}` it's possible that it won't be resolved in time. Seems like trying
       // again is easy enough fix.
       if (hasUnresolvedRefs(props) && remainingTries > 0) {
-        queueMicrotask(() => {
+        ghQueueMicrotask(() => {
           this.update(remainingTries - 1);
         });
       } else {
@@ -521,6 +532,7 @@ export default function createHandler<
             ? {
                 handlerType: name,
                 handlerTag: this.handlerTag,
+                enabled: this.props.enabled,
               }
             : {}),
           testID: this.props.testID ?? child.props.testID,
