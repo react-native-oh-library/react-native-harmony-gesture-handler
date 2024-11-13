@@ -284,7 +284,13 @@ export class PanGestureHandler extends GestureHandler<PanGestureHandlerConfig> {
     if (this.currentState === State.ACTIVE) {
       this.lastPos = this.tracker.getLastAvgPos();
     }
+
     this.tracker.removeFromTracker(event.pointerId);
+    
+    if (this.tracker.getTrackedPointersCount() === 0) {
+      this.clearActivationTimeout();
+    }
+
     if (this.currentState === State.ACTIVE) {
       this.end();
     } else {
@@ -357,5 +363,13 @@ export class PanGestureHandler extends GestureHandler<PanGestureHandlerConfig> {
     } else {
       this.unlockRNGestureResponder?.()
     }
+  }
+
+  protected onCancel(): void {
+    this.clearActivationTimeout();
+  }
+
+  protected onReset(): void {
+    this.clearActivationTimeout();
   }
 }
