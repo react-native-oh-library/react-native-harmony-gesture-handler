@@ -375,6 +375,35 @@ export function NewApiTest() {
               .false;
           }}
         />
+        <TestCase<Boolean>
+          itShould="change background color to green after LongPress"
+          initialState={false}
+          arrange={({setState, reset}) => {
+            return (
+              <Example
+                onReset={setBackgroundColor => {
+                  setBackgroundColor(PALETTE.DARK_BLUE);
+                  reset();
+                }}
+                createGesture={setBackgroundColor => {
+                  const panGesture = Gesture.Pan()
+                  .enabled(true)
+                  .activateAfterLongPress(1000)
+                  .onStart(() => {
+                    setState(true)
+                    setBackgroundColor(PALETTE.LIGHT_GREEN)
+                  })
+                  return panGesture;
+                }}
+                size={128}
+                label="LONG PRESS FOR 1 SECOND"
+              />
+            );
+          }}
+          assert={({expect, state}) => {
+            expect(state).to.be.true;
+          }}
+        />
       </TestSuite>
       
       <TestSuite name="Gesture callback data">
