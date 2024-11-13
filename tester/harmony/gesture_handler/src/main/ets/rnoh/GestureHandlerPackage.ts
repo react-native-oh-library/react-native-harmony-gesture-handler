@@ -19,7 +19,7 @@ class GestureHandlerTurboModuleFactory extends TurboModulesFactory {
  * @deprecated: Use the package class exported from ../RNOHPackage.ets (2024-10-10)
  */
 export class GestureHandlerPackage extends RNPackage {
-  createUITurboModuleFactory(ctx: TurboModuleContext): TurboModulesFactory {
+  createTurboModulesFactory(ctx: TurboModuleContext): TurboModulesFactory {
     return new GestureHandlerTurboModuleFactory(ctx);
   }
 }
