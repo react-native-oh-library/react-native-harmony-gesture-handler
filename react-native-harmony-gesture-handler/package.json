@@ -13,7 +13,7 @@
       "ohPackageName": "@rnoh/react-native-openharmony-gesture-handler"
     }
   },
-  "version": "2.20.0",
+  "version": "2.20.1",
   "description": "",
   "react-native": "src/index.ts",
   "main": "lib/commonjs/index.js",
