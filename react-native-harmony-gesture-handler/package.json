@@ -17,7 +17,7 @@
     "type": "git",
     "url": "https://github.com/react-native-oh-library/react-native-harmony-gesture-handler.git"
   },
-  "version": "2.14.15-rc.1",
+  "version": "2.14.15-rc.2",
   "description": "",
   "react-native": "src/index.ts",
   "main": "lib/commonjs/index.js",
