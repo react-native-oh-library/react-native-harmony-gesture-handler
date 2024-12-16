@@ -1,0 +1,11 @@
+[
+    {
+        "Name": "react-native-gesture-handler",
+        "License": "MIT License",
+        "License File": "LICENSE",
+        "Version Number": "2.14.14",
+        "Owner" : "xiafeng@huawei.com",
+        "Upstream URL": "https://github.com/software-mansion/react-native-gesture-handler",
+        "Description": "Declarative API exposing platform native touch and gesture system to React Native."
+    }
+]
