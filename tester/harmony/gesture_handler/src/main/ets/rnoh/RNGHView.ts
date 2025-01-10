@@ -57,6 +57,10 @@ export class RNGHView implements View {
     this.boundingBox = boundingBox
   }
 
+  resetChildrenBoundingRects() {
+    this.childrenBoundingBoxes.clear()
+  }
+
   attachChildrenBoundingRects(view: RNGHView) {
     this.childrenBoundingBoxes.add(view.getBoundingRect())
     for (const childBoundingBox of view.getChildrenBoundingRects()) {

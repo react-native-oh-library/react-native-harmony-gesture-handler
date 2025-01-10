@@ -94,11 +94,10 @@ export class RNGHRootViewController {
       // with the child bounding box ensures that the parent handlers are called correctly.
       // This approach is slightly different from Android RNGH implementation (extracting parent gesture handlers), 
       // however, the outcome is the same.
-      for (let j = i; j > 1; j--) {
-        const currentView = views[j];
-        const parentView = views[j-1];
-        if (parentView.intersectsWith(currentView)) {
-          parentView.attachChildrenBoundingRects(currentView);
+      for (let j = i - 1; j > 0; j--) {
+        const parentView = views[j];
+        if (parentView.intersectsWith(view)) {
+          parentView.attachChildrenBoundingRects(view);
         }
       }
     }
@@ -118,6 +117,7 @@ export class RNGHRootViewController {
 
     if (touchEvent.type === TouchType.Up || touchEvent.type === TouchType.Cancel) {
       touchableViews.forEach(view => this.touchableViewsMultiset.remove(view));
+      views.forEach(view => view.resetChildrenBoundingRects());
     }
   }
 
