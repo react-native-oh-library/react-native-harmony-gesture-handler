@@ -13,12 +13,13 @@
     "format:cpp": "zsh -c 'clang-format -i ./harmony/gesture_handler/src/main/cpp/**/*.h ./harmony/gesture_handler/src/main/cpp/**/*.cpp ./harmony/entry/**/*.h ./harmony/entry/**/*.cpp --style=file:./harmony/.clang-format'"
   },
   "dependencies": {
+    "@react-native-oh/react-native-core": "npm:@rnoh/react-native-core@0.75.1+rn.0.75.4",
     "@rnoh/testerino": "^0.0.9",
     "react": "18.3.1",
     "react-native": "0.75.4",
     "react-native-gesture-handler": "2.20.2",
-    "react-native-harmony": "npm:@rnoh/react-native-harmony@^0.75.1",
-    "react-native-harmony-gesture-handler": "file:../react-native-harmony-gesture-handler/rnoh-react-native-harmony-gesture-handler-2.20.0.tgz"
+    "react-native-harmony": "npm:@rnoh/react-native-harmony@0.75.4",
+    "react-native-harmony-gesture-handler": "file:../react-native-harmony-gesture-handler/rnoh-react-native-harmony-gesture-handler-2.20.1.tgz"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
