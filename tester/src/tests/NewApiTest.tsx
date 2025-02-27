@@ -47,6 +47,7 @@ export function NewApiTest() {
                     width: 128,
                     height: 128,
                     margin: 32,
+                    padding: 8,
                     alignSelf: 'center',
                     backgroundColor: PALETTE.DARK_BLUE,
                     justifyContent: 'center',
@@ -59,8 +60,7 @@ export function NewApiTest() {
                       },
                     ],
                   }}>
-                  <Text
-                    style={{textAlign: 'center', color: 'white', padding: 8}}>
+                  <Text style={{textAlign: 'center', color: 'white'}}>
                     ROTATE ME 45 DEG CLOCKWISE
                   </Text>
                 </Animated.View>
@@ -142,20 +142,23 @@ export function NewApiTest() {
                       setBackgroundColor('gray');
                       hasDoublePressed = true;
                     });
-                  const tripleTap = Gesture.Tap()
-                    .numberOfTaps(3)
-                    .maxDelay(2000)
-                    .onEnd(() => {
-                      setBackgroundColor(PALETTE.LIGHT_GREEN);
-                      if (hasDoublePressed) {
-                        setState('DOUBLE_AND_TRIPLE_TAP');
-                      } else {
-                        setState('TRIPLE_TAP');
-                      }
-                    });
+                  const createTripleTapGesture = () => {
+                    return Gesture.Tap()
+                      .numberOfTaps(3)
+                      .maxDelay(2000)
+                      .onEnd(() => {
+                        setBackgroundColor(PALETTE.LIGHT_GREEN);
+                        if (hasDoublePressed) {
+                          setState('DOUBLE_AND_TRIPLE_TAP');
+                        } else {
+                          setState('TRIPLE_TAP');
+                        }
+                      });
+                  };
+
                   return Gesture.Simultaneous(
-                    Gesture.Race(doubleTap, tripleTap),
-                    tripleTap,
+                    Gesture.Race(doubleTap, createTripleTapGesture()),
+                    createTripleTapGesture(),
                   );
                 }}
               />
@@ -201,6 +204,7 @@ export function NewApiTest() {
           }}
         />
       </TestSuite>
+
       <TestSuite name="Gesture.LongPress">
         <TestCase
           itShould="pass after pressing the blue rectangle for one second"
@@ -387,12 +391,12 @@ export function NewApiTest() {
                 }}
                 createGesture={setBackgroundColor => {
                   const panGesture = Gesture.Pan()
-                  .enabled(true)
-                  .activateAfterLongPress(1000)
-                  .onStart(() => {
-                    setState(true)
-                    setBackgroundColor(PALETTE.LIGHT_GREEN)
-                  })
+                    .enabled(true)
+                    .activateAfterLongPress(1000)
+                    .onStart(() => {
+                      setState(true);
+                      setBackgroundColor(PALETTE.LIGHT_GREEN);
+                    });
                   return panGesture;
                 }}
                 size={128}
@@ -405,7 +409,7 @@ export function NewApiTest() {
           }}
         />
       </TestSuite>
-      
+
       <TestSuite name="Gesture callback data">
         <TestCase<TapGestureHandlerEventPayload | undefined>
           itShould="Tap"
@@ -421,7 +425,7 @@ export function NewApiTest() {
                     });
                   }}
                   size={{width: 300, height: 120}}
-                  label='show callback data after tap'
+                  label="show callback data after tap"
                 />
               </>
             );
@@ -450,7 +454,7 @@ export function NewApiTest() {
                     });
                   }}
                   size={{width: 300, height: 120}}
-                  label='show callback data after Fling'
+                  label="show callback data after Fling"
                 />
               </>
             );
@@ -479,7 +483,7 @@ export function NewApiTest() {
                     });
                   }}
                   size={{width: 300, height: 120}}
-                  label='show callback data after Pinch'
+                  label="show callback data after Pinch"
                 />
               </>
             );
@@ -508,7 +512,7 @@ export function NewApiTest() {
                     });
                   }}
                   size={{width: 300, height: 120}}
-                  label='show callback data after LongPress'
+                  label="show callback data after LongPress"
                 />
               </>
             );
@@ -538,7 +542,7 @@ export function NewApiTest() {
                     });
                   }}
                   size={{width: 300, height: 120}}
-                  label='show callback data after Rotation'
+                  label="show callback data after Rotation"
                 />
               </>
             );
@@ -567,7 +571,7 @@ export function NewApiTest() {
                     });
                   }}
                   size={{width: 300, height: 120}}
-                  label='show callback data after tap'
+                  label="show callback data after tap"
                 />
               </>
             );
@@ -731,7 +735,7 @@ function Example(props: {
     setLabel: React.Dispatch<React.SetStateAction<string>>,
   ) => React.ComponentProps<typeof GestureDetector>['gesture'];
   rightHitSlop?: number;
-  size?: number | {width: number, height: number};
+  size?: number | {width: number; height: number};
   onReset?: (setColor: React.Dispatch<React.SetStateAction<string>>) => void;
 }) {
   const [backgroundColor, setBackgroundColor] = useState(PALETTE.DARK_BLUE);
