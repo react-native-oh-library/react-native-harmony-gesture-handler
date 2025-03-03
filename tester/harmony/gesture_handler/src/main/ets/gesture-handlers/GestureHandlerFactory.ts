@@ -7,7 +7,8 @@ import {
   GestureHandlerDependencies,
   ScrollLocker,
   GestureHandlerOrchestrator,
-  RNGestureResponder
+  RNGestureResponder,
+  VelocityTracker
 } from "../core"
 import { TapGestureHandler } from './TapGestureHandler';
 import { PanGestureHandler } from "./PanGestureHandler"
@@ -32,7 +33,7 @@ export class GestureHandlerFactory {
     this.logger.cloneAndJoinPrefix(`create`).debug(`(handlerName=${handlerName}, handlerTag=${handlerTag})`);
 
     const deps: GestureHandlerDependencies = {
-      tracker: new PointerTracker(),
+      tracker: new PointerTracker(this.cleanLogger, new VelocityTracker(this.cleanLogger)),
       orchestrator: this.orchestrator,
       handlerTag,
       interactionManager: this.interactionManager,

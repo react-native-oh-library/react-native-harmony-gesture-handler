@@ -40,7 +40,7 @@ struct Index {
         RNApp({
           rnInstanceConfig: {
             name: "app_name",
-            createRNPackages,
+            createRNPackages: (ctx) => createRNPackages(ctx, this.rnohCoreContext!.isDebugModeEnabled),
             enableCAPIArchitecture: true,
           },
           appKey: "app_name",
