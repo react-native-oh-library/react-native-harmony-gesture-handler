@@ -100,6 +100,7 @@ export abstract class GestureHandler<TGestureConfig extends GestureConfig = Gest
   protected pointerType: PointerType
   protected activationIndex = 0
   protected shouldResetProgress = false;
+  protected numberOfPointers: number = 0;
 
   protected handlerTag: number
   protected orchestrator: GestureHandlerOrchestrator
@@ -158,6 +159,10 @@ export abstract class GestureHandler<TGestureConfig extends GestureConfig = Gest
     if (touchEvent) {
       this.eventDispatcher.onGestureHandlerEvent(touchEvent)
     }
+  }
+
+  public setNumberOfPointers(numberOfPointers: number) {
+    this.numberOfPointers = numberOfPointers;
   }
 
   protected transformToTouchEvent(event: IncomingEvent): GestureTouchEvent | undefined {
@@ -631,7 +636,7 @@ export abstract class GestureHandler<TGestureConfig extends GestureConfig = Gest
 
   private createStateChangeEvent(newState: State, oldState: State): GestureStateChangeEvent {
     return {
-      numberOfPointers: this.tracker.getTrackedPointersCount(),
+      numberOfPointers: this.numberOfPointers,
       state: newState,
       pointerInside: this.view.isPositionInBounds({
         x: this.tracker.getLastAvgX(),

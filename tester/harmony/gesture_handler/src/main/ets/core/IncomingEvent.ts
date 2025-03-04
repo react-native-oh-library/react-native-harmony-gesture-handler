@@ -74,5 +74,6 @@ export interface IncomingEvent {
   allTouches?: Touch[];
   changedTouches?: Touch[];
   touchEventType?: TouchEventType;
+  pointerCount: number;
 }
 
