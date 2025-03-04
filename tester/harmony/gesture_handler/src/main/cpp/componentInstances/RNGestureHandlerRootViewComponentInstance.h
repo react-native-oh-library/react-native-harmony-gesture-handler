@@ -24,6 +24,7 @@ public:
 
     private:
         RNGestureHandlerRootViewComponentInstance *m_rootView;
+        int64_t lastEventTime = 0;
     };
 
     using Point = facebook::react::Point;
