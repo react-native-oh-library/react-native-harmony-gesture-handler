@@ -53,6 +53,7 @@ export class RNGHViewController {
       stopTracingA()
       const stopTracingB = logger.cloneAndJoinPrefix("B").startTracing()
       this.gestureHandlers.forEach(gh => {
+        gh.setNumberOfPointers(adaptedEvent.pointerCount);
         switch (adaptedEvent.eventType) {
           case EventType.DOWN:
             gh.onPointerDown(adaptedEvent);
@@ -130,6 +131,7 @@ export class RNGHViewController {
       buttons: 0,
       time: e.timestamp,
       allTouches: e.touches.map(touch => this.mapTouchObjectToTouch(touch)),
+      pointerCount: e.touches.length,
       changedTouches: e.changedTouches.map(touch =>
       this.mapTouchObjectToTouch(touch),
       ),
