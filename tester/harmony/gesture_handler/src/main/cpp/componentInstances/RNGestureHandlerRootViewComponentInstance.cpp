@@ -42,6 +42,11 @@ RNGestureHandlerRootViewComponentInstance::findTargetForTouchPoint(Point const &
 
 void RNGestureHandlerRootViewComponentInstance::RNGestureHandlerRootViewTouchHandler::onTouchEvent(
     ArkUI_UIInputEvent *e) {
+    auto eventTime = OH_ArkUI_UIInputEvent_GetEventTime(e);
+    if (eventTime <= lastEventTime) {
+        return;
+    }
+    lastEventTime = eventTime;
     auto ancestor = m_rootView->getParent().lock();
     while (ancestor != nullptr) {
         auto ancestorRNGHRootView = std::dynamic_pointer_cast<RNGestureHandlerRootViewComponentInstance>(ancestor);
@@ -85,14 +90,14 @@ void RNGestureHandlerRootViewComponentInstance::RNGestureHandlerRootViewTouchHan
         auto dist = pow(activeWindowX - touchPoint["windowX"].asDouble(), 2) +
                     pow(activeWindowY - touchPoint["windowY"].asDouble(), 2);
         if (minDist < 0 || dist < minDist) {
-          minDist = dist;
-          activePointerIdx = i;
-        } 
+            minDist = dist;
+            activePointerIdx = i;
+        }
     }
     payload["actionTouch"] = touchPoints[activePointerIdx];
     payload["touchPoints"] = touchPoints;
     payload["sourceType"] = OH_ArkUI_UIInputEvent_GetSourceType(e);
-    payload["timestamp"] = OH_ArkUI_UIInputEvent_GetEventTime(e);
+    payload["timestamp"] = eventTime;
     payload["touchableViews"] = m_rootView->dynamicFromTouchableViews(touchableViews);
     payload["rootTag"] = m_rootView->getTag();
     payload["action"] = action;

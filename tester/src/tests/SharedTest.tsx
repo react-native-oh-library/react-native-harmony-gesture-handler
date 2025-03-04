@@ -11,6 +11,8 @@ import {
   RectButton,
   LongPressGestureHandler,
   TapGestureHandler,
+  Gesture,
+  GestureDetector,
 } from 'react-native-gesture-handler';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import {StyleSheet, Text, View, Platform, Animated} from 'react-native';
@@ -214,6 +216,16 @@ export function SharedAPITest() {
           expect(state).to.be.true;
         }}
       />
+      <TestCase
+        itShould="pass when pressed with two or more fingers"
+        initialState={0}
+        arrange={({setState}) => {
+          return <NumberOfPointersTest setState={setState} />;
+        }}
+        assert={({expect, state}) => {
+          expect(state).to.be.greaterThan(1);
+        }}
+      />
       <TestCase itShould="emit gesture event when shouldCancelWhenOutside is set to false and pointer is outside LongPressGestureHandler">
         <LongPressGestureHandlerShouldCancelWhenOutsideExample />
       </TestCase>
@@ -226,10 +238,10 @@ export function SharedAPITest() {
               <Animated.View
                 key="progress-indicator"
                 style={{
-                    left: 0,
-                    width: 150,
-                    height: 150,
-                    backgroundColor: 'green',
+                  left: 0,
+                  width: 150,
+                  height: 150,
+                  backgroundColor: 'green',
                 }}>
                 <Animated.View
                   style={{
@@ -284,6 +296,35 @@ const LongPressGestureHandlerShouldCancelWhenOutsideExample = () => {
         </View>
       </LongPressGestureHandler>
     </View>
+  );
+};
+
+const NumberOfPointersTest = ({
+  setState,
+}: {
+  setState: (state: number) => void;
+}) => {
+  const TapGesture = Gesture.Tap().onFinalize(e => {
+    setState(e.numberOfPointers);
+  });
+  return (
+    <GestureDetector gesture={TapGesture}>
+      <View
+        style={{
+          width: 150,
+          height: 128,
+          backgroundColor: PALETTE.DARK_BLUE,
+          justifyContent: 'center',
+        }}>
+        <Text
+          style={{
+            color: 'white',
+            textAlign: 'center',
+          }}>
+          PRESS ME WITH TWO (OR MORE) FINGERS
+        </Text>
+      </View>
+    </GestureDetector>
   );
 };
 
