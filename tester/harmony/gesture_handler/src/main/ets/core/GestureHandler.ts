@@ -81,7 +81,16 @@ export type GestureHandlerDependencies = {
 
 export abstract class GestureHandler<TGestureConfig extends GestureConfig = GestureConfig> {
   protected config: TGestureConfig = this.getDefaultConfig()
-  protected currentState: State = State.UNDETERMINED
+
+  protected _currentState: State = State.UNDETERMINED
+  protected get currentState(): State {
+    return this._currentState
+  }
+  protected set currentState(newState: State) {
+    this.logger.cloneAndJoinPrefix("setCurrentState").debug(`${getStateName(this._currentState)} => ${getStateName(newState)}`)
+    this._currentState = newState;
+  }
+
   protected view: View | undefined = undefined
   protected lastSentState: State | undefined = undefined
   protected shouldCancelWhenOutside = false
@@ -123,7 +132,9 @@ export abstract class GestureHandler<TGestureConfig extends GestureConfig = Gest
   }
 
   public onPointerDown(e: IncomingEvent) {
-    const stopTracing = this.logger.cloneAndJoinPrefix("onPointerDown").startTracing()
+    const logger = this.logger.cloneAndJoinPrefix("onPointerDown")
+    const stopTracing = logger.startTracing()
+    logger.debug({ currentState: getStateName(this.currentState) })
     this.orchestrator.registerHandlerIfNotPresent(this);
     this.pointerType = e.pointerType;
     if (this.pointerType === PointerType.TOUCH) {
@@ -243,7 +254,9 @@ export abstract class GestureHandler<TGestureConfig extends GestureConfig = Gest
   }
 
   public onPointerUp(e: IncomingEvent): void {
-    const stopTracing = this.logger.cloneAndJoinPrefix("onPointerUp").startTracing()
+    const logger = this.logger.cloneAndJoinPrefix("onPointerUp")
+    const stopTracing = logger.startTracing()
+    logger.debug({ currentState: getStateName(this.currentState) })
     if (this.config.needsPointerData) {
       this.sendTouchEvent(e)
     }
@@ -251,7 +264,9 @@ export abstract class GestureHandler<TGestureConfig extends GestureConfig = Gest
   }
 
   public onAdditionalPointerAdd(e: IncomingEvent): void {
-    const stopTracing = this.logger.cloneAndJoinPrefix("onAdditionalPointerAdd").startTracing()
+    const logger = this.logger.cloneAndJoinPrefix("onAdditionalPointerAdd")
+    const stopTracing = logger.startTracing()
+    logger.debug({ currentState: getStateName(this.currentState) })
     if (this.config.needsPointerData) {
       this.sendTouchEvent(e)
     }
@@ -259,7 +274,9 @@ export abstract class GestureHandler<TGestureConfig extends GestureConfig = Gest
   }
 
   public onAdditionalPointerRemove(e: IncomingEvent): void {
-    const stopTracing = this.logger.cloneAndJoinPrefix("onAdditionalPointerRemove").startTracing()
+    const logger = this.logger.cloneAndJoinPrefix("onAdditionalPointerRemove")
+    const stopTracing = logger.startTracing()
+    logger.debug({ currentState: getStateName(this.currentState) })
     if (this.config.needsPointerData) {
       this.sendTouchEvent(e)
     }
@@ -267,7 +284,9 @@ export abstract class GestureHandler<TGestureConfig extends GestureConfig = Gest
   }
 
   public onPointerMove(e: IncomingEvent): void {
-    const stopTracing = this.logger.cloneAndJoinPrefix("onPointerMove").startTracing()
+    const logger = this.logger.cloneAndJoinPrefix("onPointerMove")
+    const stopTracing = logger.startTracing()
+    logger.debug({ currentState: getStateName(this.currentState) })
     this.tryToSendMoveEvent(false);
     if (this.config.needsPointerData) {
       this.sendTouchEvent(e);
@@ -295,7 +314,9 @@ export abstract class GestureHandler<TGestureConfig extends GestureConfig = Gest
   }
 
   public onPointerEnter(e: IncomingEvent): void {
-    const stopTracing = this.logger.cloneAndJoinPrefix("onPointerEnter").startTracing()
+    const logger = this.logger.cloneAndJoinPrefix("onPointerEnter")
+    const stopTracing = logger.startTracing()
+    logger.debug({ currentState: getStateName(this.currentState) })
     if (this.config.needsPointerData) {
       this.sendTouchEvent(e)
     }
@@ -303,7 +324,9 @@ export abstract class GestureHandler<TGestureConfig extends GestureConfig = Gest
   }
 
   public onPointerOut(e: IncomingEvent): void {
-    const stopTracing = this.logger.cloneAndJoinPrefix("onPointerOut").startTracing()
+    const logger = this.logger.cloneAndJoinPrefix("onPointerOut")
+    const stopTracing = logger.startTracing()
+    logger.debug({ currentState: getStateName(this.currentState) })
     if (this.shouldCancelWhenOutside) {
       switch (this.currentState) {
         case State.ACTIVE:
@@ -323,7 +346,9 @@ export abstract class GestureHandler<TGestureConfig extends GestureConfig = Gest
   }
 
   public onPointerCancel(e: IncomingEvent): void {
-    const stopTracing = this.logger.cloneAndJoinPrefix("onPointerCancel").startTracing()
+    const logger = this.logger.cloneAndJoinPrefix("onPointerCancel")
+    const stopTracing = logger.startTracing()
+    logger.debug({ currentState: getStateName(this.currentState) })
     if (this.config.needsPointerData) {
       this.sendTouchEvent(e);
     }
@@ -333,7 +358,8 @@ export abstract class GestureHandler<TGestureConfig extends GestureConfig = Gest
   }
 
   public onPointerOutOfBounds(e: IncomingEvent): void {
-    const stopTracing = this.logger.cloneAndJoinPrefix("onPointerOutOfBounds").startTracing()
+    const logger = this.logger.cloneAndJoinPrefix("onPointerOutOfBounds")
+    const stopTracing = logger.startTracing()
     this.tryToSendMoveEvent(true);
     if (this.config.needsPointerData) {
       this.sendTouchEvent(e);

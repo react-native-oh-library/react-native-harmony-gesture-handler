@@ -44,9 +44,9 @@ export function NewApiTest() {
               <GestureDetector gesture={rotationGh}>
                 <Animated.View
                   style={{
-                    width: 128,
-                    height: 128,
-                    margin: 32,
+                    width: 200,
+                    height: 200,
+                    margin: 48,
                     padding: 8,
                     alignSelf: 'center',
                     backgroundColor: PALETTE.DARK_BLUE,
@@ -142,23 +142,20 @@ export function NewApiTest() {
                       setBackgroundColor('gray');
                       hasDoublePressed = true;
                     });
-                  const createTripleTapGesture = () => {
-                    return Gesture.Tap()
-                      .numberOfTaps(3)
-                      .maxDelay(2000)
-                      .onEnd(() => {
-                        setBackgroundColor(PALETTE.LIGHT_GREEN);
-                        if (hasDoublePressed) {
-                          setState('DOUBLE_AND_TRIPLE_TAP');
-                        } else {
-                          setState('TRIPLE_TAP');
-                        }
-                      });
-                  };
-
+                  const tripleTap = Gesture.Tap()
+                    .numberOfTaps(3)
+                    .maxDelay(2000)
+                    .onEnd(() => {
+                      setBackgroundColor(PALETTE.LIGHT_GREEN);
+                      if (hasDoublePressed) {
+                        setState('DOUBLE_AND_TRIPLE_TAP');
+                      } else {
+                        setState('TRIPLE_TAP');
+                      }
+                    });
                   return Gesture.Simultaneous(
-                    Gesture.Race(doubleTap, createTripleTapGesture()),
-                    createTripleTapGesture(),
+                    Gesture.Race(doubleTap, tripleTap),
+                    tripleTap,
                   );
                 }}
               />
@@ -204,7 +201,6 @@ export function NewApiTest() {
           }}
         />
       </TestSuite>
-
       <TestSuite name="Gesture.LongPress">
         <TestCase
           itShould="pass after pressing the blue rectangle for one second"
