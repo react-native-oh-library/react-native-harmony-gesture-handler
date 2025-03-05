@@ -13,3 +13,4 @@ export * from "./State"
 export * from "./GestureHandlerRegistry"
 export * from "./ViewRegistry"
 export * from './Multiset'
+export * from "./VelocityTracker"

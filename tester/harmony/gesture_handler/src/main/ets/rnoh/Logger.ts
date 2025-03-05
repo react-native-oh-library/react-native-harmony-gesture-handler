@@ -60,10 +60,10 @@ export class DevelopmentRNGHLogger implements RNGHLogger {
       stopTrace()
       const stopTime = Date.now()
       const durationInMs = stopTime - startTime
-      if (durationInMs < 16) {
+      if (durationInMs < 8) {
         this.log("debug", "STOP", currentOffset)
       } else {
-        this.log("debug", `STOP (${durationInMs} ms)`, currentOffset)
+        this.log("warn", `STOP (${durationInMs} ms)`, currentOffset)
       }
     }
   }
@@ -92,14 +92,14 @@ export class ProductionRNGHLogger extends DevelopmentRNGHLogger {
 
   override startTracing(): () => void {
     const startTime = Date.now()
-    const currentOffset = this.tracer.getActiveTracesCount() * 2
+    const currentOffset = this.tracer.getActiveTracesCount();
 
     const stopTrace = this.tracer.startTrace(this.prefix)
     return () => {
       stopTrace()
       const stopTime = Date.now()
       const durationInMs = stopTime - startTime
-      if (durationInMs > 16) {
+      if (durationInMs > 4) {
         this.log("warn", `STOP (${durationInMs} ms)`, currentOffset)
       }
     }

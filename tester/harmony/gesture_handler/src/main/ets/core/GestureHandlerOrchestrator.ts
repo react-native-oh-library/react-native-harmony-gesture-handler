@@ -294,10 +294,13 @@ export class GestureHandlerOrchestrator {
   }
 
   private cleanUpHandler(handler: GestureHandler) {
+    const logger = this.logger.cloneAndJoinPrefix("cleanUpHandler")
+    const stopTracing = logger.startTracing()
     handler.reset();
     handler.setActive(false);
     handler.setAwaiting(false);
     handler.setActivationIndex(Number.MAX_VALUE);
+    stopTracing()
   }
 
   public registerHandlerIfNotPresent(handler: GestureHandler) {

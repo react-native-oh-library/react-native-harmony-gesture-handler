@@ -7,7 +7,8 @@ import {
   TouchEventType,
   Touch,
   RNGHLogger,
-  View
+  View,
+  RNGHError
 } from '../core';
 import { TouchEvent, TouchType, TouchObject } from './types';
 
@@ -30,6 +31,7 @@ export class RNGHViewController {
 
   handleTouch(e: TouchEvent) {
     const logger = this.logger.cloneAndJoinPrefix("handleTouch")
+    const stopTracingA = logger.cloneAndJoinPrefix("A").startTracing()
     for (const changedTouch of e.changedTouches) {
       if (this.shouldSkipTouch(changedTouch)) {
         continue;
@@ -48,6 +50,8 @@ export class RNGHViewController {
         },
       );
       const adaptedEvent = this.adaptTouchEvent(e, changedTouch);
+      stopTracingA()
+      const stopTracingB = logger.cloneAndJoinPrefix("B").startTracing()
       this.gestureHandlers.forEach(gh => {
         switch (adaptedEvent.eventType) {
           case EventType.DOWN:
@@ -80,6 +84,7 @@ export class RNGHViewController {
             break;
         }
       })
+      stopTracingB()
     }
   }
 
@@ -99,7 +104,6 @@ export class RNGHViewController {
   ): IncomingEvent {
     const xAbsolute = changedTouch.windowX;
     const yAbsolute = changedTouch.windowY;
-
     const eventType = this.mapTouchTypeToEventType(
       changedTouch.type,
       this.isInBounds({ x: xAbsolute, y: yAbsolute }),
@@ -171,11 +175,17 @@ export class RNGHViewController {
   }
 
   private updateActivePointers(touchType: TouchType, pointerId: number): void {
+    const logger = this.logger.cloneAndJoinPrefix("updateActivePointers")
     switch (touchType) {
       case TouchType.Down:
         this.activePointerIds.add(pointerId);
         break;
       case TouchType.Up:
+        logger.debug(`delete active pointer: ${pointerId} from ${Array.from(this.activePointerIds)}`)
+        if (!this.activePointerIds.has(pointerId)) {
+          logger.error(`Tried to remove active pointer with id=${pointerId}, but there is no such active pointer (activePointerIds=${Array.from(this.activePointerIds)})`)
+          return;
+        }
         this.activePointerIds.delete(pointerId);
         break;
       case TouchType.Cancel:
@@ -206,20 +216,20 @@ export class RNGHViewController {
      * If user manages to drag finger out of GestureHandlerRootView,
      * we don't receive UP event.
      */
-    let activePointersCount = this.activePointerIds.size
+    let otherActivePointersCount = this.activePointerIds.size
     if (this.activePointerIds.has(pointerId)) {
-      activePointersCount--;
+      otherActivePointersCount--;
     }
 
     switch (touchType) {
       case TouchType.Down:
-        if (activePointersCount > 0) {
+        if (otherActivePointersCount > 0) {
           return EventType.ADDITIONAL_POINTER_DOWN;
         } else {
           return EventType.DOWN;
         }
       case TouchType.Up:
-        if (activePointersCount > 1) {
+        if (otherActivePointersCount > 1) {
           return EventType.ADDITIONAL_POINTER_UP;
         } else {
           return EventType.UP;

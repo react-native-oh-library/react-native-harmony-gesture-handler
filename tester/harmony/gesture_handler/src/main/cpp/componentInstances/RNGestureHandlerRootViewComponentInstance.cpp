@@ -77,13 +77,17 @@ void RNGestureHandlerRootViewComponentInstance::RNGestureHandlerRootViewTouchHan
     auto activeWindowX = OH_ArkUI_PointerEvent_GetWindowX(e);
     auto activeWindowY = OH_ArkUI_PointerEvent_GetWindowY(e);
     int32_t pointerCount = OH_ArkUI_PointerEvent_GetPointerCount(e);
+    double minDist = -1;
     int activePointerIdx = 0;
     for (int i = 0; i < pointerCount; i++) {
         auto touchPoint = m_rootView->convertNodeTouchPointToDynamic(e, i);
         touchPoints.push_back(touchPoint);
-        if (activeWindowX == touchPoint["windowX"].asDouble() && activeWindowY == touchPoint["windowY"].asDouble()) {
-            activePointerIdx = i;
-        }
+        auto dist = pow(activeWindowX - touchPoint["windowX"].asDouble(), 2) +
+                    pow(activeWindowY - touchPoint["windowY"].asDouble(), 2);
+        if (minDist < 0 || dist < minDist) {
+          minDist = dist;
+          activePointerIdx = i;
+        } 
     }
     payload["actionTouch"] = touchPoints[activePointerIdx];
     payload["touchPoints"] = touchPoints;
