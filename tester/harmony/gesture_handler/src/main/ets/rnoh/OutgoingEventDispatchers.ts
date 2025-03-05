@@ -23,9 +23,9 @@ export class JSEventDispatcher implements OutgoingEventDispatcher {
   public onGestureHandlerEvent(
     event: GestureStateChangeEvent | GestureUpdateEvent | GestureTouchEvent,
   ) {
-    const stopTracing = this.logger.cloneAndJoinPrefix(`onGestureHandlerEvent`).startTracing();
+    const logger = this.logger.cloneAndJoinPrefix(`onGestureHandlerEvent`);
+    logger.debug(event)
     this.rnInstance.emitDeviceEvent('onGestureHandlerEvent', event);
-    stopTracing()
   }
 }
 
@@ -83,12 +83,12 @@ export class ReanimatedEventDispatcher implements OutgoingEventDispatcher {
   public onGestureHandlerEvent(
     event: GestureStateChangeEvent | GestureUpdateEvent | GestureTouchEvent,
   ) {
-    const stopTracing = this.logger.cloneAndJoinPrefix(`onGestureHandlerEvent`).startTracing();
+    const logger = this.logger.cloneAndJoinPrefix(`onGestureHandlerEvent`);
+    logger.debug(event)
     this.rnInstance.emitComponentEvent(
       this.viewTag,
       'onGestureHandlerEvent',
       event,
     );
-    stopTracing()
   }
 }

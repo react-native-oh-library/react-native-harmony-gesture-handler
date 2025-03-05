@@ -1,15 +1,13 @@
 import { VelocityTracker, TrackerElement } from './VelocityTracker';
 import { IncomingEvent } from "./IncomingEvent"
 import { Vector2D } from './Vector2D';
+import { RNGHLogger } from "./RNGHLogger"
 
 const MAX_POINTERS = 20;
 
 export class PointerTracker {
-  private velocityTracker = new VelocityTracker();
-  private trackedPointers: Map<number, TrackerElement> = new Map<
-  number,
-  TrackerElement
-  >();
+  private trackedPointers: Map<number, TrackerElement> = new Map<number,
+  TrackerElement>();
 
   private touchEventsIds: Map<number, number> = new Map<number, number>();
 
@@ -17,7 +15,10 @@ export class PointerTracker {
 
   private cachedAverages: { x: number; y: number } = { x: 0, y: 0 };
 
-  public constructor() {
+  private logger: RNGHLogger
+
+  public constructor(logger: RNGHLogger, private velocityTracker: VelocityTracker) {
+    this.logger = logger.cloneAndJoinPrefix("PointerTracker")
     this.lastMovedPointerId = NaN;
 
     for (let i = 0; i < MAX_POINTERS; ++i) {
@@ -55,6 +56,7 @@ export class PointerTracker {
   }
 
   public track(event: IncomingEvent): void {
+    const stopTracing = this.logger.cloneAndJoinPrefix("track").startTracing()
     const element: TrackerElement = this.trackedPointers.get(
       event.pointerId
     ) as TrackerElement;
@@ -83,6 +85,7 @@ export class PointerTracker {
       x: avgX,
       y: avgY,
     };
+    stopTracing()
   }
 
   //Mapping TouchEvents ID
@@ -113,12 +116,13 @@ export class PointerTracker {
   }
 
   public getVelocity(pointerId: number) {
-    return new Vector2D({x: this.getVelocityX(pointerId), y: this.getVelocityY(pointerId)})
+    return new Vector2D({ x: this.getVelocityX(pointerId), y: this.getVelocityY(pointerId) })
   }
 
   public getVelocityX(pointerId: number): number {
     return this.trackedPointers.get(pointerId)?.velocityX as number;
   }
+
   public getVelocityY(pointerId: number): number {
     return this.trackedPointers.get(pointerId)?.velocityY as number;
   }
@@ -166,7 +170,7 @@ export class PointerTracker {
   }
 
   public getLastAvgPos() {
-    return new Vector2D({x: this.getLastAvgX(), y: this.getLastAvgY()})
+    return new Vector2D({ x: this.getLastAvgX(), y: this.getLastAvgY() })
   }
 
   // Some handlers use these methods to send average values in native event.
@@ -177,10 +181,12 @@ export class PointerTracker {
     const avgX: number = this.getSumX() / this.trackedPointers.size;
     return isNaN(avgX) ? this.cachedAverages.x : avgX;
   }
+
   public getLastAvgY(): number {
     const avgY: number = this.getSumY() / this.trackedPointers.size;
     return isNaN(avgY) ? this.cachedAverages.y : avgY;
   }
+
   public getSumX(ignoredPointer?: number): number {
     let sumX = 0;
 
@@ -192,6 +198,7 @@ export class PointerTracker {
 
     return sumX;
   }
+
   public getSumY(ignoredPointer?: number): number {
     let sumY = 0;
 
@@ -203,9 +210,11 @@ export class PointerTracker {
 
     return sumY;
   }
+
   public getTrackedPointersCount(): number {
     return this.trackedPointers.size;
   }
+
   public getTrackedPointersID(): number[] {
     const keys: number[] = [];
 

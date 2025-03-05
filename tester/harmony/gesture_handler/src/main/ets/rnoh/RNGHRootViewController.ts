@@ -52,6 +52,12 @@ export class RNGHRootViewController {
      * NOTE: TouchEventArkTS was used in ArkTS RNOH architecture. Currently only C-API architecture is supported.
      */
     const touchEvent = rawTouchEventToTouchEventArkTS(rawTouchEvent);
+    const logger = this.logger.cloneAndJoinPrefix("handleTouch")
+    const stopTracing = logger.startTracing()
+    logger.debug({
+      rawTouchPointIds: rawTouchEvent.touchPoints.map(tp => tp.pointerId),
+      detectedChangedTouchIds: touchEvent.changedTouches.map(ct => ct.id)
+    });
     if (touchEvent.type === TouchType.Down) {
       touchableViews.forEach(view => this.touchableViewsMultiset.add(view));
     }
@@ -119,6 +125,7 @@ export class RNGHRootViewController {
       touchableViews.forEach(view => this.touchableViewsMultiset.remove(view));
       views.forEach(view => view.resetChildrenBoundingRects());
     }
+    stopTracing()
   }
 
   cancelTouches() {
@@ -131,38 +138,15 @@ export class RNGHRootViewController {
   }
 }
 
-
-const CACHED_RAW_TOUCH_POINT_BY_POINTER_ID = new Map<number, RawTouchPoint>();
-let LAST_CHANGED_POINTER_ID: number | null = null;
-const MAX_CACHE_SIZE = 10;
-
 function rawTouchEventToTouchEventArkTS(raw: RawTouchEvent): TouchEventArkTS {
   const touchType = touchTypeFromAction(raw.action);
-  const actionTouch = raw.actionTouch;
-
-  let lastChangedTouch: RawTouchPoint = actionTouch;
-  if (CACHED_RAW_TOUCH_POINT_BY_POINTER_ID.has(actionTouch.pointerId)) {
-    if (!areRawTouchPointsEqual(actionTouch,
-      CACHED_RAW_TOUCH_POINT_BY_POINTER_ID.get(actionTouch.pointerId) as RawTouchPoint)) {
-      LAST_CHANGED_POINTER_ID = actionTouch.pointerId;
-      CACHED_RAW_TOUCH_POINT_BY_POINTER_ID.set(actionTouch.pointerId, actionTouch);
-    }
-  } else {
-    // remove first element if the cache is full
-    if (CACHED_RAW_TOUCH_POINT_BY_POINTER_ID.size >= MAX_CACHE_SIZE) {
-      CACHED_RAW_TOUCH_POINT_BY_POINTER_ID.delete(CACHED_RAW_TOUCH_POINT_BY_POINTER_ID.keys().next().value);
-    }
-    LAST_CHANGED_POINTER_ID = actionTouch.pointerId;
-    CACHED_RAW_TOUCH_POINT_BY_POINTER_ID.set(actionTouch.pointerId, actionTouch);
-  }
-  lastChangedTouch = CACHED_RAW_TOUCH_POINT_BY_POINTER_ID.get(LAST_CHANGED_POINTER_ID as number) as RawTouchPoint
   return {
     type: touchTypeFromAction(raw.action),
     touches: raw.touchPoints.map(tp =>
     touchObjectFromTouchPoint(tp, touchType),
     ),
     changedTouches: [
-      touchObjectFromTouchPoint(lastChangedTouch, touchType),
+      touchObjectFromTouchPoint(raw.actionTouch, touchType),
     ],
     timestamp: raw.timestamp / Math.pow(10, 6),
   };
