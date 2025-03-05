@@ -9,9 +9,9 @@
   "repository": {},
   "version": "1.0.0",
   "dependencies": {
-    "@rnoh/react-native-openharmony": "0.72.38"
+    "@rnoh/react-native-openharmony": "0.72.48"
   },
   "overrides": {
-    "@rnoh/react-native-openharmony": "0.72.38"
+    "@rnoh/react-native-openharmony": "0.72.48"
   }
 }
