@@ -43,7 +43,7 @@ RNGestureHandlerRootViewComponentInstance::findTargetForTouchPoint(Point const &
 void RNGestureHandlerRootViewComponentInstance::RNGestureHandlerRootViewTouchHandler::onTouchEvent(
     ArkUI_UIInputEvent *e) {
     auto eventTime = OH_ArkUI_UIInputEvent_GetEventTime(e);
-    if (eventTime <= lastEventTime) {
+    if (eventTime < lastEventTime) {
         return;
     }
     lastEventTime = eventTime;
