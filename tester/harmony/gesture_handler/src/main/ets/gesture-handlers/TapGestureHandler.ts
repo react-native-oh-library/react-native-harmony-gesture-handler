@@ -2,7 +2,7 @@ import { GestureHandler, GestureHandlerDependencies, IncomingEvent, EventType, S
 
 const DEFAULT_MAX_DURATION_MS = 500;
 const DEFAULT_NUMBER_OF_TAPS = 1;
-const DEFAULT_MAX_DELAY_MS = 500;
+const DEFAULT_MAX_DELAY_MS = 200;
 
 export class TapGestureHandler extends GestureHandler {
   private startX = 0;
@@ -188,6 +188,7 @@ export class TapGestureHandler extends GestureHandler {
     const logger = this.logger.cloneAndJoinPrefix("endTap")
     this.clearTimeouts();
     if (
+      this.tracker.getTrackedPointersCount() === 0 &&
       ++this.numberOfTapsSoFar === (this.config.numberOfTaps ?? DEFAULT_NUMBER_OF_TAPS) &&
         this.maxNumberOfPointersSoFar >= (this.config.minNumberOfPointers ?? 0)
     ) {

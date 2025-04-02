@@ -712,6 +712,10 @@ export abstract class GestureHandler<TGestureConfig extends GestureConfig = Gest
     this.activationIndex = value
   }
 
+  getActivationIndex(): number {
+    return this.activationIndex
+  }
+
   setShouldResetProgress(value: boolean): void {
     this.shouldResetProgress = value;
   }
