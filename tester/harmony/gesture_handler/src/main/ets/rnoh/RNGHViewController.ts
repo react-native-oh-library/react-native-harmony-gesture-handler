@@ -52,7 +52,15 @@ export class RNGHViewController {
       const adaptedEvent = this.adaptTouchEvent(e, changedTouch);
       stopTracingA()
       const stopTracingB = logger.cloneAndJoinPrefix("B").startTracing()
-      this.gestureHandlers.forEach(gh => {
+      
+      // We want to deliver events to active handlers first in order of their activation (handlers
+      // that activated first will first get event delivered). Otherwise we deliver events in the
+      // order in which handlers has been added ("most direct" children goes first). As children
+      // are registered in order in which they should be tested, the sort function must be stable.
+      // HermesJS engine sort is stable, see https://github.com/facebook/hermes/commit/ec424a146638ab4dde53754598f12d83d22aa335
+      const gestureHandlersArray = Array.from(this.gestureHandlers).sort(this.sortHandlers);
+      
+      gestureHandlersArray.forEach(gh => {
         gh.setNumberOfPointers(adaptedEvent.pointerCount);
         switch (adaptedEvent.eventType) {
           case EventType.DOWN:
@@ -262,6 +270,33 @@ export class RNGHViewController {
         return TouchEventType.CANCELLED;
       default:
         return TouchEventType.UNDETERMINED;
+    }
+  }
+
+  private sortHandlers(a: GestureHandler, b: GestureHandler) {    
+    // Check if both handlers are in the same significant state (both active or both awaiting)
+    if ((a.isActive() && b.isActive()) || (a.isAwaiting() && b.isAwaiting())) {
+      // Both A and B are either active or awaiting activation.
+      // In this case, we prefer the one that activated (or started awaiting) earlier.
+      // A lower activationIndex means it activated earlier.
+      // We want the one with the lower index first, so if b's index is higher,
+      // b comes later (positive result). If b's index is lower, b comes first (negative result).
+      return Math.sign(b.getActivationIndex() - a.getActivationIndex());
+    } else if (a.isActive()) {
+      // Only A is active, A has higher priority.
+      return -1;
+    } else if (b.isActive()) {
+      // Only B is active, B has higher priority.
+      return 1;
+    } else if (a.isAwaiting()) {
+      // Only A is awaiting (and B is inactive), A has higher priority than inactive.
+      return -1;
+    } else if (b.isAwaiting()) {
+      // Only B is awaiting (and A is inactive), B has higher priority than inactive.
+      return 1;
+    } else {
+      // Both A and B are inactive. Their relative order doesn't matter based on state or activation index.
+      return 0;
     }
   }
 }
