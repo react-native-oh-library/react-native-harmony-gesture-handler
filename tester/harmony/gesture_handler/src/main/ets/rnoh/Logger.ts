@@ -91,17 +91,6 @@ export class ProductionRNGHLogger extends DevelopmentRNGHLogger {
   }
 
   override startTracing(): () => void {
-    const startTime = Date.now()
-    const currentOffset = this.tracer.getActiveTracesCount();
-
-    const stopTrace = this.tracer.startTrace(this.prefix)
-    return () => {
-      stopTrace()
-      const stopTime = Date.now()
-      const durationInMs = stopTime - startTime
-      if (durationInMs > 4) {
-        this.log("warn", `STOP (${durationInMs} ms)`, currentOffset)
-      }
-    }
+    return () => {}
   }
 }

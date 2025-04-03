@@ -97,23 +97,18 @@ export class RotationGestureHandler extends GestureHandler {
   }
 
   public onPointerMove(event: IncomingEvent): void {
-    const logger = this.logger.cloneAndJoinPrefix("onPointerMove")
-    const stopTracing = logger.startTracing();
-    (() => {
-      if (this.tracker.getTrackedPointersCount() < 2) {
-        return;
-      }
-      if (this.getAnchorX()) {
-        this.cachedAnchorX = this.getAnchorX();
-      }
-      if (this.getAnchorY()) {
-        this.cachedAnchorY = this.getAnchorY();
-      }
-      this.tracker.track(event);
-      this.rotationGestureDetector.onTouchEvent(event, this.tracker);
-      super.onPointerMove(event);
-    })();
-    stopTracing()
+    if (this.tracker.getTrackedPointersCount() < 2) {
+      return;
+    }
+    if (this.getAnchorX()) {
+      this.cachedAnchorX = this.getAnchorX();
+    }
+    if (this.getAnchorY()) {
+      this.cachedAnchorY = this.getAnchorY();
+    }
+    this.tracker.track(event);
+    this.rotationGestureDetector.onTouchEvent(event, this.tracker);
+    super.onPointerMove(event);
   }
 
   public onPointerOutOfBounds(event: IncomingEvent): void {
