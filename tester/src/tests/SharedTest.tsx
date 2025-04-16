@@ -13,11 +13,12 @@ import {
   TapGestureHandler,
   Gesture,
   GestureDetector,
+  ScrollView,
 } from 'react-native-gesture-handler';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import {StyleSheet, Text, View, Platform, Animated} from 'react-native';
 import {PALETTE} from '../constants';
-import {useState} from 'react';
+import {useState, useRef} from 'react';
 
 const RNGHView = createNativeWrapper(View, {
   disallowInterruption: true,
@@ -257,6 +258,50 @@ export function SharedAPITest() {
         }}
         assert={({expect, state}) => {
           expect(state).to.be.true;
+        }}
+      />
+      <TestCase
+        itShould="support simultaneous gesture and scrolling with a Pan gesture"
+        initialState={{ scrollPosition: 0 }}
+        arrange={({setState}) => {
+          const scrollRef = useRef(null);
+          const panGesture = Gesture.Pan()
+          
+          // Configure the gesture to work simultaneously with the ScrollView
+          panGesture.simultaneousWithExternalGesture(scrollRef);
+
+          return (
+            <View style={{ height: 200 }}>
+              <ScrollView 
+                style={{ height: 200 }} 
+                ref={scrollRef}
+                onScroll={(event) => {
+                  const scrollY = event.nativeEvent.contentOffset.y;
+                  setState(prev => ({ ...prev, scrollPosition: scrollY }));
+                }}
+                scrollEventThrottle={16}>
+                <GestureDetector gesture={panGesture}>
+                  <View style={{ height: 300, backgroundColor: PALETTE.DARK_BLUE }}>
+                    <Text style={{ color: '#fff', textAlign: 'center', padding: 10 }}>
+                      SCROLL AND PAN HERE
+                    </Text>
+                  </View>
+                </GestureDetector>
+                <View style={{ height: 300, backgroundColor: PALETTE.LIGHT_RED }}>
+                  <Text style={{ textAlign: 'center' }}>Content 1</Text>
+                </View>
+                <View style={{ height: 300, backgroundColor: PALETTE.LIGHT_GREEN }}>
+                  <Text style={{ textAlign: 'center' }}>Content 2</Text>
+                </View>
+                <View style={{ height: 300, backgroundColor: PALETTE.DARK_RED }}>
+                  <Text style={{ color: 'white', textAlign: 'center' }}>Content 3</Text>
+                </View>
+              </ScrollView>
+            </View>
+          );
+        }}
+        assert={({expect, state}) => {
+          expect(state.scrollPosition, 'ScrollView should have scrolled').to.be.greaterThan(0);
         }}
       />
     </TestSuite>
