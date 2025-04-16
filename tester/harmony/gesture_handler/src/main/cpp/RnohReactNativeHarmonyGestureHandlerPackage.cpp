@@ -79,7 +79,7 @@ public:
                      * root will handle the touch.
                      */
                     auto isChangingResponderStatusAllowed = false;
-                    for (size_t i = ancestors.size() - 1; i > 0; i--) {
+                    for (int i = ancestors.size() - 1; i >= 0; i--) {
                         auto ancestor = ancestors[i];
                         if (!isChangingResponderStatusAllowed) {
                             auto rootView =
