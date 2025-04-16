@@ -110,7 +110,7 @@ export class RNGestureHandlerModule extends UITurboModule implements TM.RNGestur
   public install() {
     const stopTracing = this.ctx.logger.clone("install").startTracing()
     this.viewRegistry = new RNGHViewRegistry()
-    const scrollLocker = new RNOHScrollLockerCAPI(this.ctx.rnInstance, this.cleanLogger);
+    const scrollLocker = new RNOHScrollLockerCAPI(this.ctx.rnInstance, this.cleanLogger, this.gestureHandlerRegistry);
     const rnGestureResponder = new RNOHGestureResponder(this.ctx.rnInstance)
     this.gestureHandlerFactory =
       new GestureHandlerFactory(this.cleanLogger, scrollLocker, this.interactionManager, rnGestureResponder)

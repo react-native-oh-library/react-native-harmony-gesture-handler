@@ -62,7 +62,7 @@ export interface GestureConfig {
 type PointerId = number
 
 export interface ScrollLocker {
-  lockScrollContainingViewTag(viewTag: number): () => void
+  lockScrollContainingViewTag(viewTag: number, simultaneousHandlers?: Handler[] | null): () => void,
 }
 
 export interface RNGestureResponder {

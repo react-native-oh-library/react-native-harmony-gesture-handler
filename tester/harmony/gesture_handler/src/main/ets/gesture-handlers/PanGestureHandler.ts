@@ -354,7 +354,7 @@ export class PanGestureHandler extends GestureHandler<PanGestureHandlerConfig> {
   protected onStateChange(newState: State, oldState: State) {
     super.onStateChange(newState, oldState)
     if (newState === State.BEGAN) {
-      this.unlockScrolls = this.scrollLocker.lockScrollContainingViewTag(this.view.getTag())
+      this.unlockScrolls = this.scrollLocker.lockScrollContainingViewTag(this.view.getTag(), this.config.simultaneousHandlers)
     } else if (newState !== State.ACTIVE) {
       this.unlockScrolls?.()
     }
