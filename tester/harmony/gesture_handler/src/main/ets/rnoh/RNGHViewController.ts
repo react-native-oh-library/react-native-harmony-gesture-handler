@@ -20,6 +20,9 @@ export class RNGHViewController {
   private view: View;
   private logger: RNGHLogger;
 
+  private maxActivePointers = -1;
+  private lastPointerEventTimestamp = -1;
+
   constructor(view: View, logger: RNGHLogger) {
     this.logger = logger.cloneAndJoinPrefix(`RNGHViewTouchHandler`)
     this.view = view;
@@ -128,6 +131,25 @@ export class RNGHViewController {
       yAbsolute,
     );
     this.updateActivePointers(changedTouch.type, changedTouch.id);
+
+    /**
+     * FIXME: Hack to fix pointerCount to be consistent with iOS.
+     * When we get the UP event, we store the largest number of
+     * pointers. When the time difference between the last UP event and the current
+     * event is greater than the number of pointers * 20ms, we assume that
+     * the number of pointers has changed and we set it to the current number of pointers.
+     */ 
+    if (e.type === TouchType.Up && this.maxActivePointers < e.touches.length) {
+      this.maxActivePointers = e.touches.length;
+      this.lastPointerEventTimestamp = e.timestamp;
+    }
+    let pointerCount = this.maxActivePointers;
+    if (pointerCount === -1 || e.timestamp - this.lastPointerEventTimestamp > this.maxActivePointers * 20) {
+      this.maxActivePointers = -1;
+      this.lastPointerEventTimestamp = -1;
+      pointerCount = e.touches.length;
+    }
+
     return {
       x: xAbsolute,
       y: yAbsolute,
@@ -139,7 +161,7 @@ export class RNGHViewController {
       buttons: 0,
       time: e.timestamp,
       allTouches: e.touches.map(touch => this.mapTouchObjectToTouch(touch)),
-      pointerCount: e.touches.length,
+      pointerCount,
       changedTouches: e.changedTouches.map(touch =>
       this.mapTouchObjectToTouch(touch),
       ),
