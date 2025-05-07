@@ -262,6 +262,11 @@ export class PanGestureHandler extends GestureHandler<PanGestureHandlerConfig> {
   }
 
   public onAdditionalPointerAdd(event: IncomingEvent): void {
+    if (this.currentState === State.UNDETERMINED) {
+      this.fail();
+      this.reset();
+      return;
+    }
     this.tracker.addToTracker(event);
     super.onAdditionalPointerAdd(event);
     this.tryBegin(event);
@@ -286,7 +291,7 @@ export class PanGestureHandler extends GestureHandler<PanGestureHandlerConfig> {
     }
 
     this.tracker.removeFromTracker(event.pointerId);
-    
+
     if (this.tracker.getTrackedPointersCount() === 0) {
       this.clearActivationTimeout();
     }
@@ -354,7 +359,8 @@ export class PanGestureHandler extends GestureHandler<PanGestureHandlerConfig> {
   protected onStateChange(newState: State, oldState: State) {
     super.onStateChange(newState, oldState)
     if (newState === State.BEGAN) {
-      this.unlockScrolls = this.scrollLocker.lockScrollContainingViewTag(this.view.getTag(), this.config.simultaneousHandlers)
+      this.unlockScrolls =
+        this.scrollLocker.lockScrollContainingViewTag(this.view.getTag(), this.config.simultaneousHandlers)
     } else if (newState !== State.ACTIVE) {
       this.unlockScrolls?.()
     }
