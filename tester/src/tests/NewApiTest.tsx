@@ -8,6 +8,7 @@ import {
   Button,
   Animated,
   Pressable,
+  Platform,
 } from 'react-native';
 import {
   Gesture,
@@ -118,54 +119,59 @@ export function NewApiTest() {
           }}
         />
       </TestSuite>
-      <TestSuite name="Gesture.Race & Gesture.Simultaneous">
-        <TestCase<
-          'DOUBLE_TAP' | 'DOUBLE_AND_TRIPLE_TAP' | 'TRIPLE_TAP' | undefined
-        >
-          itShould="pass when double tap was chosen by Gesture.Race and tripleTap was fired by Gesture.Simultaneous"
-          initialState={undefined}
-          arrange={({setState, reset}) => {
-            let hasDoublePressed = false;
+      {(Platform.OS as any) === 'harmony' && (
+        <TestSuite name="Gesture.Race & Gesture.Simultaneous">
+          <TestCase<
+            'DOUBLE_TAP' | 'DOUBLE_AND_TRIPLE_TAP' | 'TRIPLE_TAP' | undefined
+          >
+            itShould="pass when double tap was chosen by Gesture.Race and tripleTap was fired by Gesture.Simultaneous"
+            initialState={undefined}
+            arrange={({setState, reset}) => {
+              let hasDoublePressed = false;
 
-            return (
-              <Example
-                label="TRIPLE TAP ME"
-                onReset={setBackgroundColor => {
-                  reset();
-                  setBackgroundColor(PALETTE.DARK_BLUE);
-                }}
-                size={128}
-                createGesture={setBackgroundColor => {
-                  const doubleTap = Gesture.Tap()
-                    .numberOfTaps(2)
-                    .onEnd(() => {
-                      setBackgroundColor('gray');
-                      hasDoublePressed = true;
-                    });
-                  const tripleTap = Gesture.Tap()
-                    .numberOfTaps(3)
-                    .maxDelay(2000)
-                    .onEnd(() => {
-                      setBackgroundColor(PALETTE.LIGHT_GREEN);
-                      if (hasDoublePressed) {
-                        setState('DOUBLE_AND_TRIPLE_TAP');
-                      } else {
-                        setState('TRIPLE_TAP');
-                      }
-                    });
-                  return Gesture.Simultaneous(
-                    Gesture.Race(doubleTap, tripleTap),
-                    tripleTap,
-                  );
-                }}
-              />
-            );
-          }}
-          assert={({expect, state}) => {
-            expect(state).to.be.eq('DOUBLE_AND_TRIPLE_TAP');
-          }}
-        />
-      </TestSuite>
+              return (
+                <Example
+                  label="TRIPLE TAP ME"
+                  onReset={setBackgroundColor => {
+                    reset();
+                    setBackgroundColor(PALETTE.DARK_BLUE);
+                  }}
+                  size={128}
+                  createGesture={setBackgroundColor => {
+                    const doubleTap = Gesture.Tap()
+                      .numberOfTaps(2)
+                      .onEnd(() => {
+                        setBackgroundColor('gray');
+                        hasDoublePressed = true;
+                      });
+                    const tripleTap = Gesture.Tap()
+                      .numberOfTaps(3)
+                      .maxDelay(2000)
+                      .onEnd(() => {
+                        setBackgroundColor(PALETTE.LIGHT_GREEN);
+                        if (hasDoublePressed) {
+                          setState('DOUBLE_AND_TRIPLE_TAP');
+                        } else {
+                          setState('TRIPLE_TAP');
+                        }
+                      });
+                    /**
+                     * This is invalid usage on Android but it was provided in the report
+                     */
+                    return Gesture.Simultaneous(
+                      Gesture.Race(doubleTap, tripleTap),
+                      tripleTap,
+                    );
+                  }}
+                />
+              );
+            }}
+            assert={({expect, state}) => {
+              expect(state).to.be.eq('DOUBLE_AND_TRIPLE_TAP');
+            }}
+          />
+        </TestSuite>
+      )}
       <TestSuite name="Gesture.Fling">
         <TestCase
           itShould="pass after swiping from left to right"

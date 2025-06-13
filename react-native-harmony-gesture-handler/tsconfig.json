@@ -3,10 +3,8 @@
     "baseUrl": ".",
     "esModuleInterop": true,
     "jsx": "react-native",
-    "lib": [
-      "esnext",
-      "dom"
-    ],
+    "lib": ["esnext", "dom"],
+    "types": ["jest"],
     "module": "esnext",
     "moduleResolution": "node",
     "resolveJsonModule": true,
@@ -16,16 +14,12 @@
     "declaration": true,
     "declarationMap": false,
     "outDir": "lib/typescript",
+
     "noStrictGenericChecks": false,
     "forceConsistentCasingInFileNames": true,
     "noImplicitUseStrict": false,
     "noUnusedParameters": true,
-    "noUnusedLocals": true,
-    "types": [],
+    "noUnusedLocals": true
   },
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.tsx",
-    "jestSetup.js"
-  ],
+  "include": ["src/**/*.ts", "src/**/*.tsx", "jestSetup.js"]
 }
