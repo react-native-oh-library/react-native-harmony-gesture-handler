@@ -63,7 +63,7 @@ export class RNGHRootViewController {
     }
     const e = touchEvent;
     if (e.type === TouchType.Down) {
-      this.activeViewTags.clear();
+      // this.activeViewTags.clear();
     }
     const views = touchableViews as RNGHView[]
     for (let i = 0; i < views.length; i++) {
@@ -74,6 +74,7 @@ export class RNGHRootViewController {
         this.logger.info(
           `Found GestureHandler ${handler.getTag()} for view ${view.getTag()}`,
         );
+        handler.setExclusive(view.isExclusive());
 
         // create view touch handler if necessary
         if (!this.viewControllerByViewTag.has(view.getTag())) {
@@ -116,6 +117,13 @@ export class RNGHRootViewController {
         const viewController = this.viewControllerByViewTag.get(tag);
         if (viewController) {
           viewController.handleTouch(e);
+          if (e.type === TouchType.Up || touchEvent.type === TouchType.Cancel) {
+            viewController.getAttachGestureHandler().forEach((gh) => {
+              if (!gh.isActive()) {
+                this.activeViewTags.delete(tag)
+              }
+            })
+          }
         }
       }
     }

@@ -32,6 +32,10 @@ export class RNGHViewController {
     this.gestureHandlers.add(gestureHandler)
   }
 
+  getAttachGestureHandler(): Set<GestureHandler>{
+    return this.gestureHandlers;
+  }
+
   handleTouch(e: TouchEvent) {
     const logger = this.logger.cloneAndJoinPrefix("handleTouch")
     const stopTracingA = logger.cloneAndJoinPrefix("A").startTracing()

@@ -51,6 +51,7 @@ private:
         facebook::react::Float x;
         facebook::react::Float y;
         bool buttonRole;
+        bool exclusive;
     };
 
     bool m_isHandlingTouches = false;

@@ -96,6 +96,7 @@ export class RNGestureHandlerModule extends TurboModule implements TM.RNGestureH
           }
           view.updateBoundingBox(touchableView)
           view.setButtonRole(touchableView.buttonRole)
+          view.setExclusive(touchableView.exclusive)
         } else {
           this.viewRegistry.save(new RNGHView(touchableView))
         }
@@ -161,7 +162,8 @@ export class RNGestureHandlerModule extends TurboModule implements TM.RNGestureH
           y: 0,
           width: 0,
           height: 0,
-          buttonRole: false
+          buttonRole: false,
+          exclusive: true
         })
         viewRegistry.save(view)
       }

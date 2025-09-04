@@ -54,9 +54,10 @@ export interface GestureConfig {
   shouldActivateOnStart?: boolean;
   disallowInterruption?: boolean;
   direction?: Directions;
-  needsPointerData?: boolean
+  needsPointerData?: boolean;
   // --- Tap
-  minNumberOfPointers?: number
+  minNumberOfPointers?: number;
+  exclusive?: boolean;
 }
 
 type PointerId = number
@@ -376,6 +377,13 @@ export abstract class GestureHandler<TGestureConfig extends GestureConfig = Gest
     const stopTracing = this.logger.cloneAndJoinPrefix("onViewAttached").startTracing()
     this.view = view
     stopTracing()
+  }
+
+  public getExclusive(): boolean {
+    return Boolean(this.config.exclusive);
+  }
+  public setExclusive(exclusive: boolean): void {
+    this.config.exclusive = exclusive;
   }
 
   public getTag(): number {

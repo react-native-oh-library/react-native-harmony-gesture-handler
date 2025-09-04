@@ -148,7 +148,12 @@ RNGestureHandlerRootViewComponentInstance::findTouchableViews(float componentX, 
         LOG(WARNING) << "Surface is nullptr";
     }
     for (auto &touchTarget : touchTargets) {
-        auto buttonRole = dynamic_cast<RNGestureHandlerButtonComponentInstance *>(touchTarget.get()) != nullptr;
+        auto button_ptr = dynamic_cast<RNGestureHandlerButtonComponentInstance *>(touchTarget.get());
+        auto buttonRole = button_ptr != nullptr;
+        bool exclusive = true;
+        if (button_ptr != nullptr) {
+            exclusive = button_ptr->getExclusive();
+        }
         auto frame = touchTarget->getLayoutMetrics().frame;
         auto transform = touchTarget->getTransform();
         auto transformedFrame = frame * transform;
@@ -159,6 +164,7 @@ RNGestureHandlerRootViewComponentInstance::findTouchableViews(float componentX, 
             .x = transformedFrame.origin.x + offsetX,
             .y = transformedFrame.origin.y + offsetY,
             .buttonRole = buttonRole,
+            .exclusive = exclusive,
         });
         offsetX += transformedFrame.origin.x;
         offsetY += transformedFrame.origin.y;
@@ -180,6 +186,7 @@ RNGestureHandlerRootViewComponentInstance::dynamicFromTouchableViews(const std::
         d_touchableView["width"] = touchableView.width;
         d_touchableView["height"] = touchableView.height;
         d_touchableView["buttonRole"] = touchableView.buttonRole;
+        d_touchableView["exclusive"] = touchableView.exclusive;
         d_touchableViews.push_back(d_touchableView);
     }
     return d_touchableViews;

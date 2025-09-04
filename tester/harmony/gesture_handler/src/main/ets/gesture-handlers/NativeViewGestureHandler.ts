@@ -119,6 +119,6 @@ export class NativeViewGestureHandler extends GestureHandler {
   }
 
   public shouldBeCancelledByOther(_handler: GestureHandler): boolean {
-    return this.canBeInterrupted();
+    return _handler.getExclusive() || (this.config.exclusive && this.canBeInterrupted());
   }
 }

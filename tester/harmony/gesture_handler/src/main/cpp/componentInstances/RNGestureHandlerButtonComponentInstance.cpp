@@ -14,6 +14,15 @@ void RNGestureHandlerButtonComponentInstance::onChildInserted(ComponentInstance:
     m_stackNode.insertChild(childComponentInstance->getLocalRootArkUINode(), index);
 };
 
+bool RNGestureHandlerButtonComponentInstance::getExclusive() {
+    if (getProps()->rawProps.count("exclusive") > 0) {
+        if (getProps()->rawProps["exclusive"].isBool()) {
+            return getProps()->rawProps["exclusive"].asBool();
+        }
+    }
+    return true;
+}
+
 void RNGestureHandlerButtonComponentInstance::onChildRemoved(ComponentInstance::Shared const &childComponentInstance) {
     CppComponentInstance::onChildRemoved(childComponentInstance);
     m_stackNode.removeChild(childComponentInstance->getLocalRootArkUINode());

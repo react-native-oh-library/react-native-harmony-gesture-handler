@@ -14,17 +14,20 @@ export type RawTouchableView = {
   width: number,
   height: number,
   buttonRole: boolean,
+  exclusive: boolean,
 }
 
 export class RNGHView implements View {
   private tag: number
   private buttonRole: boolean
+  private exclusive: boolean
   private boundingBox: BoundingBox
   private childrenBoundingBoxes: Set<BoundingBox> = new Set()
 
-  constructor({ tag, buttonRole, ...boundingBox }: RawTouchableView) {
+  constructor({ tag, buttonRole, exclusive, ...boundingBox }: RawTouchableView) {
     this.tag = tag
     this.buttonRole = buttonRole
+    this.exclusive = exclusive
     this.boundingBox = boundingBox
   }
 
@@ -81,6 +84,14 @@ export class RNGHView implements View {
 
   setButtonRole(buttonRole: boolean) {
     this.buttonRole = buttonRole
+  }
+
+  setExclusive(exclusive: boolean) {
+    this.exclusive = exclusive
+  }
+
+  isExclusive(): boolean {
+    return this.exclusive
   }
 
   hasButtonRole(): boolean {

@@ -12,7 +12,7 @@ public:
     StackNode &getLocalRootArkUINode() override;
     void onChildInserted(ComponentInstance::Shared const &childComponentInstance, std::size_t index) override;
     void onChildRemoved(ComponentInstance::Shared const &childComponentInstance) override;
-
+    bool getExclusive();
 private:
     StackNode m_stackNode;
 };
