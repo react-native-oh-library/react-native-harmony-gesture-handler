@@ -1,10 +1,12 @@
+#ifndef RNOHREACTNATIVEHARMONYGESTUREHANDLERPACKAGE_H
+#define RNOHREACTNATIVEHARMONYGESTUREHANDLERPACKAGE_H
 #pragma once
 #include "RNOH/Package.h"
 
 namespace rnoh {
 class RnohReactNativeHarmonyGestureHandlerPackage : public Package {
 public:
-    RnohReactNativeHarmonyGestureHandlerPackage(Package::Context ctx) : Package(ctx) {}
+    explicit RnohReactNativeHarmonyGestureHandlerPackage(Package::Context ctx) : Package(ctx) {}
 
     EventEmitRequestHandlers createEventEmitRequestHandlers();
 
@@ -13,3 +15,4 @@ public:
     std::vector<ArkTSMessageHandler::Shared> createArkTSMessageHandlers() override;
 };
 } // namespace rnoh
+#endif // RNOHREACTNATIVEHARMONYGESTUREHANDLERPACKAGE_H

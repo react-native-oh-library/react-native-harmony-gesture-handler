@@ -1,11 +1,11 @@
 #pragma once
-#import "RNOH/CppComponentInstance.h"
-#import "RNOH/arkui/StackNode.h"
-#import "RNOH/arkui/NativeNodeApi.h"
-#import "RNOH/arkui/UIInputEventHandler.h"
-#import "RNOH/RNInstanceCAPI.h"
-#import "generated/RNGestureHandlerRootViewComponentDescriptor.h"
-#import "RNGestureHandlerButtonComponentInstance.h"
+#include "RNOH/CppComponentInstance.h"
+#include "RNOH/arkui/StackNode.h"
+#include "RNOH/arkui/NativeNodeApi.h"
+#include "RNOH/arkui/UIInputEventHandler.h"
+#include "RNOH/RNInstanceCAPI.h"
+#include "generated/RNGestureHandlerRootViewComponentDescriptor.h"
+#include "RNGestureHandlerButtonComponentInstance.h"
 
 namespace rnoh {
 class RNGestureHandlerRootViewComponentInstance
@@ -18,7 +18,7 @@ public:
         operator=(RNGestureHandlerRootViewComponentInstance const &other) = delete;
         RNGestureHandlerRootViewTouchHandler(RNGestureHandlerRootViewComponentInstance &&other) = delete;
         RNGestureHandlerRootViewTouchHandler &operator=(RNGestureHandlerRootViewComponentInstance &&other) = delete;
-        RNGestureHandlerRootViewTouchHandler(RNGestureHandlerRootViewComponentInstance *rootView);
+        explicit RNGestureHandlerRootViewTouchHandler(RNGestureHandlerRootViewComponentInstance *rootView);
 
         void onTouchEvent(ArkUI_UIInputEvent *e) override;
 
@@ -28,13 +28,13 @@ public:
     };
 
     using Point = facebook::react::Point;
-    enum class ActionType { Cancel, Down, Move, Up };
+    enum class ActionType { CANCEL, DOWN, MOVE, UP };
 
-    RNGestureHandlerRootViewComponentInstance(Context context);
+    explicit RNGestureHandlerRootViewComponentInstance(Context context);
 
     StackNode &getLocalRootArkUINode() override;
-    void setIsHandlingTouches(bool isHandlingTouches);
-    bool isHandlingTouches() const override;
+    void SetIsHandlingTouches(bool isHandlingTouches);
+    bool IsHandlingTouches() const override;
 
     // This function is borrowed from TouchEventDispatcher
     TouchTarget::Shared findTargetForTouchPoint(Point const &point, TouchTarget::Shared const &target);
