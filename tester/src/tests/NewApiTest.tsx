@@ -8,6 +8,7 @@ import {
   Button,
   Animated,
   Pressable,
+  FlatList,
 } from 'react-native';
 import {
   Gesture,
@@ -22,6 +23,7 @@ import {
   FlingGestureHandlerEventPayload,
   PinchGestureHandlerEventPayload,
   LongPressGestureHandlerEventPayload,
+  LongPressGesture,
 } from 'react-native-gesture-handler';
 import {PALETTE} from '../constants';
 
@@ -720,6 +722,23 @@ export function NewApiTest() {
           />
         </ScrollView>
       </TestCase>
+
+      <TestCase
+        itShould="tap gestures work when FlatList is inverted"
+        initialState={false}
+        arrange={({setState}) => {
+          return (
+            <FlatListExample
+              longPressGesture={Gesture.LongPress().onStart(e => {
+                console.log('onPress event logLongPressGesture: ', e);
+                setState(true);
+              })}
+            />
+          );
+        }}
+        assert={({expect, state}) => {
+          expect(state).to.be.true;
+        }}></TestCase>
     </TestSuite>
   );
 }
@@ -845,6 +864,46 @@ const OverLapExample: React.FC = () => {
         </View>
       </GestureDetector>
       <Text style={{color: 'white'}}>Tap area: {tapRange}</Text>
+    </View>
+  );
+};
+
+const FlatListExample = ({
+  longPressGesture,
+}: {
+  longPressGesture: LongPressGesture;
+}) => {
+  const logTap = Gesture.Tap().onStart(e => {
+    console.log('onPress event logTag: ', e);
+  });
+
+  const FlatListItem = ({firstItem}: {firstItem: boolean}) => {
+    return (
+      <GestureDetector gesture={Gesture.Simultaneous(logTap, longPressGesture)}>
+        <View>
+          <Text
+            style={{
+              width: 100,
+              height: 50,
+              backgroundColor: 'skyblue',
+              marginBottom: 20,
+            }}>
+            {firstItem ? 'SCROLL TO THE TOP AND LONG PRESS' : 'PRESS ME'}
+          </Text>
+        </View>
+      </GestureDetector>
+    );
+  };
+
+  return (
+    <View style={{height: 200}}>
+      <FlatList
+        inverted={true}
+        data={Array.from({length: 10}, (_, i) => ({key: `${i + 1}`}))}
+        renderItem={({item, index}) => (
+          <FlatListItem key={item.key} firstItem={index === 0} />
+        )}
+      />
     </View>
   );
 };
