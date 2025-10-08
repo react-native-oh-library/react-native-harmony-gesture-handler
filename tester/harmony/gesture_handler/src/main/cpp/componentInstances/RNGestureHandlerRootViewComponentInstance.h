@@ -1,11 +1,12 @@
 #pragma once
-#import "RNOH/CppComponentInstance.h"
-#import "RNOH/arkui/StackNode.h"
-#import "RNOH/arkui/NativeNodeApi.h"
-#import "RNOH/arkui/UIInputEventHandler.h"
-#import "RNOH/RNInstanceCAPI.h"
-#import "generated/RNGestureHandlerRootViewComponentDescriptor.h"
-#import "RNGestureHandlerButtonComponentInstance.h"
+#include "RNGestureHandlerButtonComponentInstance.h"
+#include "RNOH/CppComponentInstance.h"
+#include "RNOH/RNInstanceCAPI.h"
+#include "RNOH/arkui/NativeNodeApi.h"
+#include "RNOH/arkui/StackNode.h"
+#include "RNOH/arkui/UIInputEventHandler.h"
+#include "generated/RNGestureHandlerRootViewComponentDescriptor.h"
+#include <deque>
 
 namespace rnoh {
 class RNGestureHandlerRootViewComponentInstance
@@ -59,6 +60,11 @@ private:
     std::unique_ptr<UIInputEventHandler> m_touchHandler;
 
     std::vector<TouchableView> findTouchableViews(float componentX, float componentY);
+    std::deque<TouchTarget::Shared> buildHierarchy(TouchTarget::Shared const &touchTarget) const;
+    facebook::react::Transform getInitialTransform();
+    facebook::react::Transform buildNodeTransform(const TouchTarget::Shared &node) const;
+    TouchableView createTouchableView(const TouchTarget::Shared &node, const facebook::react::Rect &screenBounds) const;
+
     folly::dynamic dynamicFromTouchableViews(const std::vector<TouchableView> &touchableViews);
     folly::dynamic convertNodeTouchPointToDynamic(ArkUI_UIInputEvent *e, int32_t index = 0);
     Surface::Weak getSurface();

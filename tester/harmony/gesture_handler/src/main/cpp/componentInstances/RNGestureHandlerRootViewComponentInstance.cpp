@@ -126,44 +126,98 @@ void RNGestureHandlerRootViewComponentInstance::onChildRemoved(
     m_stackNode.removeChild(childComponentInstance->getLocalRootArkUINode());
 }
 
+std::deque<TouchTarget::Shared>
+RNGestureHandlerRootViewComponentInstance::buildHierarchy(TouchTarget::Shared const &touchTarget) const {
+    std::deque<TouchTarget::Shared> touchTargets{};
+    auto current = touchTarget;
+    while (current != nullptr) {
+        touchTargets.push_front(current);
+        current = current->getTouchTargetParent();
+    }
+    return touchTargets;
+}
+
+facebook::react::Transform RNGestureHandlerRootViewComponentInstance::getInitialTransform() {
+    if (auto surface = this->getSurface().lock()) {
+        const auto &viewportOffset = surface->getLayoutContext().viewportOffset;
+        return facebook::react::Transform::Translate(viewportOffset.x, viewportOffset.y, 0);
+    }
+
+    LOG(WARNING) << "RNGH::Surface unavailable, using identity transform";
+    return facebook::react::Transform::Identity();
+}
+
+RNGestureHandlerRootViewComponentInstance::TouchableView
+RNGestureHandlerRootViewComponentInstance::createTouchableView(const TouchTarget::Shared &node,
+                                                               const facebook::react::Rect &screenBounds) const {
+    const bool buttonRole = dynamic_cast<RNGestureHandlerButtonComponentInstance *>(node.get()) != nullptr;
+
+    return RNGestureHandlerRootViewComponentInstance::TouchableView{
+        .tag = node->getTouchTargetTag(),
+        .width = screenBounds.size.width,
+        .height = screenBounds.size.height,
+        .x = screenBounds.origin.x,
+        .y = screenBounds.origin.y,
+        .buttonRole = buttonRole,
+    };
+}
+
+facebook::react::Transform
+RNGestureHandlerRootViewComponentInstance::buildNodeTransform(const TouchTarget::Shared &node)  const {
+    const auto frame = node->getLayoutMetrics().frame;
+    auto currentOffset = node->getCurrentOffset();
+    const auto nodeTransform = node->getTransform();
+
+    // For inverted lists, the scroll offset needs to be applied in the opposite direction
+    if (facebook::react::Transform::isVerticalInversion(nodeTransform)) {
+        currentOffset.y = -currentOffset.y;
+    }
+
+    if (facebook::react::Transform::isHorizontalInversion(nodeTransform)) {
+        currentOffset.x = -currentOffset.x;
+    }
+
+    const auto frameCenter = facebook::react::Point{frame.size.width * 0.5f, frame.size.height * 0.5f};
+
+    // First, position the view at its layout origin (frame.origin - currentOffset).
+    // Then apply its local transform around the view's center:
+    // translate to center -> nodeTransform -> translate back.
+    return facebook::react::Transform::Translate(frame.origin.x - currentOffset.x, frame.origin.y - currentOffset.y,
+                                                 0) *
+           facebook::react::Transform::Translate(frameCenter.x, frameCenter.y, 0) * nodeTransform *
+           facebook::react::Transform::Translate(-frameCenter.x, -frameCenter.y, 0);
+}
+
 std::vector<RNGestureHandlerRootViewComponentInstance::TouchableView>
 RNGestureHandlerRootViewComponentInstance::findTouchableViews(float componentX, float componentY) {
     auto touchTarget = findTargetForTouchPoint({.x = componentX, .y = componentY}, this->shared_from_this());
-    std::vector<TouchTarget::Shared> touchTargets{};
-    auto tmp = touchTarget;
-    while (tmp != nullptr) {
-        touchTargets.push_back(tmp);
-        tmp = tmp->getTouchTargetParent();
+    if (touchTarget == nullptr) {
+        return {};
     }
-    std::reverse(touchTargets.begin(), touchTargets.end());
+    // Build hierarchy from root to touchTarget
+    auto touchTargets = buildHierarchy(touchTarget);
 
     std::vector<TouchableView> touchableViews{};
-    float offsetX = 0;
-    float offsetY = 0;
-    auto surface = this->getSurface().lock();
-    if (surface != nullptr) {
-        offsetX = surface->getLayoutContext().viewportOffset.x;
-        offsetY = surface->getLayoutContext().viewportOffset.y;
-    } else {
-        LOG(WARNING) << "Surface is nullptr";
-    }
-    for (auto &touchTarget : touchTargets) {
-        auto buttonRole = dynamic_cast<RNGestureHandlerButtonComponentInstance *>(touchTarget.get()) != nullptr;
-        auto frame = touchTarget->getLayoutMetrics().frame;
-        auto transform = touchTarget->getTransform();
-        auto transformedFrame = frame * transform;
-        touchableViews.push_back({
-            .tag = touchTarget->getTouchTargetTag(),
-            .width = transformedFrame.size.width,
-            .height = transformedFrame.size.height,
-            .x = transformedFrame.origin.x + offsetX,
-            .y = transformedFrame.origin.y + offsetY,
-            .buttonRole = buttonRole,
-        });
-        offsetX += transformedFrame.origin.x;
-        offsetY += transformedFrame.origin.y;
-        offsetX -= touchTarget->getCurrentOffset().x;
-        offsetY -= touchTarget->getCurrentOffset().y;
+    touchableViews.reserve(touchTargets.size());
+
+    auto cumulativeTransform = getInitialTransform();
+
+    // It calculates the cumulative transform for each view in the hierarchy to map its
+    // bounding box to screen coordinates
+    for (const auto &node : touchTargets) {
+        const auto frame = node->getLayoutMetrics().frame;
+
+        cumulativeTransform = cumulativeTransform * buildNodeTransform(node);
+
+        // Map this node's local corners to screen space
+        const auto a = facebook::react::Point{0.0f, 0.0f} * cumulativeTransform;
+        const auto b = facebook::react::Point{frame.size.width, 0.0f} * cumulativeTransform;
+        const auto c = facebook::react::Point{frame.size.width, frame.size.height} * cumulativeTransform;
+        const auto d = facebook::react::Point{0.0f, frame.size.height} * cumulativeTransform;
+
+        const auto boundingRect = facebook::react::Rect::boundingRect(a, b, c, d);
+
+        touchableViews.push_back(createTouchableView(node, boundingRect));
     }
 
     return touchableViews;

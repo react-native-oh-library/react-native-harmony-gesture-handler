@@ -1,7 +1,7 @@
 #pragma once
-#import "RNOH/CppComponentInstance.h"
-#import "RNOH/arkui/StackNode.h"
-#import "generated/RNGestureHandlerButtonComponentDescriptor.h"
+#include "RNOH/CppComponentInstance.h"
+#include "RNOH/arkui/StackNode.h"
+#include "generated/RNGestureHandlerButtonComponentDescriptor.h"
 
 namespace rnoh {
 class RNGestureHandlerButtonComponentInstance
