@@ -1,0 +1,9 @@
+{
+  "module": {
+    "name": "gesture_handler",
+    "type": "har",
+    "deviceTypes": [
+      "default"
+    ],
+  }
+}

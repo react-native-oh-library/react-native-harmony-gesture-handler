@@ -1,0 +1,4 @@
+lib/*
+*.tar.gz
+*.tgz
+harmony/gesture_handler

@@ -1,0 +1,6 @@
+/oh_modules
+/.preview
+/build
+/.cxx
+package-lock.json
+/src/main/resources/rawfile/assets

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<oatconfig>
+	<licensefile>LICENSE</licensefile>
+		<filefilterlist>
+			<filefilter name="copyrightPolicyFilter" desc="Filters for compatibility，license header policies">
+				<filteritem type="filepath" name="tester/.*" desc="示例工程，不添加版权头"/> 
+                <filteritem type="filepath" name="tester/harmony/gesture_handler/hvigorfile.ts" desc="hvigor构建脚本，DevEco Studio自动生成，不手动修改"/>
+                <filteritem type="filepath" name="tester/harmony/gesture_handler/src/main/cpp/generated/RNOH/generated/turbo_modules/.*" desc="codegen自动生成，不手动修改"/>
+                <filteritem type="filepath" name="tester/harmony/gesture_handler/src/main/cpp/generated/RNOH/generated/.*" desc="codegen自动生成，不手动修改"/>
+	            <filteritem type="filepath" name="tester/harmony/gesture_handler/src/main/cpp/generated/react/renderer/components/react_native_gesture_handler/.*" desc="codegen自动生成，不手动修改"/>
+                <filteritem type="filepath" name="tester/harmony/gesture_handler/src/main/ets/generated/.*" desc="codegen自动生成，不手动修改"/>
+                <filteritem type="filepath" name="tester/harmony/gesture_handler/src/main/ets/generated/components/.*" desc="codegen自动生成，不手动修改"/>
+                <filteritem type="filepath" name="tester/harmony/gesture_handler/src/main/ets/generated/turboMoudules/.*" desc="codegen自动生成，不手动修改"/>
+
+				<filteritem type="filename" name="hvigorfile.ts" desc="hvigor构建脚本，DevEco Studio自动生成，不需要添加版权头"/>
+				<filteritem type="filename" name="*.json5" desc="hvigor工程配置文件，DevEco Studio自动生成，不需要添加版权头"/>
+				<filteritem type="filename" name="*.proto" desc="资源文件，不需要添加版权头"/>
+				<filteritem type="filename" name="*.json" desc="资源文件，不需要添加版权头"/>
+				<filteritem type="filepath" name="hvigorw" desc="工程模板，不修改版权头，以防有修改版权风险"/>
+				<filteritem type="filepath" name="hvigorw.bat" desc="工程模板，不修改版权头，以防有修改版权风险"/>
+				<filteritem type="filepath" name="src/*.js" desc="第三方开源软件源码，不修改版权头，以防有修改版权风险"/>
+                <filteritem type="filepath" name="index.*" desc="第三方开源软件源码，不修改版权头，以防有修改版权风险"/>
+                <filteritem type="filepath" name="hvigor/hvigor-wrapper.js" desc="工程模板，不修改版权头，以防有修改版权风险"/>
+                <filteritem type="filepath" name="hvigor/hvigor-config.json5" desc="工程模板，不修改版权头，以防有修改版权风险"/>
+                <filteritem type="filename" name="LICENSE" desc="原三方库证书文件无需更改，因此添加过滤"/>
+				<filteritem type="filename" name="NOTICE" desc="NOTICE文件，不添加版权头"/>
+                <filteritem type="filepath" name="react-native-harmony-gesture-handler/.*" desc="第三方开源软件源码，不修改版权头，以防有修改版权风险"/>
+			</filefilter>
+			<filefilter name="defaultPolicyFilter" desc="Filters for compatibility，license header policies">
+				<filteritem type="filepath" name="tester/.*" desc="示例工程，不添加版权头"/> 
+                <filteritem type="filepath" name="tester/harmony/gesture_handler/hvigorfile.ts" desc="hvigor构建脚本，DevEco Studio自动生成，不手动修改"/>
+                <filteritem type="filepath" name="tester/harmony/gesture_handler/src/main/cpp/generated/RNOH/generated/turbo_modules/.*" desc="codegen自动生成，不手动修改"/>
+                <filteritem type="filepath" name="tester/harmony/gesture_handler/src/main/cpp/generated/RNOH/generated/.*" desc="codegen自动生成，不手动修改"/>
+	            <filteritem type="filepath" name="tester/harmony/gesture_handler/src/main/cpp/generated/react/renderer/components/react_native_gesture_handler/.*" desc="codegen自动生成，不手动修改"/>
+                <filteritem type="filepath" name="tester/harmony/gesture_handler/src/main/ets/generated/.*" desc="codegen自动生成，不手动修改"/>
+                <filteritem type="filepath" name="tester/harmony/gesture_handler/src/main/ets/generated/components/.*" desc="codegen自动生成，不手动修改"/>
+                <filteritem type="filepath" name="tester/harmony/gesture_handler/src/main/ets/generated/turboMoudules/.*" desc="codegen自动生成，不手动修改"/>
+
+				<filteritem type="filename" name="hvigorfile.ts" desc="hvigor构建脚本，DevEco Studio自动生成，不需要添加版权头"/>
+				<filteritem type="filename" name="*.json5" desc="hvigor工程配置文件，DevEco Studio自动生成，不需要添加版权头"/>
+				<filteritem type="filename" name="*.proto" desc="资源文件，不需要添加版权头"/>
+				<filteritem type="filename" name="*.json" desc="资源文件，不需要添加版权头"/>
+				<filteritem type="filepath" name="hvigorw" desc="工程模板，不修改版权头，以防有修改版权风险"/>
+				<filteritem type="filepath" name="hvigorw.bat" desc="工程模板，不修改版权头，以防有修改版权风险"/>
+				<filteritem type="filepath" name="src/*.js" desc="第三方开源软件源码，不修改版权头，以防有修改版权风险"/>
+                <filteritem type="filepath" name="index.*" desc="第三方开源软件源码，不修改版权头，以防有修改版权风险"/>
+                <filteritem type="filepath" name="hvigor/hvigor-wrapper.js" desc="工程模板，不修改版权头，以防有修改版权风险"/>
+                <filteritem type="filepath" name="hvigor/hvigor-config.json5" desc="工程模板，不修改版权头，以防有修改版权风险"/>
+                <filteritem type="filename" name="LICENSE" desc="原三方库证书文件无需更改，因此添加过滤"/>
+				<filteritem type="filename" name="NOTICE" desc="NOTICE文件，不添加版权头"/>
+                <filteritem type="filepath" name="react-native-harmony-gesture-handler/.*" desc="第三方开源软件源码，不修改版权头，以防有修改版权风险"/>
+			</filefilter>
+			<filefilter name="binaryFileTypePolicyFilter" desc="Filters for resources files policies">
+				<filteritem type="filename" name="icon.png" desc="应用图标"/>
+				<filteritem type="filename" name="app_icon.png" desc="应用图标"/>
+				<filteritem type="filename" name="warn.png" desc="页面展示图标"/>
+                <filteritem type="filename" name="ic_launcher_round.png" desc="应用图标"/>
+                <filteritem type="filename" name="ic_launcher.png" desc="应用图标"/>
+                <filteritem type="filename" name="gradle-wrapper.jar" desc="项目打包文件"/>
+                <filteritem type="filename" name="rnoh-testerino-0.0.9.tgz" desc="项目打包文件"/>
+				<filteritem type="filename" name="gesture_handler.har" desc="项目打包文件"/>
+                <filteritem type="filename" name="debug.keystore" desc="示例工程文件"/>
+                <filteritem type="filepath" name="tester/harmony/.*" desc="示例工程，不添加版权头"/> 
+			</filefilter>
+		</filefilterlist>
+        <policylist>
+            <policy name="projectPolicy" desc="">
+                <policyitem type="license" name="MIT" path=".*" desc="license under the MIT"/>
+            </policy>
+			<policy name="projectPolicy" desc="">
+				<policyitem type="compatibility" name="GPL-2.0+" path=".*" desc="Process that runs independently, invoked by the X process."/>
+				<policyitem type="compatibility" name="Apache-2.0" path=".*" desc="不影响兼容性"/>
+				<policyitem type="compatibility" name="BSDStyleLicense" path=".*" desc="不影响兼容性" />
+				<policyitem type="compatibility" name="MIT" path=".*" desc="不影响兼容性" />
+				<policyitem type="compatibility" name="GPLStyleLicense" path=".*" desc="不影响兼容性" />
+			</policy>
+        </policylist>
+	</oatconfig>
+</configuration>

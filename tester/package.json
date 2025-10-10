@@ -1,0 +1,50 @@
+{
+  "name": "tester",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "i": "cd ../react-native-harmony-gesture-handler && npm i && cd ../tester && npm i && cp -f ./harmony/.build-profile.json5 ./harmony/build-profile.json5",
+    "start": "npm run install:pkg && npm run codegen && hdc rport tcp:8081 tcp:8081 && react-native start",
+    "codegen": "react-native codegen-harmony --rnoh-module-path ./harmony/oh_modules/@rnoh/react-native-openharmony",
+    "pack:pkg": "cd ../react-native-harmony-gesture-handler && npm run pack:prod && cd ../tester",
+    "install:pkg": "npm uninstall react-native-harmony-gesture-handler && npm run pack:pkg && npm i react-native-harmony-gesture-handler@file:../react-native-harmony-gesture-handler/react-native-oh-tpl-react-native-gesture-handler-2.14.17-rc.1.tgz",
+    "dev:fast": "react-native bundle-harmony",
+    "dev": "npm run codegen && react-native bundle-harmony --dev --minify=false",
+    "android": "react-native run-android",
+    "format:cpp": "zsh -c 'clang-format -i ./harmony/gesture_handler/src/main/cpp/**/*.h ./harmony/gesture_handler/src/main/cpp/**/*.cpp ./harmony/entry/**/*.h ./harmony/entry/**/*.cpp --style=file:./harmony/.clang-format'"
+  },
+  "dependencies": {
+    "@rnoh/testerino": "file:rnoh_package/testerino/rnoh-testerino-0.0.9.tgz",
+    "react": "18.2.0",
+    "react-native": "0.72.5",
+    "react-native-gesture-handler": "2.14.1",
+    "react-native-harmony": "npm:@react-native-oh/react-native-harmony@0.72.48",
+    "react-native-harmony-gesture-handler": "file:../react-native-harmony-gesture-handler/react-native-oh-tpl-react-native-gesture-handler-2.14.17-rc.1.tgz"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.20.0",
+    "@babel/preset-env": "^7.20.0",
+    "@babel/runtime": "^7.20.0",
+    "@react-native-community/eslint-config": "^3.2.0",
+    "@react-native/metro-config": "^0.72.9",
+    "@tsconfig/react-native": "^2.0.3",
+    "@types/chai": "^4.3.5",
+    "@types/jest": "^29.2.1",
+    "@types/react": "^18.0.24",
+    "@types/react-test-renderer": "^18.0.0",
+    "babel-jest": "^29.2.1",
+    "eslint": "^8.19.0",
+    "jest": "^29.2.1",
+    "metro-config": "^0.76.3",
+    "metro-react-native-babel-preset": "0.73.9",
+    "prettier": "^2.4.1",
+    "react-test-renderer": "18.2.0",
+    "typescript": "4.8.4"
+  },
+  "jest": {
+    "preset": "react-native"
+  },
+  "overrides": {
+    "@react-native/codegen": "0.74.0"
+  }
+}
