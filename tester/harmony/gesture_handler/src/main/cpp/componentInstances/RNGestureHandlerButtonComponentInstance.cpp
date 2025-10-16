@@ -4,7 +4,7 @@
 
 namespace rnoh {
 RNGestureHandlerButtonComponentInstance::RNGestureHandlerButtonComponentInstance(Context context)
-    : CppComponentInstance(std::move(context)){};
+    : CppComponentInstance(std::move(context)) {};
 
 StackNode &RNGestureHandlerButtonComponentInstance::getLocalRootArkUINode() { return m_stackNode; };
 
