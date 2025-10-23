@@ -1,8 +1,9 @@
 import { RNPackage, RNPackageContext } from "@rnoh/react-native-openharmony";
 import type { TurboModule, TurboModuleContext } from "@rnoh/react-native-openharmony/ts";
 import { RNGestureHandlerModule } from './rnoh/RNGestureHandlerModule';
+import { RNOHPackage } from "@rnoh/react-native-openharmony";
 
-export default class RnohReactNativeHarmonyGestureHandlerPackage extends RNPackage {
+export default class RnohReactNativeHarmonyGestureHandlerPackage extends RNOHPackage {
   private isRNGHDevModeEnabled: boolean
 
   constructor(ctx: RNPackageContext, isRNGHDevModeEnabled: boolean = false) {

@@ -1,5 +1,5 @@
 import { TurboModule, TurboModuleContext, Tag } from "@rnoh/react-native-openharmony/ts";
-import { TM } from "@rnoh/react-native-openharmony/generated/ts"
+import { TM } from "../generated/ts"
 import {
   GestureHandlerRegistry,
   State,
