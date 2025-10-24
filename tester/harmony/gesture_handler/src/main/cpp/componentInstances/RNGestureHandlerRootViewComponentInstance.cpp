@@ -1,14 +1,10 @@
 #include "RNGestureHandlerRootViewComponentInstance.h"
 
 namespace rnoh {
-// 在文件顶部添加类型别名
-using RootViewTouchHandler =
-    RNGestureHandlerRootViewComponentInstance::RNGestureHandlerRootViewTouchHandler;.
-using TouchableViewVec =
-    std::vector<RNGestureHandlerRootViewComponentInstance::TouchableView>;
+using RVI = RNGestureHandlerRootViewComponentInstance;
 
 RNGestureHandlerRootViewComponentInstance::RNGestureHandlerRootViewComponentInstance(Context context)
-    : CppComponentInstance(std::move(context)),
+    : BaseRNGestureHandlerRootViewComponentInstance(std::move(context)),
       m_touchHandler(std::make_unique<RNGestureHandlerRootViewTouchHandler>(this)) {
     auto rnInstance = m_deps->rnInstance.lock();
     if (rnInstance) {
@@ -20,8 +16,8 @@ RNGestureHandlerRootViewComponentInstance::RNGestureHandlerRootViewTouchHandler:
     RNGestureHandlerRootViewComponentInstance *rootView)
     : UIInputEventHandler(rootView->getLocalRootArkUINode()), m_rootView(rootView) {}
 
-TouchTarget::Shared RNGestureHandlerRootViewComponentInstance::findTargetForTouchPoint(Point const &point,
-    TouchTarget::Shared const &target)
+TouchTarget::Shared RNGestureHandlerRootViewComponentInstance::findTargetForTouchPoint(
+    Point const &point, TouchTarget::Shared const &target)
 {
     bool canHandleTouch =
         target->canHandleTouch() && target->containsPoint(point) && (target->getTouchEventEmitter() != nullptr);
@@ -43,19 +39,56 @@ TouchTarget::Shared RNGestureHandlerRootViewComponentInstance::findTargetForTouc
     }
     return nullptr;
 }
+bool RVI::RNGestureHandlerRootViewTouchHandler::ShouldProcessEvent(
+    ArkUI_UIInputEvent *e)
+{
+    auto eventTime = OH_ArkUI_UIInputEvent_GetEventTime(e);
+    if (eventTime < lastEventTime) {
+        return false;
+    }
+    lastEventTime = eventTime;
+    return true;
+}
 
+bool RVI::RNGestureHandlerRootViewTouchHandler::HasAncestorRootView()
+{
+    auto ancestor = m_rootView->getParent().lock();
+    while (ancestor != nullptr) {
+        auto ancestorRNGHRootView = std::dynamic_pointer_cast<RNGestureHandlerRootViewComponentInstance>(ancestor);
+        if (ancestorRNGHRootView != nullptr) {
+            return true;
+        }
+        ancestor = ancestor->getParent().lock();
+    }
+    return false;
+}
+
+bool RVI::RNGestureHandlerRootViewTouchHandler::ShouldCancelDueTo()
+{
+    auto ancestorTouchTarget = m_rootView->getTouchTargetParent();
+    auto rnInstance = m_rootView->m_deps->rnInstance.lock();
+    
+    while (ancestorTouchTarget != nullptr) {
+        if (ancestorTouchTarget->isHandlingTouches()) {
+            if (rnInstance) {
+                rnInstance->postMessageToArkTS("RNGH::CANCEL_TOUCHES", m_rootView->getTag());
+            }
+            return true;
+        }
+        ancestorTouchTarget = ancestorTouchTarget->getTouchTargetParent();
+    }
+    return false;
+}
 void RNGestureHandlerRootViewComponentInstance::RNGestureHandlerRootViewTouchHandler::onTouchEvent(
     ArkUI_UIInputEvent *e)
 {
-    if (!shouldProcessEvent(e)) {
+    if (!ShouldProcessEvent(e)) {
         return;
     }
-    
-    if (hasAncestorRNGHRootView()) {
+    if (HasAncestorRootView()) {
         return;
     }
-    
-    if (shouldCancelDueToAncestorHandlingTouches()) {
+    if (ShouldCancelDueTo()) {
         return;
     }
     auto rnInstance = m_rootView->m_deps->rnInstance.lock();
@@ -66,7 +99,7 @@ void RNGestureHandlerRootViewComponentInstance::RNGestureHandlerRootViewTouchHan
     auto action = OH_ArkUI_UIInputEvent_GetAction(e);
     auto actionType = static_cast<ActionType>(action);
 
-    if (actionType != ActionType::MOVE) {
+    if (actionType != ActionType::Move) {
         auto componentX = OH_ArkUI_PointerEvent_GetX(e);
         auto componentY = OH_ArkUI_PointerEvent_GetY(e);
         touchableViews = m_rootView->findTouchableViews(componentX, componentY);
@@ -90,7 +123,7 @@ void RNGestureHandlerRootViewComponentInstance::RNGestureHandlerRootViewTouchHan
     payload["actionTouch"] = touchPoints[activePointerIdx];
     payload["touchPoints"] = touchPoints;
     payload["sourceType"] = OH_ArkUI_UIInputEvent_GetSourceType(e);
-    payload["timestamp"] = eventTime;
+    payload["timestamp"] = OH_ArkUI_UIInputEvent_GetEventTime(e);
     payload["touchableViews"] = m_rootView->dynamicFromTouchableViews(touchableViews);
     payload["rootTag"] = m_rootView->getTag();
     payload["action"] = action;
@@ -98,71 +131,31 @@ void RNGestureHandlerRootViewComponentInstance::RNGestureHandlerRootViewTouchHan
         rnInstance->postMessageToArkTS("RNGH::TOUCH_EVENT", payload);
     }
 }
-bool RNGestureHandlerRootViewComponentInstance::RNGestureHandlerRootViewTouchHandler::shouldProcessEvent(
-    ArkUI_UIInputEvent *e)
-{
-    auto eventTime = OH_ArkUI_UIInputEvent_GetEventTime(e);
-    if (eventTime < lastEventTime) {
-        return false;
-    }
-    lastEventTime = eventTime;
-    return true;
-}
 
-bool RNGestureHandlerRootViewComponentInstance::RNGestureHandlerRootViewTouchHandler::hasAncestorRNGHRootView()
-{
-    auto ancestor = m_rootView->getParent().lock();
-    while (ancestor != nullptr) {
-        auto ancestorRNGHRootView = std::dynamic_pointer_cast<RNGestureHandlerRootViewComponentInstance>(ancestor);
-        if (ancestorRNGHRootView != nullptr) {
-            return true;
-        }
-        ancestor = ancestor->getParent().lock();
-    }
-    return false;
-}
-
-bool RootViewTouchHandler::shouldCancelDueToAncestorHandlingTouches()
-{
-    auto ancestorTouchTarget = m_rootView->getTouchTargetParent();
-    auto rnInstance = m_rootView->m_deps->rnInstance.lock();
-    
-    while (ancestorTouchTarget != nullptr) {
-        if (ancestorTouchTarget->IsHandlingTouches()) {
-            if (rnInstance) {
-                rnInstance->postMessageToArkTS("RNGH::CANCEL_TOUCHES", m_rootView->getTag());
-            }
-            return true;
-        }
-        ancestorTouchTarget = ancestorTouchTarget->getTouchTargetParent();
-    }
-    return false;
-}
 StackNode &RNGestureHandlerRootViewComponentInstance::getLocalRootArkUINode() { return m_stackNode; }
 
-void RNGestureHandlerRootViewComponentInstance::SetIsHandlingTouches(bool isHandlingTouches)
+void RNGestureHandlerRootViewComponentInstance::setIsHandlingTouches(bool isHandlingTouches)
 {
     m_isHandlingTouches = isHandlingTouches;
 }
 
-bool RNGestureHandlerRootViewComponentInstance::IsHandlingTouches() const { return m_isHandlingTouches; }
+bool RNGestureHandlerRootViewComponentInstance::isHandlingTouches() const { return m_isHandlingTouches; }
 
 void RNGestureHandlerRootViewComponentInstance::onChildInserted(ComponentInstance::Shared const &childComponentInstance,
                                                                 std::size_t index)
 {
-    CppComponentInstance::onChildInserted(childComponentInstance, index);
+    Super::onChildInserted(childComponentInstance, index);
     m_stackNode.insertChild(childComponentInstance->getLocalRootArkUINode(), index);
 }
 
 void RNGestureHandlerRootViewComponentInstance::onChildRemoved(
     ComponentInstance::Shared const &childComponentInstance)
 {
-    CppComponentInstance::onChildRemoved(childComponentInstance);
+    Super::onChildRemoved(childComponentInstance);
     m_stackNode.removeChild(childComponentInstance->getLocalRootArkUINode());
 }
 
-TouchableViewVec RNGestureHandlerRootViewComponentInstance::findTouchableViews(
-    float componentX, float componentY)
+std::vector<RVI::TouchableView> RVI::findTouchableViews(float componentX, float componentY)
 {
     auto touchTarget = findTargetForTouchPoint({.x = componentX, .y = componentY}, this->shared_from_this());
     std::vector<TouchTarget::Shared> touchTargets{};
@@ -222,8 +215,8 @@ folly::dynamic RNGestureHandlerRootViewComponentInstance::dynamicFromTouchableVi
     return d_touchableViews;
 }
 
-folly::dynamic RNGestureHandlerRootViewComponentInstance::convertNodeTouchPointToDynamic(ArkUI_UIInputEvent *e,
-                                                                                         int32_t index)
+folly::dynamic RNGestureHandlerRootViewComponentInstance::convertNodeTouchPointToDynamic(
+    ArkUI_UIInputEvent *e, int32_t index)
 {
     folly::dynamic result = folly::dynamic::object;
     result["pointerId"] = OH_ArkUI_PointerEvent_GetPointerId(e, index);

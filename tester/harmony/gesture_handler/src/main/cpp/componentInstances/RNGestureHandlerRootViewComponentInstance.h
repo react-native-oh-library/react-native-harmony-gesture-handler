@@ -1,15 +1,19 @@
+#ifndef RNGESTUREHANDLERROOTVIEWCOMPONENTINSTANCE_H
+#define RNGESTUREHANDLERROOTVIEWCOMPONENTINSTANCE_H
+
 #pragma once
 #include "RNOH/CppComponentInstance.h"
 #include "RNOH/arkui/StackNode.h"
 #include "RNOH/arkui/NativeNodeApi.h"
 #include "RNOH/arkui/UIInputEventHandler.h"
 #include "RNOH/RNInstanceCAPI.h"
-#include "generated/RNGestureHandlerRootViewComponentDescriptor.h"
+#include "../generated/RNOH/generated/components/BaseRNGestureHandlerRootViewComponentInstance.h"
 #include "RNGestureHandlerButtonComponentInstance.h"
 
 namespace rnoh {
 class RNGestureHandlerRootViewComponentInstance
-    : public CppComponentInstance<facebook::react::RNGestureHandlerRootViewShadowNode> {
+    : public BaseRNGestureHandlerRootViewComponentInstance {
+    using Super = BaseRNGestureHandlerRootViewComponentInstance;
 public:
     class RNGestureHandlerRootViewTouchHandler : public UIInputEventHandler {
     public:
@@ -21,20 +25,22 @@ public:
         explicit RNGestureHandlerRootViewTouchHandler(RNGestureHandlerRootViewComponentInstance *rootView);
 
         void onTouchEvent(ArkUI_UIInputEvent *e) override;
-
+        bool ShouldProcessEvent(ArkUI_UIInputEvent *e);
+        bool HasAncestorRootView();
+        bool ShouldCancelDueTo();
     private:
         RNGestureHandlerRootViewComponentInstance *m_rootView;
         int64_t lastEventTime = 0;
     };
 
     using Point = facebook::react::Point;
-    enum class ActionType { CANCEL, DOWN, MOVE, UP };
+    enum class ActionType { Cancel, Down, Move, Up };
 
     explicit RNGestureHandlerRootViewComponentInstance(Context context);
 
     StackNode &getLocalRootArkUINode() override;
-    void SetIsHandlingTouches(bool isHandlingTouches);
-    bool IsHandlingTouches() const override;
+    void setIsHandlingTouches(bool isHandlingTouches);
+    bool isHandlingTouches() const override;
 
     // This function is borrowed from TouchEventDispatcher
     TouchTarget::Shared findTargetForTouchPoint(Point const &point, TouchTarget::Shared const &target);
@@ -64,3 +70,4 @@ private:
     Surface::Weak getSurface();
 };
 } // namespace rnoh
+#endif // RNGESTUREHANDLERROOTVIEWCOMPONENTINSTANCE_H
