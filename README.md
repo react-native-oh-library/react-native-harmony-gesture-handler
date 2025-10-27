@@ -1,4 +1,4 @@
-# @react-native-oh-tpl/react-native-gesture-handler
+# @react-native-ohos/react-native-gesture-handler
 This project is based on  [react-native-gesture-handler](https://github.com/software-mansion/react-native-gesture-handler)
 ## Documentation
 [中文](https://gitee.com/react-native-oh-library/usage-docs/blob/master/zh-cn/react-native-gesture-handler.md)
