@@ -40,8 +40,22 @@ RNGestureHandlerRootViewComponentInstance::findTargetForTouchPoint(Point const &
     return nullptr;
 }
 
+void RNGestureHandlerRootViewComponentInstance::RNGestureHandlerRootViewTouchHandler::enable() {
+  m_isEnabled = true;  
+}
+
+void RNGestureHandlerRootViewComponentInstance::RNGestureHandlerRootViewTouchHandler::disable() {
+  m_isEnabled = false;
+}
+
 void RNGestureHandlerRootViewComponentInstance::RNGestureHandlerRootViewTouchHandler::onTouchEvent(
     ArkUI_UIInputEvent *e) {
+    if (!m_isEnabled) {
+      if (auto rnInstance = m_rootView->m_deps->rnInstance.lock()) {
+        rnInstance->postMessageToArkTS("RNGH::CANCEL_TOUCHES", m_rootView->getTag());
+      }  
+      return;  
+    }
     auto eventTime = OH_ArkUI_UIInputEvent_GetEventTime(e);
     if (eventTime < lastEventTime) {
         return;
@@ -125,6 +139,22 @@ void RNGestureHandlerRootViewComponentInstance::onChildRemoved(
     CppComponentInstance::onChildRemoved(childComponentInstance);
     m_stackNode.removeChild(childComponentInstance->getLocalRootArkUINode());
 }
+
+void RNGestureHandlerRootViewComponentInstance::onNativeResponderBlockChange(bool isBlocked) {
+    /**
+     * Both, React Native and RNGH can block native responder. However, RNGH doesn't block RNGestureHandlerRootView
+     * (and its ancestors), so this method is called only when React Native blocks a native responder.
+     */
+      if (isBlocked) {
+        m_touchHandler->disable();
+        if (auto rnInstance = m_deps->rnInstance.lock()) {
+          rnInstance->postMessageToArkTS("RNGH::CANCEL_TOUCHES", m_tag);      
+        }
+      } else {
+        m_touchHandler->enable();
+      }    
+  }
+  
 
 std::vector<RNGestureHandlerRootViewComponentInstance::TouchableView>
 RNGestureHandlerRootViewComponentInstance::findTouchableViews(float componentX, float componentY) {
