@@ -25,11 +25,14 @@ public:
         explicit RNGestureHandlerRootViewTouchHandler(RNGestureHandlerRootViewComponentInstance *rootView);
 
         void onTouchEvent(ArkUI_UIInputEvent *e) override;
+        void enable();
+        void disable();
         bool ShouldProcessEvent(ArkUI_UIInputEvent *e);
         bool HasAncestorRootView();
         bool ShouldCancelDueTo();
     private:
-        RNGestureHandlerRootViewComponentInstance *m_rootView;
+        bool m_isEnabled = true;
+        RNGestureHandlerRootViewComponentInstance *m_rootView = nullptr;
         int64_t lastEventTime = 0;
     };
 
@@ -42,12 +45,14 @@ public:
     void setIsHandlingTouches(bool isHandlingTouches);
     bool isHandlingTouches() const override;
 
+  
     // This function is borrowed from TouchEventDispatcher
     TouchTarget::Shared findTargetForTouchPoint(Point const &point, TouchTarget::Shared const &target);
 
 protected:
     void onChildInserted(ComponentInstance::Shared const &childComponentInstance, std::size_t index) override;
     void onChildRemoved(ComponentInstance::Shared const &childComponentInstance) override;
+    void onNativeResponderBlockChange(bool isBlocked) override;
 
 private:
     struct TouchableView {
@@ -62,7 +67,7 @@ private:
     bool m_isHandlingTouches = false;
     StackNode m_stackNode;
     Surface::Weak m_surface;
-    std::unique_ptr<UIInputEventHandler> m_touchHandler;
+    std::unique_ptr<RNGestureHandlerRootViewTouchHandler> m_touchHandler;
 
     std::vector<TouchableView> findTouchableViews(float componentX, float componentY);
     std::deque<TouchTarget::Shared> buildHierarchy(TouchTarget::Shared const &touchTarget) const;

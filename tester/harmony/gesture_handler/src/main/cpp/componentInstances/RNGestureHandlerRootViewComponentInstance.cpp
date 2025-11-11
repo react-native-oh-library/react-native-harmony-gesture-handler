@@ -39,9 +39,23 @@ TouchTarget::Shared RNGestureHandlerRootViewComponentInstance::findTargetForTouc
     }
     return nullptr;
 }
+
+void RNGestureHandlerRootViewComponentInstance::RNGestureHandlerRootViewTouchHandler::enable() {
+  m_isEnabled = true;  
+}
+
+void RNGestureHandlerRootViewComponentInstance::RNGestureHandlerRootViewTouchHandler::disable() {
+  m_isEnabled = false;
+}
 bool RVI::RNGestureHandlerRootViewTouchHandler::ShouldProcessEvent(
     ArkUI_UIInputEvent *e)
 {
+    if (!m_isEnabled) {
+      if (auto rnInstance = m_rootView->m_deps->rnInstance.lock()) {
+        rnInstance->postMessageToArkTS("RNGH::CANCEL_TOUCHES", m_rootView->getTag());
+      }  
+      return;  
+    }
     auto eventTime = OH_ArkUI_UIInputEvent_GetEventTime(e);
     if (eventTime < lastEventTime) {
         return false;
@@ -217,6 +231,20 @@ RNGestureHandlerRootViewComponentInstance::buildNodeTransform(const TouchTarget:
            facebook::react::Transform::Translate(-frameCenter.x, -frameCenter.y, 0);
 }
 
+void RNGestureHandlerRootViewComponentInstance::onNativeResponderBlockChange(bool isBlocked) {
+    /**
+     * Both, React Native and RNGH can block native responder. However, RNGH doesn't block RNGestureHandlerRootView
+     * (and its ancestors), so this method is called only when React Native blocks a native responder.
+     */
+      if (isBlocked) {
+        m_touchHandler->disable();
+        if (auto rnInstance = m_deps->rnInstance.lock()) {
+          rnInstance->postMessageToArkTS("RNGH::CANCEL_TOUCHES", m_tag);      
+        }
+      } else {
+        m_touchHandler->enable();
+      }    
+  }
 std::vector<RVI::TouchableView> RVI::findTouchableViews(float componentX, float componentY)
 {
     auto touchTarget = findTargetForTouchPoint({.x = componentX, .y = componentY}, this->shared_from_this());
