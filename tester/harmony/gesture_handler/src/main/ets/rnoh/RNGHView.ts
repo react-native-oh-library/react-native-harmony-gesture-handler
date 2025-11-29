@@ -1,4 +1,4 @@
-import { View, BoundingBox } from "../core"
+import { View, BoundingBox, Tag } from "../core"
 
 
 export type RawTouchableView = {
@@ -22,7 +22,7 @@ export class RNGHView implements View {
   private boundingBox: BoundingBox
   private childrenBoundingBoxes: Set<BoundingBox> = new Set()
 
-  constructor({ tag, buttonRole, ...boundingBox }: RawTouchableView) {
+  constructor(private onViewAttachedToNativeViewGestureHandler: (viewTag) => void, { tag, buttonRole, ...boundingBox }: RawTouchableView) {
     this.tag = tag
     this.buttonRole = buttonRole
     this.boundingBox = boundingBox
@@ -30,6 +30,11 @@ export class RNGHView implements View {
 
   getTag(): number {
     return this.tag
+  }
+
+
+  onAttachedToNativeViewGestureHandler(gestureHandlerTag: Tag) {
+    this.onViewAttachedToNativeViewGestureHandler(this.tag)
   }
 
   getBoundingRect(): BoundingBox {
