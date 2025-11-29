@@ -1,4 +1,4 @@
-import { GestureHandler, GestureHandlerDependencies, DEFAULT_TOUCH_SLOP, Vector2D, State, IncomingEvent } from "../core"
+import { GestureHandler, GestureHandlerDependencies, DEFAULT_TOUCH_SLOP, Vector2D, State, IncomingEvent, View } from "../core"
 
 
 export class NativeViewGestureHandler extends GestureHandler {
@@ -16,6 +16,11 @@ export class NativeViewGestureHandler extends GestureHandler {
 
   public override getName(): string {
     return "NativeViewGestureHandler"
+  }
+
+  public override onViewAttached(view: View): void {
+    super.onViewAttached(view);
+    view.onAttachedToNativeViewGestureHandler(this.handlerTag)
   }
 
   public override isGestureContinuous(): boolean {

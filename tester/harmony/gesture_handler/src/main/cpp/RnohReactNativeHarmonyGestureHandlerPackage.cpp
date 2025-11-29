@@ -3,6 +3,7 @@
 #include "RNOH/RNInstanceCAPI.h"
 #include "componentInstances/RNGestureHandlerButtonComponentInstance.h"
 #include "componentInstances/RNGestureHandlerRootViewComponentInstance.h"
+#include <RNOHCorePackage/ComponentInstances/ScrollViewComponentInstance.h>
 #include <glog/logging.h>
 #include <react/renderer/debug/SystraceSection.h>
 
@@ -114,6 +115,29 @@ public:
                     }
                 }
             }
+        } else if (ctx.messageName == "RNGH::VIEW_ATTACHED_TO_NATIVE_VIEW_GESTURE_HANDLER") {
+            auto viewTag = ctx.messagePayload["viewTag"].asDouble();
+            auto rnInstance = ctx.rnInstance.lock();
+            if (!rnInstance) {
+                return;
+            }
+            auto rnInstanceCAPI = std::dynamic_pointer_cast<RNInstanceCAPI>(rnInstance);
+            if (!rnInstanceCAPI) {
+                return;
+            }
+            auto componentInstance = rnInstanceCAPI->findComponentInstanceByTag(viewTag);
+            if (!componentInstance) {
+                return;
+            }
+            auto scrollViewComponentInstance =
+                std::dynamic_pointer_cast<ScrollViewComponentInstance>(componentInstance);
+            if (!scrollViewComponentInstance) {
+                return;
+            }
+            auto scrollNode = &scrollViewComponentInstance->getLocalRootArkUINode();
+            scrollNode->setEnableScrollInteraction(true);
+            scrollViewComponentInstance->setNestedScrollMode(ARKUI_SCROLL_NESTED_MODE_PARENT_FIRST,
+                                                             ARKUI_SCROLL_NESTED_MODE_SELF_FIRST);
         }
     };
 };
