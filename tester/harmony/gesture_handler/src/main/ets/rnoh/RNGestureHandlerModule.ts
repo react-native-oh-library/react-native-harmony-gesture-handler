@@ -97,7 +97,9 @@ export class RNGestureHandlerModule extends TurboModule implements TM.RNGestureH
           view.updateBoundingBox(touchableView)
           view.setButtonRole(touchableView.buttonRole)
         } else {
-          this.viewRegistry.save(new RNGHView(touchableView))
+          this.viewRegistry.save(new RNGHView((viewTag: number) => {
+            this.ctx.rnInstance.postMessageToCpp("RNGH::VIEW_ATTACHED_TO_NATIVE_VIEW_GESTURE_HANDLER", { viewTag })
+          }, touchableView))
         }
       })
       rootViewController.handleTouch(e, e.touchableViews.map(({ tag }) => this.viewRegistry.getViewByTag(tag)));
@@ -155,14 +157,17 @@ export class RNGestureHandlerModule extends TurboModule implements TM.RNGestureH
       const viewRegistry = this.viewRegistry
       let view = this.viewRegistry.getViewByTag(viewTag)
       if (!view && viewRegistry instanceof RNGHViewRegistry) {
-        view = new RNGHView({
-          tag: viewTag,
-          x: 0,
-          y: 0,
-          width: 0,
-          height: 0,
-          buttonRole: false
-        })
+        view = new RNGHView((viewTag: number) => {
+          this.ctx.rnInstance.postMessageToCpp("RNGH::VIEW_ATTACHED_TO_NATIVE_VIEW_GESTURE_HANDLER", { viewTag })
+        },
+          {
+            tag: viewTag,
+            x: 0,
+            y: 0,
+            width: 0,
+            height: 0,
+            buttonRole: false
+          })
         viewRegistry.save(view)
       }
       if (!view) {

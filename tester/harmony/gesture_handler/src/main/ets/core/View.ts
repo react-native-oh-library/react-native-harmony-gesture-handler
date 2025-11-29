@@ -18,4 +18,6 @@ export interface View {
   getBoundingRect(): BoundingBox
 
   hasButtonRole(): boolean
+
+  onAttachedToNativeViewGestureHandler(gestureHandlerTag: Tag): void
 }
