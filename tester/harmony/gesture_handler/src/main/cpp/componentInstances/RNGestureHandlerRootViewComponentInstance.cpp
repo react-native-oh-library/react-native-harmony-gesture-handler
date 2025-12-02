@@ -40,21 +40,23 @@ TouchTarget::Shared RNGestureHandlerRootViewComponentInstance::findTargetForTouc
     return nullptr;
 }
 
-void RNGestureHandlerRootViewComponentInstance::RNGestureHandlerRootViewTouchHandler::enable() {
-  m_isEnabled = true;  
+void RNGestureHandlerRootViewComponentInstance::RNGestureHandlerRootViewTouchHandler::enable() 
+{
+    m_isEnabled = true;  
 }
 
-void RNGestureHandlerRootViewComponentInstance::RNGestureHandlerRootViewTouchHandler::disable() {
-  m_isEnabled = false;
+void RNGestureHandlerRootViewComponentInstance::RNGestureHandlerRootViewTouchHandler::disable() 
+{
+    m_isEnabled = false;
 }
 bool RVI::RNGestureHandlerRootViewTouchHandler::ShouldProcessEvent(
     ArkUI_UIInputEvent *e)
 {
     if (!m_isEnabled) {
-      if (auto rnInstance = m_rootView->m_deps->rnInstance.lock()) {
-        rnInstance->postMessageToArkTS("RNGH::CANCEL_TOUCHES", m_rootView->getTag());
-      }  
-      return;  
+        if (auto rnInstance = m_rootView->m_deps->rnInstance.lock()) {
+            rnInstance->postMessageToArkTS("RNGH::CANCEL_TOUCHES", m_rootView->getTag());
+        }
+        return;
     }
     auto eventTime = OH_ArkUI_UIInputEvent_GetEventTime(e);
     if (eventTime < lastEventTime) {
@@ -169,8 +171,7 @@ void RNGestureHandlerRootViewComponentInstance::onChildRemoved(
     m_stackNode.removeChild(childComponentInstance->getLocalRootArkUINode());
 }
 
-std::deque<TouchTarget::Shared>
-RNGestureHandlerRootViewComponentInstance::buildHierarchy(TouchTarget::Shared const &touchTarget) const {
+std::deque<TouchTarget::Shared> RNGestureHandlerRootViewComponentInstance::buildHierarchy(TouchTarget::Shared const &touchTarget) const {
     std::deque<TouchTarget::Shared> touchTargets{};
     auto current = touchTarget;
     while (current != nullptr) {
@@ -190,8 +191,7 @@ facebook::react::Transform RNGestureHandlerRootViewComponentInstance::getInitial
     return facebook::react::Transform::Identity();
 }
 
-RNGestureHandlerRootViewComponentInstance::TouchableView
-RNGestureHandlerRootViewComponentInstance::createTouchableView(const TouchTarget::Shared &node,
+RNGestureHandlerRootViewComponentInstance::TouchableView RNGestureHandlerRootViewComponentInstance::createTouchableView(const TouchTarget::Shared &node,
                                                                const facebook::react::Rect &screenBounds) const {
     const bool buttonRole = dynamic_cast<RNGestureHandlerButtonComponentInstance *>(node.get()) != nullptr;
 
@@ -205,8 +205,7 @@ RNGestureHandlerRootViewComponentInstance::createTouchableView(const TouchTarget
     };
 }
 
-facebook::react::Transform
-RNGestureHandlerRootViewComponentInstance::buildNodeTransform(const TouchTarget::Shared &node)  const {
+facebook::react::Transform RNGestureHandlerRootViewComponentInstance::buildNodeTransform(const TouchTarget::Shared &node)  const {
     const auto frame = node->getLayoutMetrics().frame;
     auto currentOffset = node->getCurrentOffset();
     const auto nodeTransform = node->getTransform();
@@ -231,19 +230,16 @@ RNGestureHandlerRootViewComponentInstance::buildNodeTransform(const TouchTarget:
            facebook::react::Transform::Translate(-frameCenter.x, -frameCenter.y, 0);
 }
 
-void RNGestureHandlerRootViewComponentInstance::onNativeResponderBlockChange(bool isBlocked) {
-    /**
-     * Both, React Native and RNGH can block native responder. However, RNGH doesn't block RNGestureHandlerRootView
-     * (and its ancestors), so this method is called only when React Native blocks a native responder.
-     */
-      if (isBlocked) {
+void RNGestureHandlerRootViewComponentInstance::onNativeResponderBlockChange(bool isBlocked)
+{
+    if (isBlocked) {
         m_touchHandler->disable();
         if (auto rnInstance = m_deps->rnInstance.lock()) {
-          rnInstance->postMessageToArkTS("RNGH::CANCEL_TOUCHES", m_tag);      
+            rnInstance->postMessageToArkTS("RNGH::CANCEL_TOUCHES", m_tag);
         }
-      } else {
+    } else {
         m_touchHandler->enable();
-      }    
+    }
   }
 std::vector<RVI::TouchableView> RVI::findTouchableViews(float componentX, float componentY)
 {
