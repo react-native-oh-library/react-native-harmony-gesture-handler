@@ -27,7 +27,7 @@ import {
   scheduleFlushOperations,
 } from "react-native-gesture-handler/src/handlers/gestureHandlerCommon";
 import { ValueOf } from 'react-native-gesture-handler/src/typeUtils';
-import { isFabric, isJestEnv, tagMessage } from 'react-native-gesture-handler/src/utils';
+import { deepEqual, isFabric, isTestEnv, tagMessage } from 'react-native-gesture-handler/src/utils';
 import { ActionType } from 'react-native-gesture-handler/src/ActionType';
 import { PressabilityDebugView } from 'react-native-gesture-handler/src/handlers/PressabilityDebugView';
 import GestureHandlerRootViewContext from 'react-native-gesture-handler/src/GestureHandlerRootViewContext';
@@ -406,7 +406,7 @@ export default function createHandler<
     }
 
     render() {
-      if (__DEV__ && !this.context && !isJestEnv() && Platform.OS !== 'web' && (Platform.OS as any) !== "harmony") { // RNOH: patch
+      if (__DEV__ && !this.context && !isTestEnv() && Platform.OS !== 'web' && (Platform.OS as any) !== "harmony") { // RNOH: patch
         throw new Error(
           name +
             ' must be used as a descendant of GestureHandlerRootView. Otherwise the gestures will not be recognized. See https://docs.swmansion.com/react-native-gesture-handler/docs/installation for more details.'
@@ -517,7 +517,7 @@ export default function createHandler<
         {
           ref: this.refHandler,
           collapsable: false,
-          ...(isJestEnv()
+          ...(isTestEnv()
             ? {
                 handlerType: name,
                 handlerTag: this.handlerTag,
